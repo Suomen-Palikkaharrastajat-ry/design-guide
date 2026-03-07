@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="339.557685" height="90.251594" viewBox="0 0 339.557685 90.251594"
      xmlns="http://www.w3.org/2000/svg">
-  <g transform="translate(0.000000, 0)">
-    <!-- Symmetric LEGO minifig head.
-     ViewBox: 0 0 76.674316 90.251594  (same as original)
-     Center x: 38.337158
-
-     Symmetry axes used throughout:
-       head/nub  x: cx ± 19.0  → [19.337, 57.337]
-       body      x: cx ± 37.0  → [ 1.337, 75.337]
-       neck      x: cx ± 16.5  → [21.837, 54.837]
-       eyes      x: cx ± 14.305 at cy = 41.644, r = 9.676 (6.451 × 1.5)
-       smile     x: cx ± 18.0  → [20.337, 56.337], U-band y=70..82/75.5
--->
-
-<defs
+  <g transform="translate(0, 0)">
+    <defs
      id="defs1" />
   <!-- Head outline: nub on top, face body, narrow neck at bottom.
        Path is clockwise from nub top-left.
@@ -28,12 +16,17 @@
      style="fill:#151100;stroke-width:0"
      d="m 15.610417,51.064592 c 0,28.926294 45.690626,28.926294 45.690626,0 0,13.257884 -45.690626,13.257884 -45.690626,0 z"
      id="path8-9-2" />
+  <!-- Smile: classic LEGO "U" — a curved band open at the top.
+       Outer arc: corners at y=70, dips to y≈82 at center (the bottom of the U).
+       Inner arc: returns at y=70, dips only to y≈75.5 → band is ~5.5 units thick at center. -->
+  <!-- Left eye: cx = 38.337158 − 14.305 = 24.032, r = 6.4509315 × 1.5 = 9.676 -->
   <circle
      style="fill:#000000;stroke-width:0.264583"
      id="path2"
      cx="24.032"
      cy="35.823162"
      r="9.6759996" />
+  <!-- Right eye: cx = 38.337158 + 14.305 = 52.642 (mirror of left) -->
   <circle
      style="fill:#000000;stroke-width:0.264583"
      id="path2-5"
@@ -41,20 +34,8 @@
      cy="35.823162"
      r="9.6759996" />
   </g>
-  <g transform="translate(87.627790, 0)">
-    <!-- Symmetric LEGO minifig head.
-     ViewBox: 0 0 76.674316 90.251594  (same as original)
-     Center x: 38.337158
-
-     Symmetry axes used throughout:
-       head/nub  x: cx ± 19.0  → [19.337, 57.337]
-       body      x: cx ± 37.0  → [ 1.337, 75.337]
-       neck      x: cx ± 16.5  → [21.837, 54.837]
-       eyes      x: cx ± 14.305 at cy = 41.644, r = 9.676 (6.451 × 1.5)
-       smile     x: cx ± 18.0  → [20.337, 56.337], U-band y=70..82/75.5
--->
-
-<defs
+  <g transform="translate(87.62779, 0)">
+    <defs
      id="defs1" />
   <!-- Head outline: nub on top, face body, narrow neck at bottom.
        Path is clockwise from nub top-left.
@@ -68,12 +49,17 @@
      style="fill:#151100;stroke-width:0"
      d="m 15.610417,51.064592 c 0,28.926294 45.690626,28.926294 45.690626,0 0,13.257884 -45.690626,13.257884 -45.690626,0 z"
      id="path8-9-2" />
+  <!-- Smile: classic LEGO "U" — a curved band open at the top.
+       Outer arc: corners at y=70, dips to y≈82 at center (the bottom of the U).
+       Inner arc: returns at y=70, dips only to y≈75.5 → band is ~5.5 units thick at center. -->
+  <!-- Left eye: cx = 38.337158 − 14.305 = 24.032, r = 6.4509315 × 1.5 = 9.676 -->
   <circle
      style="fill:#000000;stroke-width:0.264583"
      id="path2"
      cx="24.032"
      cy="35.823162"
      r="9.6759996" />
+  <!-- Right eye: cx = 38.337158 + 14.305 = 52.642 (mirror of left) -->
   <circle
      style="fill:#000000;stroke-width:0.264583"
      id="path2-5"
@@ -82,19 +68,7 @@
      r="9.6759996" />
   </g>
   <g transform="translate(175.255579, 0)">
-    <!-- Symmetric LEGO minifig head.
-     ViewBox: 0 0 76.674316 90.251594  (same as original)
-     Center x: 38.337158
-
-     Symmetry axes used throughout:
-       head/nub  x: cx ± 19.0  → [19.337, 57.337]
-       body      x: cx ± 37.0  → [ 1.337, 75.337]
-       neck      x: cx ± 16.5  → [21.837, 54.837]
-       eyes      x: cx ± 14.305 at cy = 41.644, r = 9.676 (6.451 × 1.5)
-       smile     x: cx ± 18.0  → [20.337, 56.337], U-band y=70..82/75.5
--->
-
-<defs
+    <defs
      id="defs1" />
   <!-- Head outline: nub on top, face body, narrow neck at bottom.
        Path is clockwise from nub top-left.
@@ -108,12 +82,17 @@
      style="fill:#151100;stroke-width:0"
      d="m 15.610417,51.064592 c 0,28.926294 45.690626,28.926294 45.690626,0 0,13.257884 -45.690626,13.257884 -45.690626,0 z"
      id="path8-9-2" />
+  <!-- Smile: classic LEGO "U" — a curved band open at the top.
+       Outer arc: corners at y=70, dips to y≈82 at center (the bottom of the U).
+       Inner arc: returns at y=70, dips only to y≈75.5 → band is ~5.5 units thick at center. -->
+  <!-- Left eye: cx = 38.337158 − 14.305 = 24.032, r = 6.4509315 × 1.5 = 9.676 -->
   <circle
      style="fill:#000000;stroke-width:0.264583"
      id="path2"
      cx="24.032"
      cy="35.823162"
      r="9.6759996" />
+  <!-- Right eye: cx = 38.337158 + 14.305 = 52.642 (mirror of left) -->
   <circle
      style="fill:#000000;stroke-width:0.264583"
      id="path2-5"
@@ -122,19 +101,7 @@
      r="9.6759996" />
   </g>
   <g transform="translate(262.883369, 0)">
-    <!-- Symmetric LEGO minifig head.
-     ViewBox: 0 0 76.674316 90.251594  (same as original)
-     Center x: 38.337158
-
-     Symmetry axes used throughout:
-       head/nub  x: cx ± 19.0  → [19.337, 57.337]
-       body      x: cx ± 37.0  → [ 1.337, 75.337]
-       neck      x: cx ± 16.5  → [21.837, 54.837]
-       eyes      x: cx ± 14.305 at cy = 41.644, r = 9.676 (6.451 × 1.5)
-       smile     x: cx ± 18.0  → [20.337, 56.337], U-band y=70..82/75.5
--->
-
-<defs
+    <defs
      id="defs1" />
   <!-- Head outline: nub on top, face body, narrow neck at bottom.
        Path is clockwise from nub top-left.
@@ -148,12 +115,17 @@
      style="fill:#151100;stroke-width:0"
      d="m 15.610417,51.064592 c 0,28.926294 45.690626,28.926294 45.690626,0 0,13.257884 -45.690626,13.257884 -45.690626,0 z"
      id="path8-9-2" />
+  <!-- Smile: classic LEGO "U" — a curved band open at the top.
+       Outer arc: corners at y=70, dips to y≈82 at center (the bottom of the U).
+       Inner arc: returns at y=70, dips only to y≈75.5 → band is ~5.5 units thick at center. -->
+  <!-- Left eye: cx = 38.337158 − 14.305 = 24.032, r = 6.4509315 × 1.5 = 9.676 -->
   <circle
      style="fill:#000000;stroke-width:0.264583"
      id="path2"
      cx="24.032"
      cy="35.823162"
      r="9.6759996" />
+  <!-- Right eye: cx = 38.337158 + 14.305 = 52.642 (mirror of left) -->
   <circle
      style="fill:#000000;stroke-width:0.264583"
      id="path2-5"

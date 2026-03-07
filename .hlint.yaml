@@ -1,0 +1,7 @@
+- ignore: {name: "Use String"}
+- ignore: {name: "Redundant do"}
+- ignore: {name: "Use <$>"}
+
+- extensions:
+  - default: true
+    name: OverloadedStrings

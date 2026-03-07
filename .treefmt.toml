@@ -1,0 +1,4 @@
+[formatter.fourmolu]
+command = "fourmolu"
+args = ["--mode", "inplace"]
+includes = ["**/*.hs"]

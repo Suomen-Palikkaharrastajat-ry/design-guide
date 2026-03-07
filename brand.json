@@ -1,8 +1,5 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "organization": {
-    "name": "Suomen Palikkaharrastajat ry"
-  },
   "colors": {
     "brand": [
       {
@@ -25,185 +22,428 @@
         ]
       }
     ],
-    "skinTones": [
-      {
-        "hex": "#F2CD37",
-        "id": "yellow",
-        "name": "Yellow",
-        "description": "Classic minifig"
-      },
-      {
-        "hex": "#F6D7B3",
-        "id": "light-nougat",
-        "name": "Light Nougat",
-        "description": "Light skin"
-      },
-      {
-        "hex": "#CC8E69",
-        "id": "nougat",
-        "name": "Nougat",
-        "description": "Medium skin"
-      },
-      {
-        "hex": "#AD6140",
-        "id": "dark-nougat",
-        "name": "Dark Nougat",
-        "description": "Dark skin"
-      }
-    ],
+    "darkBackground": "#05131D",
     "rainbow": [
       {
+        "description": "Red",
         "hex": "#F2705E",
-        "name": "Salmon",
-        "description": "Red"
+        "name": "Salmon"
       },
       {
+        "description": "Orange",
         "hex": "#F9BA61",
-        "name": "Light Orange",
-        "description": "Orange"
+        "name": "Light Orange"
       },
       {
+        "description": "Yellow",
         "hex": "#F2CD37",
-        "name": "Yellow",
-        "description": "Yellow"
+        "name": "Yellow"
       },
       {
+        "description": "Green",
         "hex": "#73DCA1",
-        "name": "Medium Green",
-        "description": "Green"
+        "name": "Medium Green"
       },
       {
+        "description": "Blue",
         "hex": "#9FC3E9",
-        "name": "Bright Light Blue",
-        "description": "Blue"
+        "name": "Bright Light Blue"
       },
       {
+        "description": "Indigo",
         "hex": "#9195CA",
-        "name": "Light Lilac",
-        "description": "Indigo"
+        "name": "Light Lilac"
       },
       {
+        "description": "Violet",
         "hex": "#AC78BA",
-        "name": "Medium Lavender",
-        "description": "Violet"
+        "name": "Medium Lavender"
+      }
+    ],
+    "skinTones": [
+      {
+        "description": "Classic minifig",
+        "hex": "#F2CD37",
+        "id": "yellow",
+        "name": "Yellow"
+      },
+      {
+        "description": "Light skin",
+        "hex": "#F6D7B3",
+        "id": "light-nougat",
+        "name": "Light Nougat"
+      },
+      {
+        "description": "Medium skin",
+        "hex": "#CC8E69",
+        "id": "nougat",
+        "name": "Nougat"
+      },
+      {
+        "description": "Dark skin",
+        "hex": "#AD6140",
+        "id": "dark-nougat",
+        "name": "Dark Nougat"
       }
     ],
     "text": {
-      "onLight": "#05131D",
-      "onDark": "#FFFFFF"
-    },
-    "darkBackground": "#05131D"
-  },
-  "typography": {
-    "primaryFont": {
-      "family": "Outfit",
-      "style": "variable",
-      "axes": [
-        {
-          "tag": "wght",
-          "min": 100,
-          "max": 900
-        }
-      ],
-      "files": {
-        "variableTTF": {
-          "file": "fonts/Outfit-VariableFont_wght.ttf",
-          "url": "https://logo.palikkaharrastajat.fi/fonts/Outfit-VariableFont_wght.ttf"
-        }
-      },
-      "license": "OFL-1.1",
-      "licenseFile": {
-        "file": "fonts/OFL.txt",
-        "url": "https://logo.palikkaharrastajat.fi/fonts/OFL.txt"
-      }
+      "onDark": "#FFFFFF",
+      "onLight": "#05131D"
     }
   },
+  "favicons": {
+    "appleTouchIcon": {
+      "file": "favicon/apple-touch-icon.png",
+      "size": 180,
+      "url": "https://logo.palikkaharrastajat.fi/favicon/apple-touch-icon.png"
+    },
+    "ico": {
+      "file": "favicon/favicon.ico",
+      "url": "https://logo.palikkaharrastajat.fi/favicon/favicon.ico"
+    },
+    "png": [
+      {
+        "file": "favicon/favicon-16.png",
+        "size": 16,
+        "url": "https://logo.palikkaharrastajat.fi/favicon/favicon-16.png"
+      },
+      {
+        "file": "favicon/favicon-32.png",
+        "size": 32,
+        "url": "https://logo.palikkaharrastajat.fi/favicon/favicon-32.png"
+      },
+      {
+        "file": "favicon/favicon-48.png",
+        "size": 48,
+        "url": "https://logo.palikkaharrastajat.fi/favicon/favicon-48.png"
+      }
+    ],
+    "webAppIcons": [
+      {
+        "file": "favicon/icon-192.png",
+        "size": 192,
+        "url": "https://logo.palikkaharrastajat.fi/favicon/icon-192.png"
+      },
+      {
+        "file": "favicon/icon-512.png",
+        "size": 512,
+        "url": "https://logo.palikkaharrastajat.fi/favicon/icon-512.png"
+      }
+    ]
+  },
   "logos": {
-    "primaryLogo": "square/square",
-    "square": {
-      "description": "Square minifig-head logo mark",
-      "aspectRatio": "1:1",
+    "horizontal": {
+      "aspectRatio": "approx 4.4:1",
+      "description": "Horizontal logo mark (four heads side-by-side)",
       "variants": [
         {
-          "id": "square",
-          "description": "Yellow, classic minifig",
-          "skinTone": "yellow",
           "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/square/svg/square.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/square.svg"
+          "description": "Logo mark only, light theme",
+          "id": "horizontal",
+          "png": {
+            "file": "logo/horizontal/png/horizontal.png",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal.png"
           },
+          "svg": {
+            "file": "logo/horizontal/svg/horizontal.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal.svg"
+          },
+          "theme": "light",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal.webp"
+          },
+          "withText": false
+        },
+        {
+          "animated": false,
+          "description": "Logo mark with association name subtitle, light theme",
+          "id": "horizontal-full",
+          "png": {
+            "file": "logo/horizontal/png/horizontal-full.png",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full.png"
+          },
+          "svg": {
+            "file": "logo/horizontal/svg/horizontal-full.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-full.svg"
+          },
+          "theme": "light",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-full.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full.webp"
+          },
+          "withText": true
+        },
+        {
+          "animated": false,
+          "description": "Logo mark with subtitle, dark theme",
+          "id": "horizontal-full-dark",
+          "png": {
+            "file": "logo/horizontal/png/horizontal-full-dark.png",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-dark.png"
+          },
+          "svg": {
+            "file": "logo/horizontal/svg/horizontal-full-dark.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-full-dark.svg"
+          },
+          "theme": "dark",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-full-dark.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-dark.webp"
+          },
+          "withText": true
+        },
+        {
+          "animated": true,
+          "description": "Animated logo mark cycling skin-tone order",
+          "frameDurationMs": 10000,
+          "gif": {
+            "file": "logo/horizontal/png/horizontal-animated.gif",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-animated.gif"
+          },
+          "id": "horizontal-animated",
+          "theme": "light",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-animated.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-animated.webp"
+          },
+          "withText": false
+        },
+        {
+          "animated": true,
+          "description": "Animated logo with subtitle cycling skin-tone order, light theme",
+          "frameDurationMs": 10000,
+          "gif": {
+            "file": "logo/horizontal/png/horizontal-full-animated.gif",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-animated.gif"
+          },
+          "id": "horizontal-full-animated",
+          "theme": "light",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-full-animated.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-animated.webp"
+          },
+          "withText": true
+        },
+        {
+          "animated": true,
+          "description": "Animated logo with subtitle cycling skin-tone order, dark theme",
+          "frameDurationMs": 10000,
+          "gif": {
+            "file": "logo/horizontal/png/horizontal-full-dark-animated.gif",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-dark-animated.gif"
+          },
+          "id": "horizontal-full-dark-animated",
+          "theme": "dark",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-full-dark-animated.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-dark-animated.webp"
+          },
+          "withText": true
+        },
+        {
+          "animated": false,
+          "description": "Rainbow logo mark, sliding window of 4 colors",
+          "id": "horizontal-rainbow",
+          "png": {
+            "file": "logo/horizontal/png/horizontal-rainbow.png",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow.png"
+          },
+          "svg": {
+            "file": "logo/horizontal/svg/horizontal-rainbow.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-rainbow.svg"
+          },
+          "theme": "light",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-rainbow.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow.webp"
+          },
+          "withText": false
+        },
+        {
+          "animated": true,
+          "colors": [
+            "#F2705E",
+            "#F9BA61",
+            "#F2CD37",
+            "#73DCA1",
+            "#9FC3E9",
+            "#9195CA",
+            "#AC78BA"
+          ],
+          "description": "Animated rainbow logo mark cycling all 7 colors one step at a time",
+          "frameCount": 7,
+          "frameDurationMs": 10000,
+          "gif": {
+            "file": "logo/horizontal/png/horizontal-rainbow-animated.gif",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-animated.gif"
+          },
+          "id": "horizontal-rainbow-animated",
+          "theme": "light",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-rainbow-animated.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-animated.webp"
+          },
+          "withText": false
+        },
+        {
+          "animated": false,
+          "description": "Rainbow logo mark with subtitle, light theme",
+          "id": "horizontal-rainbow-full",
+          "png": {
+            "file": "logo/horizontal/png/horizontal-rainbow-full.png",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full.png"
+          },
+          "svg": {
+            "file": "logo/horizontal/svg/horizontal-rainbow-full.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-rainbow-full.svg"
+          },
+          "theme": "light",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-rainbow-full.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full.webp"
+          },
+          "withText": true
+        },
+        {
+          "animated": true,
+          "description": "Animated rainbow logo with subtitle, light theme, 7 colors cycling",
+          "frameCount": 7,
+          "frameDurationMs": 10000,
+          "gif": {
+            "file": "logo/horizontal/png/horizontal-rainbow-full-animated.gif",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-animated.gif"
+          },
+          "id": "horizontal-rainbow-full-animated",
+          "theme": "light",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-rainbow-full-animated.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-animated.webp"
+          },
+          "withText": true
+        },
+        {
+          "animated": false,
+          "description": "Rainbow logo mark with subtitle, dark theme",
+          "id": "horizontal-rainbow-full-dark",
+          "png": {
+            "file": "logo/horizontal/png/horizontal-rainbow-full-dark.png",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-dark.png"
+          },
+          "svg": {
+            "file": "logo/horizontal/svg/horizontal-rainbow-full-dark.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-rainbow-full-dark.svg"
+          },
+          "theme": "dark",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-rainbow-full-dark.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-dark.webp"
+          },
+          "withText": true
+        },
+        {
+          "animated": true,
+          "description": "Animated rainbow logo with subtitle, dark theme, 7 colors cycling",
+          "frameCount": 7,
+          "frameDurationMs": 10000,
+          "gif": {
+            "file": "logo/horizontal/png/horizontal-rainbow-full-dark-animated.gif",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-dark-animated.gif"
+          },
+          "id": "horizontal-rainbow-full-dark-animated",
+          "theme": "dark",
+          "webp": {
+            "file": "logo/horizontal/png/horizontal-rainbow-full-dark-animated.webp",
+            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-dark-animated.webp"
+          },
+          "withText": true
+        }
+      ]
+    },
+    "primaryLogo": "square/square",
+    "square": {
+      "aspectRatio": "1:1",
+      "description": "Square minifig-head logo mark",
+      "variants": [
+        {
+          "animated": false,
+          "description": "Yellow, classic minifig",
+          "id": "square",
           "png": {
             "file": "logo/square/png/square.png",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square.png"
           },
+          "skinTone": "yellow",
+          "svg": {
+            "file": "logo/square/svg/square.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/square.svg"
+          },
+          "theme": "light",
           "webp": {
             "file": "logo/square/png/square.webp",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square.webp"
           }
         },
         {
-          "id": "square-light-nougat",
-          "description": "Light Nougat skin tone",
-          "skinTone": "light-nougat",
           "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/square/svg/square-light-nougat.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/square-light-nougat.svg"
-          },
+          "description": "Light Nougat skin tone",
+          "id": "square-light-nougat",
           "png": {
             "file": "logo/square/png/square-light-nougat.png",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square-light-nougat.png"
           },
+          "skinTone": "light-nougat",
+          "svg": {
+            "file": "logo/square/svg/square-light-nougat.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/square-light-nougat.svg"
+          },
+          "theme": "light",
           "webp": {
             "file": "logo/square/png/square-light-nougat.webp",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square-light-nougat.webp"
           }
         },
         {
-          "id": "square-nougat",
-          "description": "Nougat skin tone",
-          "skinTone": "nougat",
           "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/square/svg/square-nougat.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/square-nougat.svg"
-          },
+          "description": "Nougat skin tone",
+          "id": "square-nougat",
           "png": {
             "file": "logo/square/png/square-nougat.png",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square-nougat.png"
           },
+          "skinTone": "nougat",
+          "svg": {
+            "file": "logo/square/svg/square-nougat.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/square-nougat.svg"
+          },
+          "theme": "light",
           "webp": {
             "file": "logo/square/png/square-nougat.webp",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square-nougat.webp"
           }
         },
         {
-          "id": "square-dark-nougat",
-          "description": "Dark Nougat skin tone",
-          "skinTone": "dark-nougat",
           "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/square/svg/square-dark-nougat.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/square-dark-nougat.svg"
-          },
+          "description": "Dark Nougat skin tone",
+          "id": "square-dark-nougat",
           "png": {
             "file": "logo/square/png/square-dark-nougat.png",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square-dark-nougat.png"
           },
+          "skinTone": "dark-nougat",
+          "svg": {
+            "file": "logo/square/svg/square-dark-nougat.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/square-dark-nougat.svg"
+          },
+          "theme": "light",
           "webp": {
             "file": "logo/square/png/square-dark-nougat.webp",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square-dark-nougat.webp"
           }
         },
         {
-          "id": "square-animated",
-          "description": "Animated logo cycling through all four skin tones",
           "animated": true,
+          "description": "Animated logo cycling through all four skin tones",
           "frameDurationMs": 10000,
           "frames": [
             "yellow",
@@ -215,316 +455,76 @@
             "file": "logo/square/png/square-animated.gif",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square-animated.gif"
           },
+          "id": "square-animated",
           "webp": {
             "file": "logo/square/png/square-animated.webp",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/square-animated.webp"
           }
         },
         {
-          "id": "minifig-colorful",
-          "description": "Minifig head with face divided into horizontal skin-tone bands",
           "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/square/svg/minifig-colorful.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/minifig-colorful.svg"
-          },
+          "description": "Minifig head with face divided into horizontal skin-tone bands",
+          "id": "minifig-colorful",
           "png": {
             "file": "logo/square/png/minifig-colorful.png",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/minifig-colorful.png"
           },
+          "svg": {
+            "file": "logo/square/svg/minifig-colorful.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/minifig-colorful.svg"
+          },
+          "theme": "light",
           "webp": {
             "file": "logo/square/png/minifig-colorful.webp",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/minifig-colorful.webp"
           }
         },
         {
-          "id": "minifig-rainbow",
-          "description": "Minifig head with face divided into horizontal rainbow bands",
           "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/square/svg/minifig-rainbow.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/minifig-rainbow.svg"
-          },
+          "description": "Minifig head with face divided into horizontal rainbow bands",
+          "id": "minifig-rainbow",
           "png": {
             "file": "logo/square/png/minifig-rainbow.png",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/minifig-rainbow.png"
           },
+          "svg": {
+            "file": "logo/square/svg/minifig-rainbow.svg",
+            "url": "https://logo.palikkaharrastajat.fi/logo/square/svg/minifig-rainbow.svg"
+          },
+          "theme": "light",
           "webp": {
             "file": "logo/square/png/minifig-rainbow.webp",
             "url": "https://logo.palikkaharrastajat.fi/logo/square/png/minifig-rainbow.webp"
           }
         }
       ]
-    },
-    "horizontal": {
-      "description": "Horizontal logo mark (four heads side-by-side)",
-      "aspectRatio": "approx 4.4:1",
-      "variants": [
-        {
-          "id": "horizontal",
-          "description": "Logo mark only, light theme",
-          "withText": false,
-          "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/horizontal/svg/horizontal.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal.svg"
-          },
-          "png": {
-            "file": "logo/horizontal/png/horizontal.png",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal.png"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal.webp"
-          }
-        },
-        {
-          "id": "horizontal-full",
-          "description": "Logo mark with association name subtitle, light theme",
-          "withText": true,
-          "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/horizontal/svg/horizontal-full.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-full.svg"
-          },
-          "png": {
-            "file": "logo/horizontal/png/horizontal-full.png",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full.png"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-full.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full.webp"
-          }
-        },
-        {
-          "id": "horizontal-full-dark",
-          "description": "Logo mark with subtitle, dark theme",
-          "withText": true,
-          "animated": false,
-          "theme": "dark",
-          "svg": {
-            "file": "logo/horizontal/svg/horizontal-full-dark.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-full-dark.svg"
-          },
-          "png": {
-            "file": "logo/horizontal/png/horizontal-full-dark.png",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-dark.png"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-full-dark.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-dark.webp"
-          }
-        },
-        {
-          "id": "horizontal-animated",
-          "description": "Animated logo mark cycling skin-tone order",
-          "withText": false,
-          "animated": true,
-          "theme": "light",
-          "frameDurationMs": 10000,
-          "gif": {
-            "file": "logo/horizontal/png/horizontal-animated.gif",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-animated.gif"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-animated.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-animated.webp"
-          }
-        },
-        {
-          "id": "horizontal-full-animated",
-          "description": "Animated logo with subtitle cycling skin-tone order, light theme",
-          "withText": true,
-          "animated": true,
-          "theme": "light",
-          "frameDurationMs": 10000,
-          "gif": {
-            "file": "logo/horizontal/png/horizontal-full-animated.gif",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-animated.gif"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-full-animated.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-animated.webp"
-          }
-        },
-        {
-          "id": "horizontal-full-dark-animated",
-          "description": "Animated logo with subtitle cycling skin-tone order, dark theme",
-          "withText": true,
-          "animated": true,
-          "theme": "dark",
-          "frameDurationMs": 10000,
-          "gif": {
-            "file": "logo/horizontal/png/horizontal-full-dark-animated.gif",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-dark-animated.gif"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-full-dark-animated.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-full-dark-animated.webp"
-          }
-        },
-        {
-          "id": "horizontal-rainbow",
-          "description": "Rainbow logo mark, sliding window of 4 colors",
-          "withText": false,
-          "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/horizontal/svg/horizontal-rainbow.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-rainbow.svg"
-          },
-          "png": {
-            "file": "logo/horizontal/png/horizontal-rainbow.png",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow.png"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-rainbow.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow.webp"
-          }
-        },
-        {
-          "id": "horizontal-rainbow-animated",
-          "description": "Animated rainbow logo mark cycling all 7 colors one step at a time",
-          "withText": false,
-          "animated": true,
-          "theme": "light",
-          "frameCount": 7,
-          "frameDurationMs": 10000,
-          "colors": [
-            "#F2705E",
-            "#F9BA61",
-            "#F2CD37",
-            "#73DCA1",
-            "#9FC3E9",
-            "#9195CA",
-            "#AC78BA"
-          ],
-          "gif": {
-            "file": "logo/horizontal/png/horizontal-rainbow-animated.gif",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-animated.gif"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-rainbow-animated.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-animated.webp"
-          }
-        },
-        {
-          "id": "horizontal-rainbow-full",
-          "description": "Rainbow logo mark with subtitle, light theme",
-          "withText": true,
-          "animated": false,
-          "theme": "light",
-          "svg": {
-            "file": "logo/horizontal/svg/horizontal-rainbow-full.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-rainbow-full.svg"
-          },
-          "png": {
-            "file": "logo/horizontal/png/horizontal-rainbow-full.png",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full.png"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-rainbow-full.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full.webp"
-          }
-        },
-        {
-          "id": "horizontal-rainbow-full-animated",
-          "description": "Animated rainbow logo with subtitle, light theme, 7 colors cycling",
-          "withText": true,
-          "animated": true,
-          "theme": "light",
-          "frameCount": 7,
-          "frameDurationMs": 10000,
-          "gif": {
-            "file": "logo/horizontal/png/horizontal-rainbow-full-animated.gif",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-animated.gif"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-rainbow-full-animated.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-animated.webp"
-          }
-        },
-        {
-          "id": "horizontal-rainbow-full-dark",
-          "description": "Rainbow logo mark with subtitle, dark theme",
-          "withText": true,
-          "animated": false,
-          "theme": "dark",
-          "svg": {
-            "file": "logo/horizontal/svg/horizontal-rainbow-full-dark.svg",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/svg/horizontal-rainbow-full-dark.svg"
-          },
-          "png": {
-            "file": "logo/horizontal/png/horizontal-rainbow-full-dark.png",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-dark.png"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-rainbow-full-dark.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-dark.webp"
-          }
-        },
-        {
-          "id": "horizontal-rainbow-full-dark-animated",
-          "description": "Animated rainbow logo with subtitle, dark theme, 7 colors cycling",
-          "withText": true,
-          "animated": true,
-          "theme": "dark",
-          "frameCount": 7,
-          "frameDurationMs": 10000,
-          "gif": {
-            "file": "logo/horizontal/png/horizontal-rainbow-full-dark-animated.gif",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-dark-animated.gif"
-          },
-          "webp": {
-            "file": "logo/horizontal/png/horizontal-rainbow-full-dark-animated.webp",
-            "url": "https://logo.palikkaharrastajat.fi/logo/horizontal/png/horizontal-rainbow-full-dark-animated.webp"
-          }
-        }
-      ]
     }
   },
-  "favicons": {
-    "ico": {
-      "file": "favicon/favicon.ico",
-      "url": "https://logo.palikkaharrastajat.fi/favicon/favicon.ico"
-    },
-    "png": [
-      {
-        "file": "favicon/favicon-16.png",
-        "url": "https://logo.palikkaharrastajat.fi/favicon/favicon-16.png",
-        "size": 16
+  "organization": {
+    "name": "Suomen Palikkaharrastajat ry"
+  },
+  "typography": {
+    "primaryFont": {
+      "axes": [
+        {
+          "max": 900,
+          "min": 100,
+          "tag": "wght"
+        }
+      ],
+      "family": "Outfit",
+      "files": {
+        "variableTTF": {
+          "file": "fonts/Outfit-VariableFont_wght.ttf",
+          "url": "https://logo.palikkaharrastajat.fi/fonts/Outfit-VariableFont_wght.ttf"
+        }
       },
-      {
-        "file": "favicon/favicon-32.png",
-        "url": "https://logo.palikkaharrastajat.fi/favicon/favicon-32.png",
-        "size": 32
+      "license": "OFL-1.1",
+      "licenseFile": {
+        "file": "fonts/OFL.txt",
+        "url": "https://logo.palikkaharrastajat.fi/fonts/OFL.txt"
       },
-      {
-        "file": "favicon/favicon-48.png",
-        "url": "https://logo.palikkaharrastajat.fi/favicon/favicon-48.png",
-        "size": 48
-      }
-    ],
-    "appleTouchIcon": {
-      "file": "favicon/apple-touch-icon.png",
-      "url": "https://logo.palikkaharrastajat.fi/favicon/apple-touch-icon.png",
-      "size": 180
-    },
-    "webAppIcons": [
-      {
-        "file": "favicon/icon-192.png",
-        "url": "https://logo.palikkaharrastajat.fi/favicon/icon-192.png",
-        "size": 192
-      },
-      {
-        "file": "favicon/icon-512.png",
-        "url": "https://logo.palikkaharrastajat.fi/favicon/icon-512.png",
-        "size": 512
-      }
-    ]
+      "style": "variable"
+    }
   }
 }

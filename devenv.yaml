@@ -2,4 +2,6 @@
 inputs:
   nixpkgs:
     url: github:nixos/nixpkgs
+  nixpkgs-stable:
+    url: github:nixos/nixpkgs/nixos-25.11
 profile: shell

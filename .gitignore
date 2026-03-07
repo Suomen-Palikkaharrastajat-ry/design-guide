@@ -2,6 +2,13 @@
 __pycache__/
 *.pyc
 
+# Haskell
+dist-newstyle/
+.stack-work/
+
+# Elm (generated)
+elm-app/src/Brand/Generated.elm
+
 # Devenv / direnv
 .devenv*
 .direnv
@@ -10,3 +17,8 @@ devenv.local.yaml
 
 # Agents
 .claude
+
+# TODO files (local working notes — see TODO.md.example for reference)
+TODO.md
+TODO-1.md
+TODO-2.md

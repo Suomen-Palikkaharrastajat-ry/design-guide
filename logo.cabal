@@ -1,0 +1,42 @@
+cabal-version: 2.2
+name:          logo-gen
+version:       0.1.0.0
+license:       BSD-3-Clause
+build-type:    Simple
+
+library
+  exposed-modules:
+    Brand.Colors, Brand.Json, Brand.ElmGen,
+    Logo.Designs, Logo.Blockify, Logo.Compose,
+    Logo.Animate, Logo.Raster, Logo.Favicons
+  hs-source-dirs: src
+  ghc-options: -Wall
+  default-language: Haskell2010
+  build-depends:
+    base >=4.7 && <5, text, bytestring, base64-bytestring,
+    directory, filepath, process, xml-conduit, xml-types,
+    aeson, aeson-pretty, JuicyPixels, containers, vector
+
+executable logo-gen
+  main-is: Main.hs
+  other-modules:
+    Brand.Colors, Brand.Json, Brand.ElmGen,
+    Logo.Designs, Logo.Blockify, Logo.Compose,
+    Logo.Animate, Logo.Raster, Logo.Favicons
+  hs-source-dirs: src
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: Haskell2010
+  build-depends:
+    base >=4.7 && <5, text, bytestring, base64-bytestring,
+    directory, filepath, process, xml-conduit, xml-types,
+    aeson, aeson-pretty, JuicyPixels, containers, vector
+
+test-suite logo-gen-tests
+  type: exitcode-stdio-1.0
+  main-is: TestSuite.hs
+  hs-source-dirs: tests
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: Haskell2010
+  build-depends:
+    base >=4.7 && <5, text, logo-gen,
+    tasty, tasty-hunit, tasty-quickcheck
