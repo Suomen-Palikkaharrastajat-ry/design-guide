@@ -11,13 +11,18 @@ logo/
 favicon/
 brand.json
 design/
+design-guide.json
+design-guide/
 src/Brand/Generated.elm
+src/Brand/Tokens.elm
 
 # Public assets copied from generated outputs (make assets)
 public/logo/
 public/favicon/
 public/fonts/
 public/brand.json
+public/design-guide.json
+public/design-guide/
 
 # Elm / npm build artifacts
 node_modules/
