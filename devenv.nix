@@ -30,7 +30,6 @@ in {
     packages =
       logoDrv.nativeBuildInputs
       ++ [
-        pkgs.claude-code
         # External raster/image tools (called via System.Process)
         pkgs.librsvg       # provides rsvg-convert
         pkgs.libwebp       # provides cwebp, img2webp
