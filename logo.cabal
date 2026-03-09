@@ -14,7 +14,7 @@ library
   default-language: GHC2021
   build-depends:
     base >=4.7 && <5, text, bytestring, base64-bytestring,
-    directory, filepath, process, xml-conduit, xml-types,
+    directory, filepath, process, xml-conduit,
     aeson, aeson-pretty, JuicyPixels, containers, vector
 
 executable logo-gen

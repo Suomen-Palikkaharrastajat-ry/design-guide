@@ -39,6 +39,7 @@ devenv.local.yaml
 
 # Agents
 .claude
+job-logs.txt
 
 # TODO files
 TODO.md
