@@ -1,0 +1,40 @@
+cabal-version: 2.2
+name:          logo-gen
+version:       0.1.0.0
+license:       BSD-3-Clause
+build-type:    Simple
+
+library
+  exposed-modules:
+    Brand.Colors, Brand.DesignData, Brand.Json, Brand.JsonLd, Brand.ElmGen,
+    Logo.Config, Logo.Designs, Logo.Blockify, Logo.Compose,
+    Logo.Animate, Logo.Raster, Logo.Favicons
+  hs-source-dirs: src
+  ghc-options: -Wall
+  default-language: GHC2021
+  build-depends:
+    base >=4.7 && <5, text, bytestring, base64-bytestring,
+    directory, filepath, process, xml-conduit, xml-types,
+    aeson, aeson-pretty, JuicyPixels, containers, vector
+
+executable logo-gen
+  main-is: Main.hs
+  hs-source-dirs: app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: GHC2021
+  build-depends:
+    base >=4.7 && <5, logo-gen, text, directory
+
+test-suite logo-gen-tests
+  type: exitcode-stdio-1.0
+  main-is: TestSuite.hs
+  other-modules:
+    Brand.ColorsSpec, Brand.ElmGenSpec, Brand.JsonSpec,
+    Logo.BlockifySpec, Logo.DesignsSpec
+  hs-source-dirs: tests
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: GHC2021
+  build-depends:
+    base >=4.7 && <5, text, bytestring, aeson, logo-gen,
+    tasty, tasty-hunit, tasty-quickcheck,
+    temporary, process

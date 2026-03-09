@@ -1,482 +1,144 @@
-PYTHON = python3
+.PHONY: help all build run assets site dev dev-watch deploy install test check format clean watch watch-elm repl develop shell
 
-# ── Brick parameters ────────────────────────────────────────────────────────────
-SQ_PX  = 14  # raster pixel width for square logo   (lower = blockier)
-HZ_PX  = 62   # raster pixel width for horizontal logo (4×14 heads + 3×2 gap bricks)
-BLK_W  = 24   # SVG width of a 2×2 brick (1×1 = half)
-BLK_H  = 20   # SVG height of all bricks
-PAD    = 1    # transparent stud columns added on each side of brick output
-TXT_SIZE = 57  # subtitle font size in SVG units (text is stretched to full logo width)
-ANIM_MS  = 10000  # milliseconds per frame in animated logo
-DARK_BG  = \#05131D  # dark background color for dark-theme variants
+# When elm-pages comes from the Nix store the wrapper does not include the
+# package's own node_modules/.bin (elm-optimize-level-2, etc.) in PATH.
+# Detect the store root from the resolved elm-pages binary and prepend it.
+_ELM_PAGES_BIN  := $(shell which elm-pages 2>/dev/null)
+_ELM_PAGES_ROOT := $(shell readlink -f $(_ELM_PAGES_BIN) 2>/dev/null | xargs -I{} dirname {} | xargs -I{} dirname {} 2>/dev/null)
+ifneq ($(_ELM_PAGES_ROOT),)
+export PATH := $(_ELM_PAGES_ROOT)/lib/node_modules/.bin:$(PATH)
+endif
 
-# ── Directories ─────────────────────────────────────────────────────────────────
-DESIGN_DIR  = design
-SQ_DIR      = logo/square/svg
-HZ_DIR      = logo/horizontal/svg
-SQ_PNG      = logo/square/png
-HZ_PNG      = logo/horizontal/png
-FAVICON_DIR = favicon
+# ── Pipeline constants ────────────────────────────────────────────────────────
+# These are the single documented source of truth for all tunable parameters.
+# Changing any value here invalidates logo/.stamp and triggers regeneration.
+# They are forwarded verbatim as CLI flags to logo-gen, so no Haskell rebuild
+# is needed when you change them.
 
-# ── Design sources (populated by `make designs`) ────────────────────────────────
-DESIGN_SQ       = $(DESIGN_DIR)/square.svg
-DESIGN_SQ_LN    = $(DESIGN_DIR)/square-light-nougat.svg
-DESIGN_SQ_N     = $(DESIGN_DIR)/square-nougat.svg
-DESIGN_SQ_DN    = $(DESIGN_DIR)/square-dark-nougat.svg
-DESIGN_HZ       = $(DESIGN_DIR)/horizontal.svg
-DESIGN_HZ_R1    = $(DESIGN_DIR)/horizontal-rot1.svg
-DESIGN_HZ_R2    = $(DESIGN_DIR)/horizontal-rot2.svg
-DESIGN_HZ_R3    = $(DESIGN_DIR)/horizontal-rot3.svg
-DESIGN_COLORFUL = $(DESIGN_DIR)/minifig-colorful.svg
-DESIGN_RAINBOW  = $(DESIGN_DIR)/minifig-rainbow.svg
-DESIGN_HZ_RB    = $(DESIGN_DIR)/horizontal-rainbow.svg
-DESIGN_HZ_RB_R1 = $(DESIGN_DIR)/horizontal-rainbow-rot1.svg
-DESIGN_HZ_RB_R2 = $(DESIGN_DIR)/horizontal-rainbow-rot2.svg
-DESIGN_HZ_RB_R3 = $(DESIGN_DIR)/horizontal-rainbow-rot3.svg
-DESIGN_HZ_RB_R4 = $(DESIGN_DIR)/horizontal-rainbow-rot4.svg
-DESIGN_HZ_RB_R5 = $(DESIGN_DIR)/horizontal-rainbow-rot5.svg
-DESIGN_HZ_RB_R6 = $(DESIGN_DIR)/horizontal-rainbow-rot6.svg
+SOURCE_SVG   := source.svg
+FONT_PATH    := fonts/Outfit-VariableFont_wght.ttf
 
-# ── Generated brick SVGs ────────────────────────────────────────────────────────
-SQ_SVG       = $(SQ_DIR)/square.svg
-SQ_LN_SVG    = $(SQ_DIR)/square-light-nougat.svg
-SQ_N_SVG     = $(SQ_DIR)/square-nougat.svg
-SQ_DN_SVG    = $(SQ_DIR)/square-dark-nougat.svg
-HZ_SVG          = $(HZ_DIR)/horizontal.svg
-HZ_R1_SVG       = $(HZ_DIR)/horizontal-rot1.svg
-HZ_R2_SVG       = $(HZ_DIR)/horizontal-rot2.svg
-HZ_R3_SVG       = $(HZ_DIR)/horizontal-rot3.svg
-HZ_FULL_SVG         = $(HZ_DIR)/horizontal-full.svg
-HZ_FULL_R1_SVG      = $(HZ_DIR)/horizontal-full-rot1.svg
-HZ_FULL_R2_SVG      = $(HZ_DIR)/horizontal-full-rot2.svg
-HZ_FULL_R3_SVG      = $(HZ_DIR)/horizontal-full-rot3.svg
-HZ_FULL_DARK_SVG    = $(HZ_DIR)/horizontal-full-dark.svg
-HZ_FULL_DARK_R1_SVG = $(HZ_DIR)/horizontal-full-dark-rot1.svg
-HZ_FULL_DARK_R2_SVG = $(HZ_DIR)/horizontal-full-dark-rot2.svg
-HZ_FULL_DARK_R3_SVG = $(HZ_DIR)/horizontal-full-dark-rot3.svg
-COLORFUL_SVG = $(SQ_DIR)/minifig-colorful.svg
-RAINBOW_SVG  = $(SQ_DIR)/minifig-rainbow.svg
-HZ_RB_SVG    = $(HZ_DIR)/horizontal-rainbow.svg
-HZ_RB_R1_SVG = $(HZ_DIR)/horizontal-rainbow-rot1.svg
-HZ_RB_R2_SVG = $(HZ_DIR)/horizontal-rainbow-rot2.svg
-HZ_RB_R3_SVG = $(HZ_DIR)/horizontal-rainbow-rot3.svg
-HZ_RB_R4_SVG = $(HZ_DIR)/horizontal-rainbow-rot4.svg
-HZ_RB_R5_SVG = $(HZ_DIR)/horizontal-rainbow-rot5.svg
-HZ_RB_R6_SVG = $(HZ_DIR)/horizontal-rainbow-rot6.svg
-HZ_RB_FULL_SVG         = $(HZ_DIR)/horizontal-rainbow-full.svg
-HZ_RB_FULL_R1_SVG      = $(HZ_DIR)/horizontal-rainbow-full-rot1.svg
-HZ_RB_FULL_R2_SVG      = $(HZ_DIR)/horizontal-rainbow-full-rot2.svg
-HZ_RB_FULL_R3_SVG      = $(HZ_DIR)/horizontal-rainbow-full-rot3.svg
-HZ_RB_FULL_R4_SVG      = $(HZ_DIR)/horizontal-rainbow-full-rot4.svg
-HZ_RB_FULL_R5_SVG      = $(HZ_DIR)/horizontal-rainbow-full-rot5.svg
-HZ_RB_FULL_R6_SVG      = $(HZ_DIR)/horizontal-rainbow-full-rot6.svg
-HZ_RB_FULL_DARK_SVG    = $(HZ_DIR)/horizontal-rainbow-full-dark.svg
-HZ_RB_FULL_DARK_R1_SVG = $(HZ_DIR)/horizontal-rainbow-full-dark-rot1.svg
-HZ_RB_FULL_DARK_R2_SVG = $(HZ_DIR)/horizontal-rainbow-full-dark-rot2.svg
-HZ_RB_FULL_DARK_R3_SVG = $(HZ_DIR)/horizontal-rainbow-full-dark-rot3.svg
-HZ_RB_FULL_DARK_R4_SVG = $(HZ_DIR)/horizontal-rainbow-full-dark-rot4.svg
-HZ_RB_FULL_DARK_R5_SVG = $(HZ_DIR)/horizontal-rainbow-full-dark-rot5.svg
-HZ_RB_FULL_DARK_R6_SVG = $(HZ_DIR)/horizontal-rainbow-full-dark-rot6.svg
+SQ_PX        := 14          # Square blockify target raster width (px)
+HZ_PX        := 62          # Horizontal blockify target raster width (px)
+BLK_W        := 24          # Brick SVG unit width
+BLK_H        := 20          # Brick SVG unit height
+PAD          := 1           # Transparent column padding each side
+SQ_PAD_V     := 20          # Vertical padding for square logos
+HZ_PAD_TOP   := 20          # Top padding for horizontal logos
+TXT_SIZE     := 57          # Subtitle font size (SVG units)
+ANIM_MS      := 10000       # Animation frame duration (ms)
+RASTER_W     := 800         # PNG/WebP export width (px)
 
-ALL_SVGS = $(SQ_SVG) $(SQ_LN_SVG) $(SQ_N_SVG) $(SQ_DN_SVG) \
-           $(HZ_SVG) $(HZ_R1_SVG) $(HZ_R2_SVG) $(HZ_R3_SVG) \
-           $(HZ_FULL_SVG) $(HZ_FULL_R1_SVG) $(HZ_FULL_R2_SVG) $(HZ_FULL_R3_SVG) \
-           $(HZ_FULL_DARK_SVG) $(HZ_FULL_DARK_R1_SVG) $(HZ_FULL_DARK_R2_SVG) $(HZ_FULL_DARK_R3_SVG) \
-           $(COLORFUL_SVG) $(RAINBOW_SVG) \
-           $(HZ_RB_SVG) $(HZ_RB_R1_SVG) $(HZ_RB_R2_SVG) $(HZ_RB_R3_SVG) \
-           $(HZ_RB_R4_SVG) $(HZ_RB_R5_SVG) $(HZ_RB_R6_SVG) \
-           $(HZ_RB_FULL_SVG) $(HZ_RB_FULL_R1_SVG) $(HZ_RB_FULL_R2_SVG) $(HZ_RB_FULL_R3_SVG) \
-           $(HZ_RB_FULL_R4_SVG) $(HZ_RB_FULL_R5_SVG) $(HZ_RB_FULL_R6_SVG) \
-           $(HZ_RB_FULL_DARK_SVG) $(HZ_RB_FULL_DARK_R1_SVG) $(HZ_RB_FULL_DARK_R2_SVG) $(HZ_RB_FULL_DARK_R3_SVG) \
-           $(HZ_RB_FULL_DARK_R4_SVG) $(HZ_RB_FULL_DARK_R5_SVG) $(HZ_RB_FULL_DARK_R6_SVG)
+LOGO_GEN_ARGS := \
+  --source     $(SOURCE_SVG) \
+  --font-path  $(FONT_PATH) \
+  --sq-px      $(SQ_PX) \
+  --hz-px      $(HZ_PX) \
+  --blk-w      $(BLK_W) \
+  --blk-h      $(BLK_H) \
+  --pad        $(PAD) \
+  --sq-pad-v   $(SQ_PAD_V) \
+  --hz-pad-top $(HZ_PAD_TOP) \
+  --txt-size   $(TXT_SIZE) \
+  --anim-ms    $(ANIM_MS) \
+  --raster-w   $(RASTER_W)
 
-# ── Generated raster outputs ────────────────────────────────────────────────────
-SQ_PNG_OUT    = $(SQ_PNG)/square.png
-SQ_WEBP       = $(SQ_PNG)/square.webp
-SQ_LN_PNG     = $(SQ_PNG)/square-light-nougat.png
-SQ_LN_WEBP    = $(SQ_PNG)/square-light-nougat.webp
-SQ_N_PNG      = $(SQ_PNG)/square-nougat.png
-SQ_N_WEBP     = $(SQ_PNG)/square-nougat.webp
-SQ_DN_PNG     = $(SQ_PNG)/square-dark-nougat.png
-SQ_DN_WEBP    = $(SQ_PNG)/square-dark-nougat.webp
-ANIM_FRAMES   = $(SQ_PNG_OUT) $(SQ_LN_PNG) $(SQ_N_PNG) $(SQ_DN_PNG)
-ANIM_GIF      = $(SQ_PNG)/square-animated.gif
-ANIM_WEBP     = $(SQ_PNG)/square-animated.webp
-HZ_PNG_OUT       = $(HZ_PNG)/horizontal.png
-HZ_WEBP          = $(HZ_PNG)/horizontal.webp
-HZ_R1_PNG        = $(HZ_PNG)/horizontal-rot1.png
-HZ_R1_WEBP       = $(HZ_PNG)/horizontal-rot1.webp
-HZ_R2_PNG        = $(HZ_PNG)/horizontal-rot2.png
-HZ_R2_WEBP       = $(HZ_PNG)/horizontal-rot2.webp
-HZ_R3_PNG        = $(HZ_PNG)/horizontal-rot3.png
-HZ_R3_WEBP       = $(HZ_PNG)/horizontal-rot3.webp
-HZ_FULL_PNG      = $(HZ_PNG)/horizontal-full.png
-HZ_FULL_WEBP     = $(HZ_PNG)/horizontal-full.webp
-HZ_FULL_R1_PNG   = $(HZ_PNG)/horizontal-full-rot1.png
-HZ_FULL_R1_WEBP  = $(HZ_PNG)/horizontal-full-rot1.webp
-HZ_FULL_R2_PNG   = $(HZ_PNG)/horizontal-full-rot2.png
-HZ_FULL_R2_WEBP  = $(HZ_PNG)/horizontal-full-rot2.webp
-HZ_FULL_R3_PNG   = $(HZ_PNG)/horizontal-full-rot3.png
-HZ_FULL_R3_WEBP  = $(HZ_PNG)/horizontal-full-rot3.webp
-HZ_ANIM_FRAMES      = $(HZ_PNG_OUT) $(HZ_R1_PNG) $(HZ_R2_PNG) $(HZ_R3_PNG)
-HZ_FULL_ANIM_FRAMES = $(HZ_FULL_PNG) $(HZ_FULL_R1_PNG) $(HZ_FULL_R2_PNG) $(HZ_FULL_R3_PNG)
-HZ_ANIM_GIF         = $(HZ_PNG)/horizontal-animated.gif
-HZ_ANIM_WEBP        = $(HZ_PNG)/horizontal-animated.webp
-HZ_FULL_ANIM_GIF    = $(HZ_PNG)/horizontal-full-animated.gif
-HZ_FULL_ANIM_WEBP   = $(HZ_PNG)/horizontal-full-animated.webp
-HZ_FULL_DARK_PNG    = $(HZ_PNG)/horizontal-full-dark.png
-HZ_FULL_DARK_WEBP   = $(HZ_PNG)/horizontal-full-dark.webp
-HZ_FULL_DARK_R1_PNG = $(HZ_PNG)/horizontal-full-dark-rot1.png
-HZ_FULL_DARK_R2_PNG = $(HZ_PNG)/horizontal-full-dark-rot2.png
-HZ_FULL_DARK_R3_PNG = $(HZ_PNG)/horizontal-full-dark-rot3.png
-HZ_FULL_DARK_ANIM_FRAMES = $(HZ_FULL_DARK_PNG) $(HZ_FULL_DARK_R1_PNG) $(HZ_FULL_DARK_R2_PNG) $(HZ_FULL_DARK_R3_PNG)
-HZ_FULL_DARK_ANIM_GIF    = $(HZ_PNG)/horizontal-full-dark-animated.gif
-HZ_FULL_DARK_ANIM_WEBP   = $(HZ_PNG)/horizontal-full-dark-animated.webp
-COLORFUL_PNG  = $(SQ_PNG)/minifig-colorful.png
-COLORFUL_WEBP = $(SQ_PNG)/minifig-colorful.webp
-RAINBOW_PNG   = $(SQ_PNG)/minifig-rainbow.png
-RAINBOW_WEBP  = $(SQ_PNG)/minifig-rainbow.webp
-HZ_RB_PNG        = $(HZ_PNG)/horizontal-rainbow.png
-HZ_RB_WEBP       = $(HZ_PNG)/horizontal-rainbow.webp
-HZ_RB_R1_PNG     = $(HZ_PNG)/horizontal-rainbow-rot1.png
-HZ_RB_R2_PNG     = $(HZ_PNG)/horizontal-rainbow-rot2.png
-HZ_RB_R3_PNG     = $(HZ_PNG)/horizontal-rainbow-rot3.png
-HZ_RB_R4_PNG     = $(HZ_PNG)/horizontal-rainbow-rot4.png
-HZ_RB_R5_PNG     = $(HZ_PNG)/horizontal-rainbow-rot5.png
-HZ_RB_R6_PNG     = $(HZ_PNG)/horizontal-rainbow-rot6.png
-HZ_RB_ANIM_FRAMES = $(HZ_RB_PNG) $(HZ_RB_R1_PNG) $(HZ_RB_R2_PNG) $(HZ_RB_R3_PNG) \
-                    $(HZ_RB_R4_PNG) $(HZ_RB_R5_PNG) $(HZ_RB_R6_PNG)
-HZ_RB_ANIM_GIF   = $(HZ_PNG)/horizontal-rainbow-animated.gif
-HZ_RB_ANIM_WEBP  = $(HZ_PNG)/horizontal-rainbow-animated.webp
-HZ_RB_FULL_PNG         = $(HZ_PNG)/horizontal-rainbow-full.png
-HZ_RB_FULL_WEBP        = $(HZ_PNG)/horizontal-rainbow-full.webp
-HZ_RB_FULL_R1_PNG      = $(HZ_PNG)/horizontal-rainbow-full-rot1.png
-HZ_RB_FULL_R2_PNG      = $(HZ_PNG)/horizontal-rainbow-full-rot2.png
-HZ_RB_FULL_R3_PNG      = $(HZ_PNG)/horizontal-rainbow-full-rot3.png
-HZ_RB_FULL_R4_PNG      = $(HZ_PNG)/horizontal-rainbow-full-rot4.png
-HZ_RB_FULL_R5_PNG      = $(HZ_PNG)/horizontal-rainbow-full-rot5.png
-HZ_RB_FULL_R6_PNG      = $(HZ_PNG)/horizontal-rainbow-full-rot6.png
-HZ_RB_FULL_ANIM_FRAMES = $(HZ_RB_FULL_PNG) $(HZ_RB_FULL_R1_PNG) $(HZ_RB_FULL_R2_PNG) $(HZ_RB_FULL_R3_PNG) \
-                         $(HZ_RB_FULL_R4_PNG) $(HZ_RB_FULL_R5_PNG) $(HZ_RB_FULL_R6_PNG)
-HZ_RB_FULL_ANIM_GIF    = $(HZ_PNG)/horizontal-rainbow-full-animated.gif
-HZ_RB_FULL_ANIM_WEBP   = $(HZ_PNG)/horizontal-rainbow-full-animated.webp
-HZ_RB_FULL_DARK_PNG         = $(HZ_PNG)/horizontal-rainbow-full-dark.png
-HZ_RB_FULL_DARK_WEBP        = $(HZ_PNG)/horizontal-rainbow-full-dark.webp
-HZ_RB_FULL_DARK_R1_PNG      = $(HZ_PNG)/horizontal-rainbow-full-dark-rot1.png
-HZ_RB_FULL_DARK_R2_PNG      = $(HZ_PNG)/horizontal-rainbow-full-dark-rot2.png
-HZ_RB_FULL_DARK_R3_PNG      = $(HZ_PNG)/horizontal-rainbow-full-dark-rot3.png
-HZ_RB_FULL_DARK_R4_PNG      = $(HZ_PNG)/horizontal-rainbow-full-dark-rot4.png
-HZ_RB_FULL_DARK_R5_PNG      = $(HZ_PNG)/horizontal-rainbow-full-dark-rot5.png
-HZ_RB_FULL_DARK_R6_PNG      = $(HZ_PNG)/horizontal-rainbow-full-dark-rot6.png
-HZ_RB_FULL_DARK_ANIM_FRAMES = $(HZ_RB_FULL_DARK_PNG) $(HZ_RB_FULL_DARK_R1_PNG) $(HZ_RB_FULL_DARK_R2_PNG) $(HZ_RB_FULL_DARK_R3_PNG) \
-                               $(HZ_RB_FULL_DARK_R4_PNG) $(HZ_RB_FULL_DARK_R5_PNG) $(HZ_RB_FULL_DARK_R6_PNG)
-HZ_RB_FULL_DARK_ANIM_GIF    = $(HZ_PNG)/horizontal-rainbow-full-dark-animated.gif
-HZ_RB_FULL_DARK_ANIM_WEBP   = $(HZ_PNG)/horizontal-rainbow-full-dark-animated.webp
+# Haskell source files – stamp depends on these so code changes also invalidate it
+HS_SOURCES := $(shell find src app -name '*.hs') logo.cabal
 
-ALL_PNGS = $(SQ_PNG_OUT) $(SQ_WEBP) \
-           $(SQ_LN_PNG) $(SQ_LN_WEBP) \
-           $(SQ_N_PNG) $(SQ_N_WEBP) \
-           $(SQ_DN_PNG) $(SQ_DN_WEBP) \
-           $(ANIM_GIF) $(ANIM_WEBP) \
-           $(HZ_PNG_OUT) $(HZ_WEBP) \
-           $(HZ_R1_PNG) $(HZ_R1_WEBP) \
-           $(HZ_R2_PNG) $(HZ_R2_WEBP) \
-           $(HZ_R3_PNG) $(HZ_R3_WEBP) \
-           $(HZ_FULL_PNG) $(HZ_FULL_WEBP) \
-           $(HZ_FULL_R1_PNG) $(HZ_FULL_R1_WEBP) \
-           $(HZ_FULL_R2_PNG) $(HZ_FULL_R2_WEBP) \
-           $(HZ_FULL_R3_PNG) $(HZ_FULL_R3_WEBP) \
-           $(HZ_ANIM_GIF) $(HZ_ANIM_WEBP) \
-           $(HZ_FULL_ANIM_GIF) $(HZ_FULL_ANIM_WEBP) \
-           $(HZ_FULL_DARK_PNG) $(HZ_FULL_DARK_WEBP) \
-           $(HZ_FULL_DARK_R1_PNG) $(HZ_FULL_DARK_R2_PNG) $(HZ_FULL_DARK_R3_PNG) \
-           $(HZ_FULL_DARK_ANIM_GIF) $(HZ_FULL_DARK_ANIM_WEBP) \
-           $(COLORFUL_PNG) $(COLORFUL_WEBP) \
-           $(RAINBOW_PNG) $(RAINBOW_WEBP) \
-           $(HZ_RB_PNG) $(HZ_RB_WEBP) \
-           $(HZ_RB_R1_PNG) $(HZ_RB_R2_PNG) $(HZ_RB_R3_PNG) \
-           $(HZ_RB_R4_PNG) $(HZ_RB_R5_PNG) $(HZ_RB_R6_PNG) \
-           $(HZ_RB_ANIM_GIF) $(HZ_RB_ANIM_WEBP) \
-           $(HZ_RB_FULL_PNG) $(HZ_RB_FULL_WEBP) \
-           $(HZ_RB_FULL_R1_PNG) $(HZ_RB_FULL_R2_PNG) $(HZ_RB_FULL_R3_PNG) \
-           $(HZ_RB_FULL_R4_PNG) $(HZ_RB_FULL_R5_PNG) $(HZ_RB_FULL_R6_PNG) \
-           $(HZ_RB_FULL_ANIM_GIF) $(HZ_RB_FULL_ANIM_WEBP) \
-           $(HZ_RB_FULL_DARK_PNG) $(HZ_RB_FULL_DARK_WEBP) \
-           $(HZ_RB_FULL_DARK_R1_PNG) $(HZ_RB_FULL_DARK_R2_PNG) $(HZ_RB_FULL_DARK_R3_PNG) \
-           $(HZ_RB_FULL_DARK_R4_PNG) $(HZ_RB_FULL_DARK_R5_PNG) $(HZ_RB_FULL_DARK_R6_PNG) \
-           $(HZ_RB_FULL_DARK_ANIM_GIF) $(HZ_RB_FULL_DARK_ANIM_WEBP)
+LOGO_STAMP := logo/.stamp
 
-# ── Top-level targets ───────────────────────────────────────────────────────────
-# ── Favicon outputs ─────────────────────────────────────────────────────────────
-FAVICON_ICO   = $(FAVICON_DIR)/favicon.ico
-FAVICON_FILES = $(FAVICON_ICO) \
-                $(FAVICON_DIR)/favicon-16.png \
-                $(FAVICON_DIR)/favicon-32.png \
-                $(FAVICON_DIR)/favicon-48.png \
-                $(FAVICON_DIR)/apple-touch-icon.png \
-                $(FAVICON_DIR)/icon-192.png \
-                $(FAVICON_DIR)/icon-512.png
-
-# ── Top-level targets ───────────────────────────────────────────────────────────
-BRAND_JSON = brand.json
-
-.PHONY: all logos pngs designs favicons brand clean help shell develop
-
-all: logos pngs favicons brand ## Build everything (design sources → brick SVGs → PNG/WebP → favicons → brand.json)
-
-logos: designs $(ALL_SVGS) ## Build all brick SVGs
-
-pngs: logos $(ALL_PNGS) ## Export all PNGs and WebPs
-
-favicons: pngs $(FAVICON_FILES) ## Generate favicon.ico and PNG variants
-
-brand: favicons $(BRAND_JSON) ## Generate machine-readable brand manifest (brand.json)
-
-designs: $(DESIGN_SQ) $(DESIGN_SQ_LN) $(DESIGN_SQ_N) $(DESIGN_SQ_DN) \
-         $(DESIGN_HZ) $(DESIGN_HZ_R1) $(DESIGN_HZ_R2) $(DESIGN_HZ_R3) \
-         $(DESIGN_COLORFUL) $(DESIGN_RAINBOW) \
-         $(DESIGN_HZ_RB) $(DESIGN_HZ_RB_R1) $(DESIGN_HZ_RB_R2) $(DESIGN_HZ_RB_R3) \
-         $(DESIGN_HZ_RB_R4) $(DESIGN_HZ_RB_R5) $(DESIGN_HZ_RB_R6) ## Populate design/ from source.svg and colors.py
+# ── Targets ───────────────────────────────────────────────────────────────────
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
 	awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-clean: ## Remove all generated files (design/, logo outputs, and Python cache)
-	rm -f $(DESIGN_SQ) $(DESIGN_SQ_LN) $(DESIGN_SQ_N) $(DESIGN_SQ_DN) \
-	      $(DESIGN_HZ) $(DESIGN_HZ_R1) $(DESIGN_HZ_R2) $(DESIGN_HZ_R3) \
-	      $(DESIGN_COLORFUL) $(DESIGN_RAINBOW) \
-	      $(DESIGN_HZ_RB) $(DESIGN_HZ_RB_R1) $(DESIGN_HZ_RB_R2) $(DESIGN_HZ_RB_R3) \
-	      $(DESIGN_HZ_RB_R4) $(DESIGN_HZ_RB_R5) $(DESIGN_HZ_RB_R6)
-	rm -f $(ALL_SVGS) $(ALL_PNGS)
-	rm -f $(FAVICON_FILES)
-	rm -f $(BRAND_JSON)
-	rm -rf __pycache__
+all: site ## Build everything: Haskell pipeline → assets → elm-pages → dist/
+
+# ── Haskell pipeline ─────────────────────────────────────────────────────────
+
+build: ## Compile Haskell executable (no run)
+	cabal build --offline
+
+# Incremental: only re-runs logo-gen when source.svg, fonts/, Haskell source,
+# or any constant in this Makefile has changed.
+$(LOGO_STAMP): $(SOURCE_SVG) $(FONT_PATH) $(HS_SOURCES) Makefile
+	cabal build --offline
+	cabal run --offline logo-gen -- $(LOGO_GEN_ARGS)
+	@mkdir -p logo
+	touch $(LOGO_STAMP)
+
+run: $(LOGO_STAMP) ## Haskell pipeline: generate logo/, favicon/, brand.json, Brand.Generated.elm (incremental)
+
+run-force: ## Force-run logo-gen regardless of stamp
+	cabal run --offline logo-gen -- $(LOGO_GEN_ARGS)
+
+# ── elm-pages site ────────────────────────────────────────────────────────────
+
+install: ## Install npm deps and resolve Elm packages (run once after checkout)
+	npm install
+
+assets: run ## Copy generated assets into public/ for elm-pages
+	rm -rf public/logo public/favicon public/fonts public/design-guide.json public/design-guide
+	cp -r logo favicon fonts design-guide.json design-guide public/
+
+dev: assets ## Dev server: pipeline → copy assets → elm-pages dev (hot reload)
+	elm-pages dev
+
+site: assets ## Production build: pipeline → copy assets → elm-pages build → dist/
+	elm-pages build
+
+deploy: ## Push main branch to trigger GitHub Actions deploy
+	git push origin main
+
+# ── Testing & linting ─────────────────────────────────────────────────────────
+
+test: ## Run Haskell test suite and hlint
+	cabal test --offline
+	$(MAKE) check
+
+check: ## Run hlint static analysis
+	hlint src tests
+
+format: ## Format all hand-written Elm source files with elm-format
+	elm-format --yes app/ src/Component/ src/Brand/Colors.elm
+
+# ── Watching ──────────────────────────────────────────────────────────────────
+
+dev-watch: assets ## Build all static assets, then watch with elm-pages dev (hot reload)
+	elm-pages dev
+
+watch: ## Re-run Haskell pipeline on .hs/.cabal changes (requires entr)
+	find src app tests -name '*.hs' -o -name '*.cabal' | entr -r cabal run --offline logo-gen -- $(LOGO_GEN_ARGS)
+
+watch-elm: ## elm-pages dev server only (assumes assets already in public/)
+	elm-pages dev
+
+# ── REPL ──────────────────────────────────────────────────────────────────────
+
+repl: ## Open GHCi REPL
+	cabal repl --offline
+
+# ── Cleanup ───────────────────────────────────────────────────────────────────
+
+clean: ## Remove all generated files, build artifacts, and dist/
+	cabal clean
+	rm -rf design/ logo/ favicon/ brand.json design-guide.json design-guide/ __pycache__
+	rm -rf dist/ .elm-pages/
+	rm -f src/Brand/Generated.elm src/Brand/Tokens.elm
+	rm -rf public/brand.json public/design-guide.json public/design-guide public/logo public/favicon public/fonts
+
+# ── Devenv ────────────────────────────────────────────────────────────────────
+
+develop: devenv.local.nix devenv.local.yaml ## Bootstrap devenv shell + VS Code
+	devenv shell --profile=devcontainer -- code .
 
 shell: ## Enter devenv shell
 	devenv shell
-
-develop: devenv.local.nix devenv.local.yaml ## Bootstrap development environment
-	devenv shell --profile=devcontainer -- code .
 
 devenv.local.nix:
 	cp devenv.local.nix.example devenv.local.nix
 
 devenv.local.yaml:
 	cp devenv.local.yaml.example devenv.local.yaml
-
-# ── Design sources ──────────────────────────────────────────────────────────────
-$(DESIGN_DIR):
-	mkdir -p $@
-
-# All designs generated by generate_designs.py from source.svg + colors.py
-$(DESIGN_SQ) $(DESIGN_SQ_LN) $(DESIGN_SQ_N) $(DESIGN_SQ_DN) \
-$(DESIGN_HZ) $(DESIGN_HZ_R1) $(DESIGN_HZ_R2) $(DESIGN_HZ_R3) \
-$(DESIGN_COLORFUL) $(DESIGN_RAINBOW) \
-$(DESIGN_HZ_RB) $(DESIGN_HZ_RB_R1) $(DESIGN_HZ_RB_R2) $(DESIGN_HZ_RB_R3) \
-$(DESIGN_HZ_RB_R4) $(DESIGN_HZ_RB_R5) $(DESIGN_HZ_RB_R6): source.svg colors.py generate_designs.py | $(DESIGN_DIR)
-	$(PYTHON) generate_designs.py
-
-# ── Square brick SVGs ────────────────────────────────────────────────────────────
-$(SQ_DIR):
-	mkdir -p $@
-
-$(SQ_SVG): $(DESIGN_SQ) | $(SQ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(SQ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(SQ_LN_SVG): $(DESIGN_SQ_LN) | $(SQ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(SQ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(SQ_N_SVG): $(DESIGN_SQ_N) | $(SQ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(SQ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(SQ_DN_SVG): $(DESIGN_SQ_DN) | $(SQ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(SQ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-# ── Colorful / rainbow variant brick SVGs ───────────────────────────────────────
-$(COLORFUL_SVG): $(DESIGN_COLORFUL) | $(SQ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(SQ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(RAINBOW_SVG): $(DESIGN_RAINBOW) | $(SQ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(SQ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-# ── Horizontal brick SVGs ───────────────────────────────────────────────────────
-$(HZ_DIR):
-	mkdir -p $@
-
-$(HZ_SVG): $(DESIGN_HZ) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_R1_SVG): $(DESIGN_HZ_R1) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_R2_SVG): $(DESIGN_HZ_R2) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_R3_SVG): $(DESIGN_HZ_R3) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_FULL_SVG): $(HZ_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_FULL_R1_SVG): $(HZ_R1_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_FULL_R2_SVG): $(HZ_R2_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_FULL_R3_SVG): $(HZ_R3_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_FULL_DARK_SVG): $(HZ_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_FULL_DARK_R1_SVG): $(HZ_R1_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_FULL_DARK_R2_SVG): $(HZ_R2_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_FULL_DARK_R3_SVG): $(HZ_R3_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-# ── Rainbow horizontal brick SVGs ────────────────────────────────────────────
-$(HZ_RB_SVG): $(DESIGN_HZ_RB) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_RB_R1_SVG): $(DESIGN_HZ_RB_R1) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_RB_R2_SVG): $(DESIGN_HZ_RB_R2) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_RB_R3_SVG): $(DESIGN_HZ_RB_R3) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_RB_R4_SVG): $(DESIGN_HZ_RB_R4) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_RB_R5_SVG): $(DESIGN_HZ_RB_R5) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-$(HZ_RB_R6_SVG): $(DESIGN_HZ_RB_R6) | $(HZ_DIR)
-	$(PYTHON) brick_blockify.py $< $@ $(HZ_PX) $(BLK_W) $(BLK_H) auto $(PAD)
-
-# ── Rainbow horizontal full (light + dark) SVGs ──────────────────────────────
-$(HZ_RB_FULL_SVG): $(HZ_RB_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_RB_FULL_R1_SVG): $(HZ_RB_R1_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_RB_FULL_R2_SVG): $(HZ_RB_R2_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_RB_FULL_R3_SVG): $(HZ_RB_R3_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_RB_FULL_R4_SVG): $(HZ_RB_R4_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_RB_FULL_R5_SVG): $(HZ_RB_R5_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_RB_FULL_R6_SVG): $(HZ_RB_R6_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE)
-
-$(HZ_RB_FULL_DARK_SVG): $(HZ_RB_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_RB_FULL_DARK_R1_SVG): $(HZ_RB_R1_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_RB_FULL_DARK_R2_SVG): $(HZ_RB_R2_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_RB_FULL_DARK_R3_SVG): $(HZ_RB_R3_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_RB_FULL_DARK_R4_SVG): $(HZ_RB_R4_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_RB_FULL_DARK_R5_SVG): $(HZ_RB_R5_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-$(HZ_RB_FULL_DARK_R6_SVG): $(HZ_RB_R6_SVG)
-	$(PYTHON) compose_logo.py $< $@ $(TXT_SIZE) '$(DARK_BG)'
-
-# ── Square PNG / WebP ───────────────────────────────────────────────────────────
-$(SQ_PNG):
-	mkdir -p $@
-
-$(SQ_PNG)/%.png: $(SQ_DIR)/%.svg | $(SQ_PNG)
-	$(PYTHON) export_raster.py $< $@ 800
-
-$(SQ_PNG)/%.webp: $(SQ_DIR)/%.svg | $(SQ_PNG)
-	$(PYTHON) export_raster.py $< $@ 800
-
-# ── Animated skin-tone logo (GIF + WebP) ────────────────────────────────────────
-$(ANIM_GIF): $(ANIM_FRAMES) | $(SQ_PNG)
-	$(PYTHON) animate_logo.py $(ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(ANIM_WEBP): $(ANIM_FRAMES) | $(SQ_PNG)
-	$(PYTHON) animate_logo.py $(ANIM_FRAMES) $@ $(ANIM_MS)
-
-# ── Animated horizontal logos (GIF + WebP) ──────────────────────────────────────
-$(HZ_ANIM_GIF): $(HZ_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_ANIM_WEBP): $(HZ_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_FULL_ANIM_GIF): $(HZ_FULL_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_FULL_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_FULL_ANIM_WEBP): $(HZ_FULL_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_FULL_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_FULL_DARK_ANIM_GIF): $(HZ_FULL_DARK_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_FULL_DARK_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_FULL_DARK_ANIM_WEBP): $(HZ_FULL_DARK_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_FULL_DARK_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_RB_ANIM_GIF): $(HZ_RB_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_RB_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_RB_ANIM_WEBP): $(HZ_RB_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_RB_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_RB_FULL_ANIM_GIF): $(HZ_RB_FULL_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_RB_FULL_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_RB_FULL_ANIM_WEBP): $(HZ_RB_FULL_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_RB_FULL_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_RB_FULL_DARK_ANIM_GIF): $(HZ_RB_FULL_DARK_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_RB_FULL_DARK_ANIM_FRAMES) $@ $(ANIM_MS)
-
-$(HZ_RB_FULL_DARK_ANIM_WEBP): $(HZ_RB_FULL_DARK_ANIM_FRAMES) | $(HZ_PNG)
-	$(PYTHON) animate_logo.py $(HZ_RB_FULL_DARK_ANIM_FRAMES) $@ $(ANIM_MS)
-
-# ── Horizontal PNG / WebP ───────────────────────────────────────────────────────
-$(HZ_PNG):
-	mkdir -p $@
-
-$(HZ_PNG)/%.png: $(HZ_DIR)/%.svg | $(HZ_PNG)
-	$(PYTHON) export_raster.py $< $@ 800
-
-$(HZ_PNG)/%.webp: $(HZ_DIR)/%.svg | $(HZ_PNG)
-	$(PYTHON) export_raster.py $< $@ 800
-
-# ── Favicons ────────────────────────────────────────────────────────────────────
-$(FAVICON_DIR):
-	mkdir -p $@
-
-$(FAVICON_FILES): $(SQ_SVG) generate_favicons.py | $(FAVICON_DIR)
-	$(PYTHON) generate_favicons.py
-
-# ── Brand manifest ───────────────────────────────────────────────────────────
-$(BRAND_JSON): colors.py generate_brand_json.py
-	$(PYTHON) generate_brand_json.py
-
