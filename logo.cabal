@@ -6,7 +6,7 @@ build-type:    Simple
 
 library
   exposed-modules:
-    Brand.Colors, Brand.Json, Brand.ElmGen,
+    Brand.Colors, Brand.DesignData, Brand.Json, Brand.JsonLd, Brand.ElmGen,
     Logo.Config, Logo.Designs, Logo.Blockify, Logo.Compose,
     Logo.Animate, Logo.Raster, Logo.Favicons
   hs-source-dirs: src

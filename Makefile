@@ -1,4 +1,4 @@
-.PHONY: help all build run assets site dev dev-watch deploy install test check clean watch watch-elm repl develop shell
+.PHONY: help all build run assets site dev dev-watch deploy install test check format clean watch watch-elm repl develop shell
 
 # When elm-pages comes from the Nix store the wrapper does not include the
 # package's own node_modules/.bin (elm-optimize-level-2, etc.) in PATH.
@@ -80,8 +80,8 @@ install: ## Install npm deps and resolve Elm packages (run once after checkout)
 	npm install
 
 assets: run ## Copy generated assets into public/ for elm-pages
-	rm -rf public/logo public/favicon public/fonts public/brand.json
-	cp -r logo favicon fonts brand.json public/
+	rm -rf public/logo public/favicon public/fonts public/design-guide.json public/design-guide
+	cp -r logo favicon fonts design-guide.json design-guide public/
 
 dev: assets ## Dev server: pipeline → copy assets → elm-pages dev (hot reload)
 	elm-pages dev
@@ -100,6 +100,9 @@ test: ## Run Haskell test suite and hlint
 
 check: ## Run hlint static analysis
 	hlint src tests
+
+format: ## Format all hand-written Elm source files with elm-format
+	elm-format --yes app/ src/Component/ src/Brand/Colors.elm
 
 # ── Watching ──────────────────────────────────────────────────────────────────
 
@@ -121,10 +124,10 @@ repl: ## Open GHCi REPL
 
 clean: ## Remove all generated files, build artifacts, and dist/
 	cabal clean
-	rm -rf design/ logo/ favicon/ brand.json __pycache__
+	rm -rf design/ logo/ favicon/ brand.json design-guide.json design-guide/ __pycache__
 	rm -rf dist/ .elm-pages/
-	rm -f src/Brand/Generated.elm
-	rm -rf public/brand.json public/logo public/favicon public/fonts
+	rm -f src/Brand/Generated.elm src/Brand/Tokens.elm
+	rm -rf public/brand.json public/design-guide.json public/design-guide public/logo public/favicon public/fonts
 
 # ── Devenv ────────────────────────────────────────────────────────────────────
 

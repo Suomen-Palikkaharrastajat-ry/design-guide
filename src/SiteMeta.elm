@@ -13,4 +13,4 @@ siteTitle =
 
 description : String
 description =
-    "Suomen Palikkaharrastajat ry:n brändiohjeistus: logot, värit ja typografia."
+    "Suomen Palikkaharrastajat ry:n logot, värit ja typografia."

@@ -34,7 +34,7 @@ skinTones :: [(Text, Text, Hex)]
 skinTones =
     [ ("yellow", "Yellow", Hex "#F2CD37")
     , ("light-nougat", "Light Nougat", Hex "#F6D7B3")
-    , ("nougat", "Nougat", Hex "#CC8E69")
+    , ("nougat", "Nougat", Hex "#D09168")
     , ("dark-nougat", "Dark Nougat", Hex "#AD6140")
     ]
 

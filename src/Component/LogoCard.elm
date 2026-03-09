@@ -21,7 +21,7 @@ type alias LogoVariant =
 view : LogoVariant -> Html msg
 view variant =
     Html.div
-        [ Attr.class "border border-gray-200 rounded-lg overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all" ]
+        [ Attr.class "border border-gray-200 rounded-lg overflow-hidden" ]
         [ viewPreview variant
         , viewInfo variant
         ]

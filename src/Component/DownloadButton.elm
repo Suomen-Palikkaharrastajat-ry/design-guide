@@ -10,6 +10,6 @@ view { label, href } =
         [ Attr.href href
         , Attr.download ""
         , Attr.title href
-        , Attr.class "inline-block bg-brand-yellow text-brand px-3 py-1.5 rounded text-sm font-semibold hover:opacity-90 transition-opacity"
+        , Attr.class "inline-block bg-brand-yellow text-brand px-3 py-1.5 rounded text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
         ]
         [ Html.text label ]

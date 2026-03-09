@@ -111,10 +111,9 @@ viewNavbar toMsg =
                     []
                 ]
             , Html.ul
-                [ Attr.class "flex gap-1 list-none m-0 p-0" ]
-                [ navLink "/logot" "Logot"
-                , navLink "/varit" "Värit"
-                , navLink "/typografia" "Typografia"
+                [ Attr.class "flex flex-wrap gap-1 list-none m-0 p-0" ]
+                [ navLink "/komponentit" "Komponentit"
+                , navLink "/saavutettavuus" "Saavutettavuus"
                 ]
             ]
         ]
@@ -138,15 +137,17 @@ viewFooter =
         [ Html.div
             [ Attr.class "max-w-5xl mx-auto text-center space-y-2" ]
             [ Html.p [ Attr.class "text-sm text-white/80" ]
-                [ Html.text "© 2026 Suomen Palikkaharrastajat ry · Logo ja värit" ]
+                [ Html.text "© 2026 Suomen Palikkaharrastajat ry" ]
             , Html.p [ Attr.class "text-xs text-white/50" ]
                 [ Html.text "Fontit: Outfit (SIL Open Font License) · Logot: CC BY 4.0" ]
             , Html.p [ Attr.class "text-xs text-white/50" ]
+                [ Html.text "LEGO® on LEGO Groupin rekisteröity tavaramerkki" ]
+            , Html.p [ Attr.class "text-xs text-white/50" ]
                 [ Html.a
-                    [ Attr.href "/brand.json"
+                    [ Attr.href "/design-guide/index.jsonld"
                     , Attr.class "underline hover:text-white/80 transition-colors"
                     ]
-                    [ Html.text "brand.json (koneluettava)" ]
+                    [ Html.text "design-guide/ (JSON-LD)" ]
                 ]
             ]
         ]

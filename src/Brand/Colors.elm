@@ -28,18 +28,23 @@ brandColors : List ColorEntry
 brandColors =
     [ { hex = "#F2CD37"
       , id = "lego-yellow"
-      , name = "LEGO Yellow"
+      , name = "Yellow"
       , usage = [ "primary brand", "accent" ]
       }
     , { hex = "#05131D"
       , id = "lego-black"
-      , name = "LEGO Black"
+      , name = "Black"
       , usage = [ "features", "text", "dark background" ]
       }
     , { hex = "#FFFFFF"
       , id = "lego-white"
-      , name = "LEGO White"
+      , name = "White"
       , usage = [ "eye highlights", "text on dark background" ]
+      }
+    , { hex = "#C91A09"
+      , id = "red"
+      , name = "Red"
+      , usage = [ "accent", "danger", "highlights" ]
       }
     ]
 
@@ -48,7 +53,7 @@ skinTones : List SkinToneEntry
 skinTones =
     [ { hex = "#F2CD37", id = "yellow", name = "Yellow", description = "Classic minifig" }
     , { hex = "#F6D7B3", id = "light-nougat", name = "Light Nougat", description = "Light skin" }
-    , { hex = "#CC8E69", id = "nougat", name = "Nougat", description = "Medium skin" }
+    , { hex = "#D09168", id = "nougat", name = "Nougat", description = "Medium skin" }
     , { hex = "#AD6140", id = "dark-nougat", name = "Dark Nougat", description = "Dark skin" }
     ]
 

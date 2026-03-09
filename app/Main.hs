@@ -2,7 +2,8 @@ module Main where
 
 import Brand.Colors (darkBg)
 import Brand.ElmGen (generateBrandModule)
-import Brand.Json (generateBrandJson)
+import Brand.Json (generateDesignGuide)
+import Brand.JsonLd (generateJsonLd)
 import Control.Monad (forM_)
 import Logo.Animate (assembleGif, assembleWebp)
 import Logo.Blockify (blockifySvg)
@@ -119,16 +120,20 @@ main = do
     putStrLn "==> favicons"
     generateFavicons (sqSvg ++ "/square.svg") (cfgFaviconDir cfg)
 
-    -- 8. Brand manifest
-    putStrLn "==> brand.json"
-    generateBrandJson
+    -- 8. Design guide manifest
+    putStrLn "==> design-guide.json"
+    generateDesignGuide
 
-    -- 9. Elm codegen (Brand.Generated)
-    putStrLn "==> elm codegen (Brand.Generated)"
+    -- 9. JSON-LD design guide sections
+    putStrLn "==> design-guide/*.jsonld"
+    generateJsonLd
+
+    -- 10. Elm codegen (Brand.Tokens)
+    putStrLn "==> elm codegen (Brand.Tokens)"
     let elmBrandSrc = "src/Brand"
     createDirectoryIfMissing True elmBrandSrc
-    TIO.writeFile (elmBrandSrc <> "/Generated.elm") generateBrandModule
-    putStrLn "Wrote src/Brand/Generated.elm"
+    TIO.writeFile (elmBrandSrc <> "/Tokens.elm") generateBrandModule
+    putStrLn "Wrote src/Brand/Tokens.elm"
 
     putStrLn "Done."
 
