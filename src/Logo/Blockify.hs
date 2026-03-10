@@ -107,8 +107,7 @@ aspectCorrectionFactor blkW blkH =
      in fromIntegral hPitch / fromIntegral vPitch
 
 data BrickGeom = BrickGeom
-    { bgStudH      :: !Int -- stud height (2 px)
-    , bgBodyH      :: !Int -- brick body height (17 px)
+    { bgBodyH      :: !Int -- brick body height (17 px)
     , bgInnerBodyH :: !Int -- vertical row pitch / v_pitch (15 px)
     , bgHPitch     :: !Int -- horizontal column pitch / h_pitch (12 px)
     }
@@ -120,7 +119,7 @@ mkBrickGeom blkW blkH =
         innerStudH = max 2 (bodyH * 15 `div` 100)
         innerBodyH = bodyH - innerStudH
         hPitch     = blkW `div` 2
-     in BrickGeom studH bodyH innerBodyH hPitch
+     in BrickGeom bodyH innerBodyH hPitch
 
 -- ── Auto brick sizing ─────────────────────────────────────────────────────────────
 
@@ -303,16 +302,16 @@ brickElements brickX brickY brickW color geom =
             printf "  <rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" fill=\"%s\"/>"
                 brickX bodyY brickW actBH r
         lTop =
-            printf "  <line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"0.5\" opacity=\"0.3\"/>"
+            printf "  <line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"0.25\" opacity=\"1.0\"/>"
                 brickX bodyY (brickX + brickW) bodyY bc
         lBottom =
-            printf "  <line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"0.5\" opacity=\"0.3\"/>"
+            printf "  <line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"0.25\" opacity=\"1.0\"/>"
                 brickX bY2 (brickX + brickW) bY2 bc
         lLeft =
-            printf "  <line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"0.5\" opacity=\"0.3\"/>"
+            printf "  <line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"0.25\" opacity=\"1.0\"/>"
                 brickX bodyY brickX bY2 bc
         lRight =
-            printf "  <line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"0.5\" opacity=\"0.3\"/>"
+            printf "  <line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke=\"%s\" stroke-width=\"0.25\" opacity=\"1.0\"/>"
                 (brickX + brickW) bodyY (brickX + brickW) bY2 bc
 
         studs = concatMap (mkStud brickX brickY r bc studHt hP) [0 .. sCount - 1]
@@ -331,7 +330,7 @@ mkStud brickX brickY r bc studHt hPitch i =
             printf "  <rect x=\"%.1f\" y=\"%d\" width=\"%d\" height=\"%d\" fill=\"%s\"/>"
                 studX studY studW studHt r
         sBdr =
-            printf "  <rect x=\"%.1f\" y=\"%d\" width=\"%d\" height=\"%d\" fill=\"none\" stroke=\"%s\" stroke-width=\"0.5\" opacity=\"0.2\"/>"
+            printf "  <rect x=\"%.1f\" y=\"%d\" width=\"%d\" height=\"%d\" fill=\"none\" stroke=\"%s\" stroke-width=\"0.25\" opacity=\"1.0\"/>"
                 studX studY studW studHt bc
      in [sRect, sBdr]
 
