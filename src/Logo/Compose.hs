@@ -1,7 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Logo.Compose (composeLogo) where
+-- | Compose a brick-logo SVG with a subtitle text element below it.
+--
+-- No brand constants are hardcoded here; all text and colours are supplied
+-- by the caller.
+module Logo.Compose
+    ( composeLogo
+    , composeLogoFrom
+    ) where
 
-import Brand.Colors
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64 as B64
 import qualified Data.ByteString.Char8 as BC
@@ -11,15 +17,15 @@ import qualified Data.Text.IO as TIO
 import System.Directory (createDirectoryIfMissing)
 import System.FilePath (takeDirectory)
 
--- Default constants (matching Python pipeline)
+-- | Gap in SVG px between the brick grid and the subtitle text.
 _GAP :: Int
 _GAP = 24
 
+-- | Padding below the subtitle text, in SVG px.
 _BOTTOM_PAD :: Int
 _BOTTOM_PAD = 20
 
 -- | Parse width and height from SVG text.
--- Returns (width, height) as integers (truncated from the SVG float values).
 parseSvgDimensions :: Text -> (Int, Int)
 parseSvgDimensions t =
     let wStr = extract "width=\""
@@ -32,46 +38,69 @@ parseSvgDimensions t =
                 snd $ T.breakOn attr t
     readI s = case reads (T.unpack s) of
         [(n, _)] -> n
-        _ -> 0
+        _        -> 0
 
--- | Compose a full logo by appending subtitle text below the brick SVG.
--- Background is always transparent. Nothing = dark text, Just _ = light text.
-composeLogo
-    :: FilePath
-    -- ^ Outfit font path (e.g. @fonts/Outfit-VariableFont_wght.ttf@)
-    -> FilePath
-    -- ^ input brick SVG
-    -> FilePath
-    -- ^ output full SVG
-    -> Int
-    -- ^ txtSize (font size in SVG units)
-    -> Maybe Hex
-    -- ^ Nothing = light bg (dark text), Just _ = dark bg (light text)
-    -> IO ()
-composeLogo fontPath inSvg outSvg txtSize mbBg = do
-    srcText <- TIO.readFile inSvg
+-- | Compose a full logo from an in-memory brick SVG.
+--
+-- @composeLogoFrom fontPath subtitleText subtitleColor svgText txtSize@
+-- returns the composed SVG text.  'subtitleColor' should be a CSS colour
+-- value, e.g. @\"#05131D\"@.
+composeLogoFrom
+    :: FilePath  -- ^ Outfit variable-font path
+    -> Text      -- ^ Subtitle text
+    -> Text      -- ^ Subtitle CSS colour (e.g. @\"#05131D\"@)
+    -> Text      -- ^ Input brick SVG text
+    -> Int       -- ^ Font size in SVG units
+    -> IO Text
+composeLogoFrom fontPath subtitleText subtitleColor srcText txtSize = do
     fontBytes <- BS.readFile fontPath
     let (brickW, brickH) = parseSvgDimensions srcText
-        canvasW = brickW
-        canvasH = brickH + _GAP + txtSize + _BOTTOM_PAD
-        subtitleColor = case mbBg of
-            Nothing -> hexText subtitleOnLight
-            Just _ -> hexText subtitleOnDark
-        fontB64 = BC.unpack (B64.encode fontBytes)
-        fontDataUri = "data:font/truetype;base64," ++ fontB64
-    let newSvg = buildFullSvg srcText canvasW canvasH brickH txtSize subtitleColor fontDataUri
+        canvasW       = brickW
+        canvasH       = brickH + _GAP + txtSize + _BOTTOM_PAD
+        fontB64       = BC.unpack (B64.encode fontBytes)
+        fontDataUri   = "data:font/truetype;base64," ++ fontB64
+    return $ buildFullSvg srcText canvasW canvasH brickH
+                           txtSize subtitleColor fontDataUri subtitleText
+
+-- | File-based wrapper around 'composeLogoFrom'.
+--
+-- Reads @inSvg@, composes the logo, writes to @outSvg@ (creating parent
+-- directories as needed).
+composeLogo
+    :: FilePath  -- ^ Outfit variable-font path
+    -> Text      -- ^ Subtitle text
+    -> Text      -- ^ Subtitle CSS colour (e.g. @\"#05131D\"@)
+    -> FilePath  -- ^ Input brick SVG path
+    -> FilePath  -- ^ Output composed SVG path
+    -> Int       -- ^ Font size in SVG units
+    -> IO ()
+composeLogo fontPath subtitleText subtitleColor inSvg outSvg txtSize = do
+    srcText <- TIO.readFile inSvg
+    newSvg  <- composeLogoFrom fontPath subtitleText subtitleColor srcText txtSize
     createDirectoryIfMissing True (takeDirectory outSvg)
     TIO.writeFile outSvg newSvg
-    putStrLn $ "  Composed " ++ outSvg ++ "  (" ++ show canvasW ++ "x" ++ show canvasH ++ ")"
+    let (w, h) = parseSvgDimensions newSvg
+    putStrLn $ "  Composed " ++ outSvg ++ "  (" ++ show w ++ "×" ++ show h ++ ")"
 
-buildFullSvg :: Text -> Int -> Int -> Int -> Int -> Text -> String -> Text
-buildFullSvg srcText canvasW canvasH brickH txtSize subtitleColor fontDataUri =
+-- ── Internal SVG builder ─────────────────────────────────────────────────────
+
+buildFullSvg
+    :: Text   -- ^ brick SVG source
+    -> Int    -- ^ canvasW
+    -> Int    -- ^ canvasH
+    -> Int    -- ^ brickH
+    -> Int    -- ^ txtSize
+    -> Text   -- ^ subtitle colour
+    -> String -- ^ font data URI
+    -> Text   -- ^ subtitle text
+    -> Text
+buildFullSvg srcText canvasW canvasH brickH txtSize subtitleColor fontDataUri subtitleText =
     T.concat
         [ "<?xml version='1.0' encoding='utf-8'?>\n"
         , "<svg"
         , " xmlns=\"http://www.w3.org/2000/svg\""
-        , " width=\"" <> showI canvasW <> "\""
-        , " height=\"" <> showI canvasH <> "\""
+        , " width=\""   <> showI canvasW <> "\""
+        , " height=\""  <> showI canvasH <> "\""
         , " viewBox=\"0 0 " <> showI canvasW <> " " <> showI canvasH <> "\""
         , ">\n"
         , defsElem
@@ -87,58 +116,32 @@ buildFullSvg srcText canvasW canvasH brickH txtSize subtitleColor fontDataUri =
     defsElem =
         "  <defs><style>"
             <> T.pack
-                ( "@font-face { font-family: 'Outfit';"
-                    ++ " src: url('"
-                    ++ fontDataUri
-                    ++ "') format('truetype'); }"
+                (  "@font-face { font-family: 'Outfit';"
+                ++ " src: url('" ++ fontDataUri ++ "') format('truetype'); }"
                 )
             <> "</style></defs>"
 
-    -- Float y position matching Python: brick_h + GAP + font_size displayed as float
+    -- y position: brick_h + GAP + font_size  (as a float, matching Python)
     yFloat = T.pack $ show (fromIntegral (brickH + _GAP + txtSize) :: Double)
 
     textElem =
         "<text"
-            <> " x=\""
-            <> showI (canvasW `div` 2)
-            <> "\""
-            <> " y=\""
-            <> yFloat
-            <> "\""
+            <> " x=\""           <> showI (canvasW `div` 2) <> "\""
+            <> " y=\""           <> yFloat <> "\""
             <> " font-family=\"Outfit, sans-serif\""
-            <> " font-size=\""
-            <> showI txtSize
-            <> "\""
+            <> " font-size=\""   <> showI txtSize <> "\""
             <> " font-weight=\"400\""
             <> " text-anchor=\"middle\""
-            <> " textLength=\""
-            <> showI canvasW
-            <> "\""
-            <> " lengthAdjust=\"spacingAndGlyphs\""
-            <> " fill=\""
-            <> subtitleColor
-            <> "\""
+            <> " fill=\""        <> subtitleColor <> "\""
             <> ">"
-            <> associationName
+            <> subtitleText
             <> "</text>"
 
-    -- Strip outer SVG wrapper; preserve trailing newline (last element tail)
     innerContent t =
-        let noDecl = stripXmlDecl t
-            afterOpen = dropSvgOpenTag noDecl
-            noClose = dropSvgClose afterOpen
+        let noDecl   = snd $ T.breakOn "<svg" t
+            afterOpen = T.drop 1 $ snd $ T.breakOn ">" noDecl
+            s         = T.stripEnd afterOpen
+            noClose   = if "</svg>" `T.isSuffixOf` s
+                            then T.dropEnd (T.length "</svg>") s
+                            else s
          in T.stripStart noClose
-
-    stripXmlDecl t =
-        case T.breakOn "<svg" t of
-            (_, rest) -> rest
-
-    dropSvgOpenTag t =
-        case T.breakOn ">" t of
-            (_, rest) -> T.drop 1 rest
-
-    dropSvgClose t =
-        let s = T.stripEnd t
-         in if "</svg>" `T.isSuffixOf` s
-                then T.dropEnd (T.length "</svg>") s
-                else s

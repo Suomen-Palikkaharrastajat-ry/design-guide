@@ -6,24 +6,24 @@ pad-bottom: 0
 # palette: char = RRGGBB  (. = transparent)
 palette:
   . = transparent
-  A = 73dca1
-  B = 9fc3e9
-  C = 9195ca
-  D = ac78ba
-  E = 151100
-  F = 000000
+  A = f6d7b3
+  B = d09168
+  C = ad6140
+  D = f2cd37
+  E = 000000
+  F = 151100
 # grid: 70×13
 grid:
 .....|AAAA|AA|.....|..|.....|BBBB|BB|.....|..|.....|CCCC|CC|.....|..|.....|DDDD|DD|.....
 .....|AA|AAAA|.....|..|.....|BB|BBBB|.....|..|.....|CC|CCCC|.....|..|.....|DD|DDDD|.....
 ..|AAAA|AAAA|AAAA|..|..|..|BBBB|BBBB|BBBB|..|..|..|CCCC|CCCC|CCCC|..|..|..|DDDD|DDDD|DDDD|..
 .|AAA|AAAA|AAAA|AAA|.|..|.|BBB|BBBB|BBBB|BBB|.|..|.|CCC|CCCC|CCCC|CCC|.|..|.|DDD|DDDD|DDDD|DDD|.
-.|AAA|EEE|AA|EEE|AAA|.|..|.|BBB|FFF|BB|FFF|BBB|.|..|.|CCCC|CCCC|CCCC|CC|.|..|.|DDD|FFF|DD|FFF|DDD|.
-.|AAA|EEE|AA|EEE|AAA|.|..|.|BBB|FFF|BB|FFF|BBB|.|..|.|CCC|FFF|CC|FFF|CCC|.|..|.|DDD|FFF|DD|FFF|DDD|.
+.|AAA|EEE|AA|EEE|AAA|.|..|.|BBBB|BBBB|BBBB|BB|.|..|.|CCC|EEE|CC|EEE|CCC|.|..|.|DDD|FFF|DD|FFF|DDD|.
+.|AAA|EEE|AA|EEE|AAA|.|..|.|BBB|EEE|BB|EEE|BBB|.|..|.|CCC|EEE|CC|EEE|CCC|.|..|.|DDD|FFF|DD|FFF|DDD|.
 .|AAAA|AAAA|AAAA|AA|.|..|.|BBBB|BBBB|BBBB|BB|.|..|.|CCCC|CCCC|CCCC|CC|.|..|.|DDDD|DDDD|DDDD|DD|.
 .|AAA|AAAA|AAAA|AAA|.|..|.|BBB|BBBB|BBBB|BBB|.|..|.|CCC|CCCC|CCCC|CCC|.|..|.|DDD|DDDD|DDDD|DDD|.
-.|AA|AAAA|AA|AAAA|AA|.|..|.|BBB|E|BBBB|BB|E|BBB|.|..|.|CCC|EE|EEEE|EE|CCC|.|..|.|DDD|EE|EEEE|EE|DDD|.
-.|AAAA|E|AAAA|E|AAAA|.|..|.|BBBB|EEEE|EE|BBBB|.|..|.|CCCC|EEEE|EE|CCCC|.|..|.|DDDD|EEEE|EE|DDDD|.
-.|AAAA|A|EEEE|AAAA|A|.|..|.|BBBB|B|EEEE|BBBB|B|.|..|.|CCCC|C|EEEE|CCCC|C|.|..|.|DDDD|D|EEEE|DDDD|D|.
+.|AAA|F|AAAA|AA|F|AAA|.|..|.|BBB|FF|FFFF|FF|BBB|.|..|.|CCC|FF|FFFF|FF|CCC|.|..|.|DD|DDDD|DD|DDDD|DD|.
+.|AAAA|FFFF|FF|AAAA|.|..|.|BBBB|FFFF|FF|BBBB|.|..|.|CCCC|FFFF|FF|CCCC|.|..|.|DDDD|F|DDDD|F|DDDD|.
+.|AAAA|A|FFFF|AAAA|A|.|..|.|BBBB|B|FFFF|BBBB|B|.|..|.|CCCC|C|FFFF|CCCC|C|.|..|.|DDDD|D|FFFF|DDDD|D|.
 ..|AAAA|AAAA|AAA|A|..|..|..|BBBB|BBBB|BBB|B|..|..|..|CCCC|CCCC|CCC|C|..|..|..|DDDD|DDDD|DDD|D|..
 ....|AAA|AAAA|A|....|..|....|BBB|BBBB|B|....|..|....|CCC|CCCC|C|....|..|....|DDD|DDDD|D|....

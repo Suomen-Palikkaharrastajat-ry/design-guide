@@ -1,8 +1,6 @@
-.PHONY: help all build blay-compose assets site dev dev-watch deploy install test check format clean watch watch-elm repl develop shell
+.PHONY: help all build blay-compose-all assets site dev dev-watch deploy install test check format clean watch watch-elm repl develop shell render outline-text
 
-# When elm-pages comes from the Nix store the wrapper does not include the
-# package's own node_modules/.bin (elm-optimize-level-2, etc.) in PATH.
-# Detect the store root from the resolved elm-pages binary and prepend it.
+# elm-pages wrapper: add its own node_modules/.bin to PATH
 _ELM_PAGES_BIN  := $(shell which elm-pages 2>/dev/null)
 _ELM_PAGES_ROOT := $(shell readlink -f $(_ELM_PAGES_BIN) 2>/dev/null | xargs -I{} dirname {} | xargs -I{} dirname {} 2>/dev/null)
 ifneq ($(_ELM_PAGES_ROOT),)
@@ -10,47 +8,44 @@ export PATH := $(_ELM_PAGES_ROOT)/lib/node_modules/.bin:$(PATH)
 endif
 
 # ── Pipeline constants ────────────────────────────────────────────────────────
-# Single documented source of truth for all tunable parameters.
-# Forwarded verbatim as CLI flags to logo-gen; no Haskell rebuild needed when
-# changing these values.
+# Single source of truth — forwarded verbatim as CLI flags to the executables.
+# Change a value here; no Haskell rebuild required.
 
-FONT_PATH    := fonts/Outfit-VariableFont_wght.ttf
+FONT_PATH := fonts/Outfit-VariableFont_wght.ttf
+SUBTITLE  := Suomen Palikkaharrastajat ry
 
-BLK_W        := 24          # Brick SVG unit width
-BLK_H        := 20          # Brick SVG unit height
-SQ_PAD_V     := 20          # Vertical padding for square logos
-HZ_PAD_TOP   := 20          # Top padding for horizontal logos
-TXT_SIZE     := 57          # Subtitle font size (SVG units)
-ANIM_MS      := 10000       # Animation frame duration (ms)
-RASTER_W     := 800         # PNG/WebP export width (px)
+BLK_W     := 24
+BLK_H     := 20
+SQ_PAD_V  := 20
+HZ_PAD_TOP:= 20
+GAP_STUDS := 2
+TXT_SIZE  := 63
+ANIM_MS   := 10000
+RASTER_W  := 800
 
-LOGO_GEN_ARGS := \
-  --font-path  $(FONT_PATH) \
-  --blk-w      $(BLK_W) \
-  --blk-h      $(BLK_H) \
-  --sq-pad-v   $(SQ_PAD_V) \
-  --hz-pad-top $(HZ_PAD_TOP) \
-  --txt-size   $(TXT_SIZE) \
-  --anim-ms    $(ANIM_MS) \
-  --raster-w   $(RASTER_W)
+# Subtitle colours (6-digit hex, no #)
+SUBTITLE_LIGHT := 05131D
+SUBTITLE_DARK  := FFFFFF
 
-BLAY_COMPOSE_ARGS := \
-  --hz-pad-top $(HZ_PAD_TOP) \
-  --gap-studs  2
+# Placeholder and skin-tone colours in master .blay files (6-digit hex, no #)
+FACE_PH           := F2CD37
+SKIN_YELLOW       := F2CD37
+SKIN_LIGHT_NOUGAT := F6D7B3
+SKIN_NOUGAT       := D09168
+SKIN_DARK_NOUGAT  := AD6140
 
-# Haskell source files – stamp depends on these so code changes invalidate it
-HS_SOURCES := $(shell find src app -name '*.hs') logo.cabal $(wildcard cabal.project*)
+# Rainbow colours (6-digit hex, no #)
+RB_SALMON   := F2705E
+RB_ORANGE   := F9BA61
+RB_YELLOW   := F2CD37
+RB_GREEN    := 73DCA1
+RB_BLUE     := 9FC3E9
+RB_INDIGO   := 9195CA
+RB_LAVENDER := AC78BA
 
-# All committed .blay files (masters + derived outputs of blay-compose)
-BLAY_FILES  := $(wildcard layout/*.blay)
-BLAY_STAMP  := logo/.blay-stamp
+_HZ_TILE := --tile --gap-studs $(GAP_STUDS) --pad-top $(HZ_PAD_TOP) --pad-bottom 0
 
-# The devenv shell's PATH can grow to 100 KB+ from hundreds of individual
-# Haskell dep bin-dirs (one per nativeBuildInput).  When cabal spawns GHC and
-# GHC in turn spawns cc/ar, Linux's per-string MAX_ARG_STRLEN limit (128 KB)
-# is easily exceeded, producing posix_spawnp E2BIG.  Strip PATH to just the
-# entries cabal, GHC, and the runtime image tools need; GHC resolves its own
-# libtools via -Blibdir so only its bin dir is required.
+# ── PATH trimming (prevents E2BIG when cabal spawns GHC) ─────────────────────
 _GHC_BIN    := $(shell dirname $(shell which ghc          2>/dev/null) 2>/dev/null)
 _CABAL_BIN  := $(shell dirname $(shell which cabal        2>/dev/null) 2>/dev/null)
 _RSVG_BIN   := $(shell dirname $(shell which rsvg-convert 2>/dev/null) 2>/dev/null)
@@ -61,52 +56,240 @@ _MAGICK_BIN := $(shell dirname $(shell which convert      2>/dev/null) 2>/dev/nu
 _SLIM_PATH  := $(_GHC_BIN):$(_CABAL_BIN):$(_RSVG_BIN):$(_WEBP_BIN):$(_GIFSKI_BIN):$(_ICO_BIN):$(_MAGICK_BIN):/usr/bin:/bin
 CABAL       := env PATH="$(_SLIM_PATH)" cabal
 
-# Outline subtitle text in composed horizontal SVGs only (not squares, not logo-only horizontals)
-OUTLINE_TEXT := python3 scripts/text_to_path.py $(FONT_PATH) \
-  logo/horizontal/svg/*-full.svg \
-  logo/horizontal/svg/*-full-dark.svg
+HS_SOURCES := $(shell find src app -name '*.hs') logo.cabal $(wildcard cabal.project*)
 
-# ── Targets ───────────────────────────────────────────────────────────────────
+# ── Output roots ─────────────────────────────────────────────────────────────
+SQ_SVG := logo/square/svg
+SQ_PNG := logo/square/png
+HZ_SVG := logo/horizontal/svg
+HZ_PNG := logo/horizontal/png
+
+# ── Phony help ────────────────────────────────────────────────────────────────
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
-	awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-22s\033[0m %s\n", $$1, $$2}'
 
-all: site ## Build everything: Haskell pipeline → assets → elm-pages → dist/
+all: site ## Build everything: Haskell -> assets -> elm-pages -> dist/
 
-# ── Haskell pipeline ─────────────────────────────────────────────────────────
+# ── Haskell ───────────────────────────────────────────────────────────────────
 
 build: ## Compile all Haskell executables (no run)
 	$(CABAL) build --offline
 
-# ── blay-compose (developer step, run locally before committing) ──────────────
+# ── blay-compose: derive .blay files from masters (run locally; commit outputs)
 #
-# Reads layout/first.blay … fourth.blay (master layouts, human-authored) and
-# writes all derived .blay files: square skin-tone variants + rainbow horizontals.
-# Commit the outputs so CI only needs logo-gen.
-#
-# To draft a new master from source SVG use:
-#   cabal run --offline blay-draft -- --source source.svg --output layout/first.blay
+# Masters: layout/first.blay ... layout/fourth.blay use FACE_PH as placeholder.
+# Draft a new master from a source SVG:
+#   cabal run --offline blay-draft -- --source SRC.svg --output layout/first.blay
 
-blay-compose: build ## Generate derived .blay files from masters (run locally before committing)
-	$(CABAL) run --offline blay-compose -- $(BLAY_COMPOSE_ARGS)
+_COMPOSE = $(CABAL) run --offline blay-compose --
 
-# ── logo-gen render (CI-safe: reads only committed .blay files) ───────────────
+# Square skin-tone blays
+layout/square.blay: layout/first.blay $(HS_SOURCES)
+	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(SKIN_YELLOW) --output $@
 
-# Incremental: only re-renders when .blay files, fonts, Haskell source, or
-# Makefile constants change.
-$(BLAY_STAMP): $(BLAY_FILES) $(FONT_PATH) $(HS_SOURCES) Makefile scripts/text_to_path.py
-	$(CABAL) build --offline
-	$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS)
-	$(OUTLINE_TEXT)
-	@mkdir -p logo
-	touch $(BLAY_STAMP)
+layout/square-light-nougat.blay: layout/second.blay $(HS_SOURCES)
+	$(_COMPOSE) --input layout/second.blay:$(FACE_PH):$(SKIN_LIGHT_NOUGAT) --output $@
 
-render: $(BLAY_STAMP) ## Render .blay files → logo/, favicon/, design tokens (incremental)
+layout/square-nougat.blay: layout/third.blay $(HS_SOURCES)
+	$(_COMPOSE) --input layout/third.blay:$(FACE_PH):$(SKIN_NOUGAT) --output $@
 
-render-force: build ## Force re-render from .blay files regardless of stamp
-	$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS)
-	$(OUTLINE_TEXT)
+layout/square-dark-nougat.blay: layout/fourth.blay $(HS_SOURCES)
+	$(_COMPOSE) --input layout/fourth.blay:$(FACE_PH):$(SKIN_DARK_NOUGAT) --output $@
+
+_SQ_BLAYS := layout/square.blay layout/square-light-nougat.blay layout/square-nougat.blay layout/square-dark-nougat.blay
+
+# Horizontal skin-tone blays
+layout/horizontal.blay: $(_SQ_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/square.blay --input layout/square-light-nougat.blay --input layout/square-nougat.blay --input layout/square-dark-nougat.blay $(_HZ_TILE) --output $@
+
+layout/horizontal-rot1.blay: $(_SQ_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/square-light-nougat.blay --input layout/square-nougat.blay --input layout/square-dark-nougat.blay --input layout/square.blay $(_HZ_TILE) --output $@
+
+layout/horizontal-rot2.blay: $(_SQ_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/square-nougat.blay --input layout/square-dark-nougat.blay --input layout/square.blay --input layout/square-light-nougat.blay $(_HZ_TILE) --output $@
+
+layout/horizontal-rot3.blay: $(_SQ_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/square-dark-nougat.blay --input layout/square.blay --input layout/square-light-nougat.blay --input layout/square-nougat.blay $(_HZ_TILE) --output $@
+
+_MASTER_BLAYS := layout/first.blay layout/second.blay layout/third.blay layout/fourth.blay
+
+# Horizontal rainbow blays — sliding windows of 4 from 7 rainbow colours
+layout/horizontal-rainbow.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_SALMON) --input layout/second.blay:$(FACE_PH):$(RB_ORANGE) --input layout/third.blay:$(FACE_PH):$(RB_YELLOW) --input layout/fourth.blay:$(FACE_PH):$(RB_GREEN) $(_HZ_TILE) --output $@
+
+layout/horizontal-rainbow-rot1.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_ORANGE) --input layout/second.blay:$(FACE_PH):$(RB_YELLOW) --input layout/third.blay:$(FACE_PH):$(RB_GREEN) --input layout/fourth.blay:$(FACE_PH):$(RB_BLUE) $(_HZ_TILE) --output $@
+
+layout/horizontal-rainbow-rot2.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_YELLOW) --input layout/second.blay:$(FACE_PH):$(RB_GREEN) --input layout/third.blay:$(FACE_PH):$(RB_BLUE) --input layout/fourth.blay:$(FACE_PH):$(RB_INDIGO) $(_HZ_TILE) --output $@
+
+layout/horizontal-rainbow-rot3.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_GREEN) --input layout/second.blay:$(FACE_PH):$(RB_BLUE) --input layout/third.blay:$(FACE_PH):$(RB_INDIGO) --input layout/fourth.blay:$(FACE_PH):$(RB_LAVENDER) $(_HZ_TILE) --output $@
+
+layout/horizontal-rainbow-rot4.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_BLUE) --input layout/second.blay:$(FACE_PH):$(RB_INDIGO) --input layout/third.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/fourth.blay:$(FACE_PH):$(RB_SALMON) $(_HZ_TILE) --output $@
+
+layout/horizontal-rainbow-rot5.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_INDIGO) --input layout/second.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/third.blay:$(FACE_PH):$(RB_SALMON) --input layout/fourth.blay:$(FACE_PH):$(RB_ORANGE) $(_HZ_TILE) --output $@
+
+layout/horizontal-rainbow-rot6.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/second.blay:$(FACE_PH):$(RB_SALMON) --input layout/third.blay:$(FACE_PH):$(RB_ORANGE) --input layout/fourth.blay:$(FACE_PH):$(RB_YELLOW) $(_HZ_TILE) --output $@
+
+DERIVED_BLAYS := \
+  layout/square.blay layout/square-light-nougat.blay \
+  layout/square-nougat.blay layout/square-dark-nougat.blay \
+  layout/horizontal.blay layout/horizontal-rot1.blay \
+  layout/horizontal-rot2.blay layout/horizontal-rot3.blay \
+  layout/horizontal-rainbow.blay layout/horizontal-rainbow-rot1.blay \
+  layout/horizontal-rainbow-rot2.blay layout/horizontal-rainbow-rot3.blay \
+  layout/horizontal-rainbow-rot4.blay layout/horizontal-rainbow-rot5.blay \
+  layout/horizontal-rainbow-rot6.blay
+
+blay-compose-all: build $(DERIVED_BLAYS) ## Derive all .blay files (run locally; commit outputs)
+
+# ── blay-render: .blay -> SVG + PNG + WebP ───────────────────────────────────
+# Each .blay is an independent Make target: one run produces all formats.
+# No stamp files — the output files themselves are the targets.
+
+_RENDER = $(CABAL) run --offline blay-render --
+
+_COMPOSE_FLAGS := \
+  --compose-font '$(FONT_PATH)' \
+  --compose-text '$(SUBTITLE)' \
+  --compose-text-size $(TXT_SIZE) \
+  --compose-light-color $(SUBTITLE_LIGHT) \
+  --compose-dark-color $(SUBTITLE_DARK)
+
+# Macro: render a square blay => SVG + PNG + WebP (no subtitle composition)
+# $(1) = stem (e.g. square)
+define render_square
+$(SQ_SVG)/$(1).svg $(SQ_PNG)/$(1).png $(SQ_PNG)/$(1).webp &: layout/$(1).blay $(HS_SOURCES) | build
+	@mkdir -p $(SQ_SVG) $(SQ_PNG)
+	$(_RENDER) \
+	  --input layout/$(1).blay \
+	  --svg-out  $(SQ_SVG)/$(1).svg \
+	  --png-out  $(SQ_PNG)/$(1).png \
+	  --webp-out $(SQ_PNG)/$(1).webp \
+	  --width $(RASTER_W)
+endef
+
+# Macro: render a horizontal blay => SVG + PNG + WebP + light/dark composed variants
+# $(1) = stem (e.g. horizontal)
+define render_horizontal
+$(HZ_SVG)/$(1).svg $(HZ_PNG)/$(1).png $(HZ_PNG)/$(1).webp \
+$(HZ_SVG)/$(1)-full.svg $(HZ_PNG)/$(1)-full.png $(HZ_PNG)/$(1)-full.webp \
+$(HZ_SVG)/$(1)-full-dark.svg $(HZ_PNG)/$(1)-full-dark.png $(HZ_PNG)/$(1)-full-dark.webp &: layout/$(1).blay $(FONT_PATH) $(HS_SOURCES) | build
+	@mkdir -p $(HZ_SVG) $(HZ_PNG)
+	$(_RENDER) \
+	  --input    layout/$(1).blay \
+	  --svg-out  $(HZ_SVG)/$(1).svg \
+	  --png-out  $(HZ_PNG)/$(1).png \
+	  --webp-out $(HZ_PNG)/$(1).webp \
+	  --width $(RASTER_W) \
+	  $(_COMPOSE_FLAGS) \
+	  --compose-svg-out       $(HZ_SVG)/$(1)-full.svg \
+	  --compose-png-out       $(HZ_PNG)/$(1)-full.png \
+	  --compose-webp-out      $(HZ_PNG)/$(1)-full.webp \
+	  --compose-dark-svg-out  $(HZ_SVG)/$(1)-full-dark.svg \
+	  --compose-dark-png-out  $(HZ_PNG)/$(1)-full-dark.png \
+	  --compose-dark-webp-out $(HZ_PNG)/$(1)-full-dark.webp
+endef
+
+# 'square' itself is rendered by the favicon rule below (single grouped target).
+_SQ_DERIVED := square-light-nougat square-nougat square-dark-nougat
+SQ_STEMS    := square $(_SQ_DERIVED)
+HZ_STEMS    := \
+  horizontal horizontal-rot1 horizontal-rot2 horizontal-rot3 \
+  horizontal-rainbow horizontal-rainbow-rot1 horizontal-rainbow-rot2 \
+  horizontal-rainbow-rot3 horizontal-rainbow-rot4 \
+  horizontal-rainbow-rot5 horizontal-rainbow-rot6
+
+$(foreach s,$(_SQ_DERIVED),$(eval $(call render_square,$(s))))
+$(foreach s,$(HZ_STEMS),$(eval $(call render_horizontal,$(s))))
+
+# Favicons — generated alongside the default square PNG
+$(SQ_SVG)/square.svg $(SQ_PNG)/square.png $(SQ_PNG)/square.webp favicon/favicon.ico &: layout/square.blay $(HS_SOURCES) | build
+	@mkdir -p $(SQ_SVG) $(SQ_PNG) favicon
+	$(_RENDER) \
+	  --input    layout/square.blay \
+	  --svg-out  $(SQ_SVG)/square.svg \
+	  --png-out  $(SQ_PNG)/square.png \
+	  --webp-out $(SQ_PNG)/square.webp \
+	  --width $(RASTER_W) \
+	  --favicon-dir favicon
+
+ALL_SQ_OUTPUTS := $(foreach s,$(SQ_STEMS),$(SQ_SVG)/$(s).svg $(SQ_PNG)/$(s).png $(SQ_PNG)/$(s).webp)
+ALL_HZ_OUTPUTS := $(foreach s,$(HZ_STEMS), \
+  $(HZ_SVG)/$(s).svg $(HZ_PNG)/$(s).png $(HZ_PNG)/$(s).webp \
+  $(HZ_SVG)/$(s)-full.svg $(HZ_PNG)/$(s)-full.png $(HZ_PNG)/$(s)-full.webp \
+  $(HZ_SVG)/$(s)-full-dark.svg $(HZ_PNG)/$(s)-full-dark.png $(HZ_PNG)/$(s)-full-dark.webp)
+
+# ── blay-animate: PNG frames -> animated GIF + WebP ──────────────────────────
+
+_ANIMATE = $(CABAL) run --offline blay-animate --
+_SQ_FRAMES       := $(foreach s,$(SQ_STEMS),$(SQ_PNG)/$(s).png)
+_HZ_SKIN_STEMS   := horizontal horizontal-rot1 horizontal-rot2 horizontal-rot3
+_RB_STEMS        := horizontal-rainbow horizontal-rainbow-rot1 horizontal-rainbow-rot2 horizontal-rainbow-rot3 horizontal-rainbow-rot4 horizontal-rainbow-rot5 horizontal-rainbow-rot6
+_HZ_FRAMES       := $(foreach s,$(_HZ_SKIN_STEMS),$(HZ_PNG)/$(s).png)
+_HZ_FULL_FRAMES  := $(foreach s,$(_HZ_SKIN_STEMS),$(HZ_PNG)/$(s)-full.png)
+_HZ_DARK_FRAMES  := $(foreach s,$(_HZ_SKIN_STEMS),$(HZ_PNG)/$(s)-full-dark.png)
+_RB_FRAMES       := $(foreach s,$(_RB_STEMS),$(HZ_PNG)/$(s).png)
+_RB_FULL_FRAMES  := $(foreach s,$(_RB_STEMS),$(HZ_PNG)/$(s)-full.png)
+_RB_DARK_FRAMES  := $(foreach s,$(_RB_STEMS),$(HZ_PNG)/$(s)-full-dark.png)
+
+$(SQ_PNG)/square-animated.gif $(SQ_PNG)/square-animated.webp &: $(_SQ_FRAMES) | build
+	@mkdir -p $(SQ_PNG)
+	$(_ANIMATE) $(foreach f,$(_SQ_FRAMES),--input $(f)) --gif-out $(SQ_PNG)/square-animated.gif --webp-out $(SQ_PNG)/square-animated.webp --anim-ms $(ANIM_MS)
+
+$(HZ_PNG)/horizontal-animated.gif $(HZ_PNG)/horizontal-animated.webp &: $(_HZ_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_HZ_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-animated.gif --webp-out $(HZ_PNG)/horizontal-animated.webp --anim-ms $(ANIM_MS)
+
+$(HZ_PNG)/horizontal-full-animated.gif $(HZ_PNG)/horizontal-full-animated.webp &: $(_HZ_FULL_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_HZ_FULL_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-full-animated.gif --webp-out $(HZ_PNG)/horizontal-full-animated.webp --anim-ms $(ANIM_MS)
+
+$(HZ_PNG)/horizontal-full-dark-animated.gif $(HZ_PNG)/horizontal-full-dark-animated.webp &: $(_HZ_DARK_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_HZ_DARK_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-full-dark-animated.gif --webp-out $(HZ_PNG)/horizontal-full-dark-animated.webp --anim-ms $(ANIM_MS)
+
+$(HZ_PNG)/horizontal-rainbow-animated.gif $(HZ_PNG)/horizontal-rainbow-animated.webp &: $(_RB_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_RB_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-rainbow-animated.gif --webp-out $(HZ_PNG)/horizontal-rainbow-animated.webp --anim-ms $(ANIM_MS)
+
+$(HZ_PNG)/horizontal-rainbow-full-animated.gif $(HZ_PNG)/horizontal-rainbow-full-animated.webp &: $(_RB_FULL_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_RB_FULL_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-rainbow-full-animated.gif --webp-out $(HZ_PNG)/horizontal-rainbow-full-animated.webp --anim-ms $(ANIM_MS)
+
+$(HZ_PNG)/horizontal-rainbow-full-dark-animated.gif $(HZ_PNG)/horizontal-rainbow-full-dark-animated.webp &: $(_RB_DARK_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_RB_DARK_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-rainbow-full-dark-animated.gif --webp-out $(HZ_PNG)/horizontal-rainbow-full-dark-animated.webp --anim-ms $(ANIM_MS)
+
+ALL_ANIMATIONS := \
+  $(SQ_PNG)/square-animated.gif $(SQ_PNG)/square-animated.webp \
+  $(HZ_PNG)/horizontal-animated.gif $(HZ_PNG)/horizontal-animated.webp \
+  $(HZ_PNG)/horizontal-full-animated.gif $(HZ_PNG)/horizontal-full-animated.webp \
+  $(HZ_PNG)/horizontal-full-dark-animated.gif $(HZ_PNG)/horizontal-full-dark-animated.webp \
+  $(HZ_PNG)/horizontal-rainbow-animated.gif $(HZ_PNG)/horizontal-rainbow-animated.webp \
+  $(HZ_PNG)/horizontal-rainbow-full-animated.gif $(HZ_PNG)/horizontal-rainbow-full-animated.webp \
+  $(HZ_PNG)/horizontal-rainbow-full-dark-animated.gif $(HZ_PNG)/horizontal-rainbow-full-dark-animated.webp
+
+# ── brand-gen: design-guide.json + JSON-LD + Elm tokens ──────────────────────
+
+design-guide.json src/Brand/Tokens.elm &: $(HS_SOURCES) | build
+	$(CABAL) run --offline brand-gen -- --elm-tokens-out src/Brand/Tokens.elm
+
+# ── Text outlining (post-process full composed SVGs) ─────────────────────────
+ALL_FULL_SVGS := $(foreach s,$(HZ_STEMS),$(HZ_SVG)/$(s)-full.svg $(HZ_SVG)/$(s)-full-dark.svg)
+
+outline-text: $(ALL_FULL_SVGS) ## Outline subtitle text in composed horizontal SVGs
+	python3 scripts/text_to_path.py '$(FONT_PATH)' $(ALL_FULL_SVGS)
+
+# ── render: all static logo assets ───────────────────────────────────────────
+
+render: $(ALL_SQ_OUTPUTS) $(ALL_HZ_OUTPUTS) $(ALL_ANIMATIONS) design-guide.json favicon/favicon.ico ## Render all .blay files to logo/, favicon/, tokens
 
 # ── elm-pages site ────────────────────────────────────────────────────────────
 
@@ -117,10 +300,10 @@ assets: render ## Copy generated assets into public/ for elm-pages
 	rm -rf public/logo public/favicon public/fonts public/design-guide.json public/design-guide
 	cp -r logo favicon fonts design-guide.json design-guide public/
 
-dev: assets ## Dev server: pipeline → copy assets → elm-pages dev (hot reload)
+dev: assets ## Dev server: pipeline -> copy assets -> elm-pages dev (hot reload)
 	elm-pages dev
 
-site: assets ## Production build: pipeline → copy assets → elm-pages build → dist/
+site: assets ## Production build: pipeline -> copy assets -> elm-pages build -> dist/
 	elm-pages build
 
 deploy: ## Push main branch to trigger GitHub Actions deploy
@@ -135,16 +318,16 @@ test: ## Run Haskell test suite and hlint
 check: ## Run hlint static analysis
 	hlint src tests
 
-format: ## Format all hand-written Elm source files with elm-format
+format: ## Format hand-written Elm source files with elm-format
 	elm-format --yes app/ src/Component/ src/Brand/Colors.elm
 
 # ── Watching ──────────────────────────────────────────────────────────────────
 
-dev-watch: assets ## Build all static assets, then watch with elm-pages dev (hot reload)
+dev-watch: assets ## Build all static assets, then watch with elm-pages dev
 	elm-pages dev
 
-watch: ## Re-run logo-gen on .hs/.cabal changes (requires entr)
-	find src app tests -name '*.hs' -o -name '*.cabal' | entr -r sh -c '$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS) && $(OUTLINE_TEXT)'
+watch: ## Re-run render on .hs/.cabal changes (requires entr)
+	find src app tests -name '*.hs' -o -name '*.cabal' | entr -r $(MAKE) render
 
 watch-elm: ## elm-pages dev server only (assumes assets already in public/)
 	elm-pages dev

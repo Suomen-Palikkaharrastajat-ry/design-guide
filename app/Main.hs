@@ -1,185 +1,254 @@
+-- | blay-render: convert a single .blay file to SVG, PNG, WebP and optionally
+-- compose a subtitle text element below the brick logo.
+--
+-- == Usage
+--
+-- @
+-- blay-render --input FILE.blay
+--             [--svg-out FILE]
+--             [--png-out FILE]  [--webp-out FILE]  [--width N]
+--             [--compose-font PATH  --compose-text TEXT  [--compose-text-size N]
+--              [--compose-light-color RRGGBB]  [--compose-dark-color RRGGBB]
+--              [--compose-svg-out FILE]      [--compose-dark-svg-out FILE]
+--              [--compose-png-out FILE]      [--compose-dark-png-out FILE]
+--              [--compose-webp-out FILE]     [--compose-dark-webp-out FILE]]
+--             [--favicon-dir DIR]
+-- @
+--
+-- Colour arguments are 6-digit hex without '#'.
+-- No brand names, colours, or filenames are hardcoded here.
 module Main where
 
-import Brand.Colors (darkBg)
-import Brand.ElmGen (generateBrandModule)
-import Brand.Json (generateDesignGuide)
-import Brand.JsonLd (generateJsonLd)
-import Control.Monad (forM_)
-import Logo.Animate (assembleGif, assembleWebp)
-import Logo.BrickLayout
-    ( BrickLayout (..)
-    , layoutToSvg
-    , layoutsToHorizontalSvg
-    , readBrickLayout
-    )
-import Logo.Compose (composeLogo)
-import Logo.Config (Config (..), parseConfig)
+import Control.Exception (finally)
+import Control.Monad (forM_, when)
+import Data.Maybe (isJust)
+import qualified Data.Text as T
+import Logo.BrickLayout (layoutToSvg, readBrickLayout)
+import Logo.Compose (composeLogoFrom)
 import Logo.Favicons (generateFavicons)
 import Logo.Raster (exportPng, exportWebp)
-import System.Directory (createDirectoryIfMissing)
+import System.Directory (createDirectoryIfMissing, removeFile)
+import System.Environment (getArgs)
+import System.Exit (exitFailure, exitSuccess)
 import System.FilePath (takeDirectory)
-import qualified Data.Text.IO as TIO
+import System.IO (hPutStrLn, stderr)
+
+-- CLI args
+
+data RenderArgs = RenderArgs
+    { raInput              :: FilePath
+    , raSvgOut             :: Maybe FilePath
+    , raPngOut             :: Maybe FilePath
+    , raWebpOut            :: Maybe FilePath
+    , raWidth              :: Int
+    -- subtitle composition
+    , raComposeFont        :: Maybe FilePath
+    , raComposeText        :: String
+    , raComposeTextSize    :: Int
+    , raComposeLightColor  :: String  -- 6-digit hex, no '#'
+    , raComposeDarkColor   :: String  -- 6-digit hex, no '#'
+    , raComposeSvgOut      :: Maybe FilePath
+    , raComposeDarkSvgOut  :: Maybe FilePath
+    , raComposePngOut      :: Maybe FilePath
+    , raComposeDarkPngOut  :: Maybe FilePath
+    , raComposeWebpOut     :: Maybe FilePath
+    , raComposeDarkWebpOut :: Maybe FilePath
+    -- favicons
+    , raFaviconDir         :: Maybe FilePath
+    }
+
+defaultArgs :: RenderArgs
+defaultArgs = RenderArgs
+    { raInput              = ""
+    , raSvgOut             = Nothing
+    , raPngOut             = Nothing
+    , raWebpOut            = Nothing
+    , raWidth              = 800
+    , raComposeFont        = Nothing
+    , raComposeText        = ""
+    , raComposeTextSize    = 57
+    , raComposeLightColor  = "05131D"
+    , raComposeDarkColor   = "FFFFFF"
+    , raComposeSvgOut      = Nothing
+    , raComposeDarkSvgOut  = Nothing
+    , raComposePngOut      = Nothing
+    , raComposeDarkPngOut  = Nothing
+    , raComposeWebpOut     = Nothing
+    , raComposeDarkWebpOut = Nothing
+    , raFaviconDir         = Nothing
+    }
+
+-- Entry point
 
 main :: IO ()
 main = do
-    cfg <- parseConfig
+    args <- getArgs
+    case args of
+        ("--help" : _) -> putStr usageText >> exitSuccess
+        ("-h"     : _) -> putStr usageText >> exitSuccess
+        _ -> case parseArgs args defaultArgs of
+                Left err -> die err
+                Right ra ->
+                    if null (raInput ra)
+                        then die "--input is required"
+                        else runRender ra
 
-    let sqSvg = cfgSqSvgDir cfg
-        hzSvg = cfgHzSvgDir cfg
-        sqPng = cfgSqPngDir cfg
-        hzPng = cfgHzPngDir cfg
+runRender :: RenderArgs -> IO ()
+runRender ra = do
+    putStrLn $ "==> blay-render: " ++ raInput ra
+    bl <- readBrickLayout (raInput ra)
+    let svgText = T.pack (layoutToSvg bl)
 
-    mapM_ (createDirectoryIfMissing True)
-          [sqSvg, hzSvg, sqPng, hzPng]
+    -- 1. Write raw brick SVG
+    forM_ (raSvgOut ra) $ \p -> writeSvgText p svgText
 
-    runRender cfg
+    -- 2. Raw raster (needs SVG on disk)
+    let rawNeeded = isJust (raPngOut ra) || isJust (raWebpOut ra)
+                 || isJust (raFaviconDir ra)
+    when rawNeeded $
+        withSvgFile (raSvgOut ra) (raInput ra ++ ".raw.tmp.svg") svgText $
+            \svgPath -> do
+                forM_ (raPngOut ra)     $ \p -> exportPng  svgPath p (raWidth ra)
+                forM_ (raWebpOut ra)    $ \p -> exportWebp svgPath p (raWidth ra)
+                forM_ (raFaviconDir ra) $ \d -> generateFavicons svgPath d
+
+    -- 3. Subtitle composition
+    let lightNeeded = isJust (raComposeSvgOut ra)
+                   || isJust (raComposePngOut ra)
+                   || isJust (raComposeWebpOut ra)
+        darkNeeded  = isJust (raComposeDarkSvgOut ra)
+                   || isJust (raComposeDarkPngOut ra)
+                   || isJust (raComposeDarkWebpOut ra)
+    when (lightNeeded || darkNeeded) $ do
+        font <- requireArg "--compose-font" (raComposeFont ra)
+        let subtitleText = T.pack (raComposeText ra)
+            textSize     = raComposeTextSize ra
+
+        when lightNeeded $ do
+            let col = T.pack $ "#" ++ raComposeLightColor ra
+            cSvg <- composeLogoFrom font subtitleText col svgText textSize
+            renderComposeVariant ra cSvg
+                (raComposeSvgOut ra) (raComposePngOut ra) (raComposeWebpOut ra)
+                (raInput ra ++ ".light.tmp.svg")
+
+        when darkNeeded $ do
+            let col = T.pack $ "#" ++ raComposeDarkColor ra
+            cSvg <- composeLogoFrom font subtitleText col svgText textSize
+            renderComposeVariant ra cSvg
+                (raComposeDarkSvgOut ra) (raComposeDarkPngOut ra) (raComposeDarkWebpOut ra)
+                (raInput ra ++ ".dark.tmp.svg")
 
     putStrLn "Done."
 
--- | Read all committed .blay files and produce SVG, PNG, WebP, GIF, favicons,
--- and design-guide outputs.
-runRender :: Config -> IO ()
-runRender cfg = do
-    let sqSvg = cfgSqSvgDir cfg
-        hzSvg = cfgHzSvgDir cfg
-        sqPng = cfgSqPngDir cfg
-        hzPng = cfgHzPngDir cfg
+-- | Write composed SVG and raster it.  Uses the given explicit SVG output path
+-- if available, otherwise a temp path that is deleted after rasterization.
+renderComposeVariant
+    :: RenderArgs
+    -> T.Text        -- composed SVG text
+    -> Maybe FilePath -- svg-out
+    -> Maybe FilePath -- png-out
+    -> Maybe FilePath -- webp-out
+    -> FilePath       -- temp path (used if svg-out is Nothing)
+    -> IO ()
+renderComposeVariant ra cSvg mSvgOut mPngOut mWebpOut tmpPath = do
+    let rasterNeeded = isJust mPngOut || isJust mWebpOut
+    case mSvgOut of
+        Just svgPath -> do
+            writeSvgText svgPath cSvg
+            forM_ mPngOut  $ \p -> exportPng  svgPath p (raWidth ra)
+            forM_ mWebpOut $ \p -> exportWebp svgPath p (raWidth ra)
+        Nothing ->
+            when rasterNeeded $
+                withSvgFile Nothing tmpPath cSvg $ \svgPath -> do
+                    forM_ mPngOut  $ \p -> exportPng  svgPath p (raWidth ra)
+                    forM_ mWebpOut $ \p -> exportWebp svgPath p (raWidth ra)
 
-    -- Square SVGs from the four skin-tone blays.
-    putStrLn "==> logos (square SVGs from .blay)"
-    forM_ squareSkinTones $ \stem -> do
-        bl <- readBlayFile cfg stem
-        writeSvg (sqSvg ++ "/" ++ stem ++ ".svg") (layoutToSvg bl)
+-- | Run an action with the SVG on disk.
+-- If an explicit path is provided, the file is expected to already exist.
+-- Otherwise the SVG text is written to tempPath, the action runs, and the temp
+-- file is deleted afterwards.
+withSvgFile
+    :: Maybe FilePath -- explicit path (already written)
+    -> FilePath       -- temp path to use if no explicit path
+    -> T.Text         -- SVG text to write if explicit path absent
+    -> (FilePath -> IO ())
+    -> IO ()
+withSvgFile (Just p) _    _       action = action p
+withSvgFile Nothing  tmp  svgText action = do
+    writeSvgText tmp svgText
+    action tmp `finally` removeFile tmp
 
-    -- Horizontal skin-tone SVGs: compose 4 square layouts side by side.
-    putStrLn "==> logos (horizontal skin-tone SVGs)"
-    let mkHz stems = do
-            ls <- mapM (readBlayFile cfg) stems
-            return $ layoutsToHorizontalSvg gapBricks (map (withHzPad cfg) ls)
-    hzSvg0 <- mkHz squareSkinTones
-    writeSvg (hzSvg ++ "/horizontal.svg") hzSvg0
-    forM_ (zip [1 :: Int ..] horizontalSkinToneRots) $ \(i, stems) -> do
-        svg <- mkHz stems
-        writeSvg (hzSvg ++ "/horizontal-rot" ++ show i ++ ".svg") svg
+writeSvgText :: FilePath -> T.Text -> IO ()
+writeSvgText p svgText = do
+    createDirectoryIfMissing True (takeDirectory p)
+    writeFile p (T.unpack svgText)
+    putStrLn $ "  Wrote " ++ p
 
-    -- Horizontal rainbow SVGs from committed rainbow .blay files.
-    putStrLn "==> logos (rainbow horizontal SVGs from .blay)"
-    forM_ rainbowHzVariants $ \stem -> do
-        bl <- readBlayFile cfg stem
-        writeSvg (hzSvg ++ "/" ++ stem ++ ".svg") (layoutToSvg bl)
+requireArg :: String -> Maybe a -> IO a
+requireArg flag Nothing  = die $ flag ++ " is required for compose outputs"
+requireArg _    (Just x) = return x
 
-    -- Compose: add subtitle text.
-    putStrLn "==> compose (add subtitle)"
-    forM_ allHorizontalVariants $ \stem -> do
-        composeLogo (cfgFontPath cfg)
-            (hzSvg ++ "/" ++ stem ++ ".svg")
-            (hzSvg ++ "/" ++ stem ++ "-full.svg")
-            (cfgTxtSize cfg) Nothing
-        composeLogo (cfgFontPath cfg)
-            (hzSvg ++ "/" ++ stem ++ ".svg")
-            (hzSvg ++ "/" ++ stem ++ "-full-dark.svg")
-            (cfgTxtSize cfg) (Just darkBg)
+-- Arg parsing
 
-    -- Raster: SVG → PNG + WebP.
-    putStrLn "==> raster (PNG + WebP)"
-    let rasterTargets =
-            [(sqSvg, sqPng, s) | s <- squareSkinTones]
-                ++ [(hzSvg, hzPng, s) | s <- allHorizontalVariants]
-                ++ [(hzSvg, hzPng, s ++ "-full") | s <- allHorizontalVariants]
-                ++ [(hzSvg, hzPng, s ++ "-full-dark") | s <- allHorizontalVariants]
-    forM_ rasterTargets $ \(svgDir, pngDir, stem) -> do
-        exportPng  (svgDir ++ "/" ++ stem ++ ".svg")
-                   (pngDir ++ "/" ++ stem ++ ".png")  (cfgRasterW cfg)
-        exportWebp (svgDir ++ "/" ++ stem ++ ".svg")
-                   (pngDir ++ "/" ++ stem ++ ".webp") (cfgRasterW cfg)
+parseArgs :: [String] -> RenderArgs -> Either String RenderArgs
+parseArgs []           ra = Right ra
+parseArgs [f]          _  = Left $ "missing value for flag: " ++ f
+parseArgs (f : v : rest) ra = case f of
+    "--input"                -> parseArgs rest ra { raInput              = v }
+    "--svg-out"              -> parseArgs rest ra { raSvgOut             = Just v }
+    "--png-out"              -> parseArgs rest ra { raPngOut             = Just v }
+    "--webp-out"             -> parseArgs rest ra { raWebpOut            = Just v }
+    "--width"                -> readInt f v >>= \n -> parseArgs rest ra { raWidth = n }
+    "--compose-font"         -> parseArgs rest ra { raComposeFont        = Just v }
+    "--compose-text"         -> parseArgs rest ra { raComposeText        = v }
+    "--compose-text-size"    -> readInt f v >>= \n -> parseArgs rest ra { raComposeTextSize = n }
+    "--compose-light-color"  -> parseArgs rest ra { raComposeLightColor  = v }
+    "--compose-dark-color"   -> parseArgs rest ra { raComposeDarkColor   = v }
+    "--compose-svg-out"      -> parseArgs rest ra { raComposeSvgOut      = Just v }
+    "--compose-dark-svg-out" -> parseArgs rest ra { raComposeDarkSvgOut  = Just v }
+    "--compose-png-out"      -> parseArgs rest ra { raComposePngOut      = Just v }
+    "--compose-dark-png-out" -> parseArgs rest ra { raComposeDarkPngOut  = Just v }
+    "--compose-webp-out"     -> parseArgs rest ra { raComposeWebpOut     = Just v }
+    "--compose-dark-webp-out"-> parseArgs rest ra { raComposeDarkWebpOut = Just v }
+    "--favicon-dir"          -> parseArgs rest ra { raFaviconDir         = Just v }
+    _                        -> Left $ "unknown flag: " ++ f
 
-    -- Animate: PNG frames → GIF + WebP.
-    putStrLn "==> animate (GIF + WebP)"
-    let mkFrames dir stems ext = map (\s -> dir ++ "/" ++ s ++ ext) stems
-        ms = cfgAnimMs cfg
+readInt :: String -> String -> Either String Int
+readInt flag s = case reads s of
+    [(n, "")] -> Right n
+    _         -> Left $ "expected integer for " ++ flag ++ ", got: " ++ s
 
-    assembleGif  (mkFrames sqPng squareSkinTones ".png")  (sqPng ++ "/square-animated.gif")  ms
-    assembleWebp (mkFrames sqPng squareSkinTones ".png")  (sqPng ++ "/square-animated.webp") ms
+die :: String -> IO a
+die msg = hPutStrLn stderr ("blay-render: " ++ msg) >> exitFailure
 
-    assembleGif  (mkFrames hzPng horizontalSkinTones ".png")  (hzPng ++ "/horizontal-animated.gif")  ms
-    assembleWebp (mkFrames hzPng horizontalSkinTones ".png")  (hzPng ++ "/horizontal-animated.webp") ms
-
-    assembleGif  (mkFrames hzPng horizontalSkinTones "-full.png")
-                 (hzPng ++ "/horizontal-full-animated.gif")  ms
-    assembleWebp (mkFrames hzPng horizontalSkinTones "-full.png")
-                 (hzPng ++ "/horizontal-full-animated.webp") ms
-
-    assembleGif  (mkFrames hzPng horizontalSkinTones "-full-dark.png")
-                 (hzPng ++ "/horizontal-full-dark-animated.gif")  ms
-    assembleWebp (mkFrames hzPng horizontalSkinTones "-full-dark.png")
-                 (hzPng ++ "/horizontal-full-dark-animated.webp") ms
-
-    assembleGif  (mkFrames hzPng rainbowHzVariants ".png")
-                 (hzPng ++ "/horizontal-rainbow-animated.gif")  ms
-    assembleWebp (mkFrames hzPng rainbowHzVariants ".png")
-                 (hzPng ++ "/horizontal-rainbow-animated.webp") ms
-
-    assembleGif  (mkFrames hzPng rainbowHzVariants "-full.png")
-                 (hzPng ++ "/horizontal-rainbow-full-animated.gif")  ms
-    assembleWebp (mkFrames hzPng rainbowHzVariants "-full.png")
-                 (hzPng ++ "/horizontal-rainbow-full-animated.webp") ms
-
-    assembleGif  (mkFrames hzPng rainbowHzVariants "-full-dark.png")
-                 (hzPng ++ "/horizontal-rainbow-full-dark-animated.gif")  ms
-    assembleWebp (mkFrames hzPng rainbowHzVariants "-full-dark.png")
-                 (hzPng ++ "/horizontal-rainbow-full-dark-animated.webp") ms
-
-    -- Favicons.
-    putStrLn "==> favicons"
-    generateFavicons (sqSvg ++ "/square.svg") (cfgFaviconDir cfg)
-
-    -- Design guide JSON + JSON-LD.
-    putStrLn "==> design-guide.json"
-    generateDesignGuide
-    putStrLn "==> design-guide/*.jsonld"
-    generateJsonLd
-
-    -- Elm codegen.
-    putStrLn "==> elm codegen (Brand.Tokens)"
-    let elmBrandSrc = "src/Brand"
-    createDirectoryIfMissing True elmBrandSrc
-    TIO.writeFile (elmBrandSrc <> "/Tokens.elm") generateBrandModule
-    putStrLn "Wrote src/Brand/Tokens.elm"
-
--- ── Helpers ───────────────────────────────────────────────────────────────────
-
-writeSvg :: FilePath -> String -> IO ()
-writeSvg path svg = do
-    createDirectoryIfMissing True (takeDirectory path)
-    writeFile path svg
-    putStrLn $ "  Saved " ++ path
-
-readBlayFile :: Config -> String -> IO BrickLayout
-readBlayFile cfg stem =
-    readBrickLayout (cfgLayoutDir cfg ++ "/" ++ stem ++ ".blay")
-
-withHzPad :: Config -> BrickLayout -> BrickLayout
-withHzPad cfg bl = bl { blPadTop = cfgHzPadTop cfg, blPadBottom = 0 }
-
-gapBricks :: Int
-gapBricks = 2
-
--- ── File lists ────────────────────────────────────────────────────────────────
-
-squareSkinTones :: [String]
-squareSkinTones = ["square", "square-light-nougat", "square-nougat", "square-dark-nougat"]
-
-horizontalSkinToneRots :: [[String]]
-horizontalSkinToneRots =
-    [ drop i squareSkinTones ++ take i squareSkinTones | i <- [1, 2, 3] ]
-
-horizontalSkinTones :: [String]
-horizontalSkinTones = ["horizontal", "horizontal-rot1", "horizontal-rot2", "horizontal-rot3"]
-
-rainbowHzVariants :: [String]
-rainbowHzVariants =
-    "horizontal-rainbow"
-        : ["horizontal-rainbow-rot" ++ show i | i <- [1 .. 6 :: Int]]
-
-allHorizontalVariants :: [String]
-allHorizontalVariants = horizontalSkinTones ++ rainbowHzVariants
+usageText :: String
+usageText = unlines
+    [ "Usage: blay-render --input FILE.blay [OPTIONS]"
+    , ""
+    , "Render a .blay brick layout to SVG, PNG, and/or WebP."
+    , "No brand names, colours, or filenames are hardcoded."
+    , ""
+    , "Core options:"
+    , "  --input FILE            Input .blay file (required)"
+    , "  --svg-out FILE          Write raw brick SVG"
+    , "  --png-out FILE          Write PNG raster"
+    , "  --webp-out FILE         Write WebP raster"
+    , "  --width N               Raster width in pixels      [default: 800]"
+    , ""
+    , "Subtitle composition (all compose-* outputs require --compose-font and"
+    , "--compose-text to be set):"
+    , "  --compose-font PATH         Outfit variable font path"
+    , "  --compose-text TEXT         Subtitle text to embed"
+    , "  --compose-text-size N       Subtitle font size (SVG px) [default: 57]"
+    , "  --compose-light-color HEX   Light subtitle colour       [default: 05131D]"
+    , "  --compose-dark-color HEX    Dark subtitle colour        [default: FFFFFF]"
+    , "  --compose-svg-out FILE      Light composed SVG"
+    , "  --compose-dark-svg-out FILE Dark composed SVG"
+    , "  --compose-png-out FILE      Light composed PNG"
+    , "  --compose-dark-png-out FILE Dark composed PNG"
+    , "  --compose-webp-out FILE     Light composed WebP"
+    , "  --compose-dark-webp-out FILE Dark composed WebP"
+    , ""
+    , "Favicons:"
+    , "  --favicon-dir DIR       Generate favicons from brick SVG into DIR"
+    ]

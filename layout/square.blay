@@ -7,8 +7,7 @@ pad-bottom: 20
 palette:
   . = transparent
   A = f2cd37
-  B = 000000
-  C = 151100
+  B = 151100
 # grid: 16×13
 grid:
 .....|AAAA|AA|.....
@@ -19,8 +18,8 @@ grid:
 .|AAA|BBB|AA|BBB|AAA|.
 .|AAAA|AAAA|AAAA|AA|.
 .|AAA|AAAA|AAAA|AAA|.
-.|AAA|AAAA|AAAA|AAA|.
-.|AAAA|C|AAAA|C|AAAA|.
-.|AAAA|A|CCCC|AAAA|A|.
+.|AA|AAAA|AA|AAAA|AA|.
+.|AAAA|B|AAAA|B|AAAA|.
+.|AAAA|A|BBBB|AAAA|A|.
 ..|AAAA|AAAA|AAA|A|..
 ....|AAA|AAAA|A|....

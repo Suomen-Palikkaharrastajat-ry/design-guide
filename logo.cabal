@@ -7,7 +7,7 @@ build-type:    Simple
 library
   exposed-modules:
     Brand.Colors, Brand.DesignData, Brand.Json, Brand.JsonLd, Brand.ElmGen,
-    Logo.Config, Logo.BrickLayout, Logo.Blockify, Logo.Compose,
+    Logo.BrickLayout, Logo.Blockify, Logo.Compose,
     Logo.Animate, Logo.Raster, Logo.Favicons
   hs-source-dirs: src
   ghc-options: -Wall
@@ -17,9 +17,9 @@ library
     directory, filepath, process, xml-conduit,
     aeson, aeson-pretty, JuicyPixels, containers, vector
 
--- Render committed .blay files → SVG / PNG / WebP / GIF / favicons / tokens.
--- Used in CI and by the Makefile assets target.
-executable logo-gen
+-- Render a single .blay file to SVG / PNG / WebP + optional subtitle composition.
+-- Generic: no filenames or brand colours are hardcoded.
+executable blay-render
   main-is: Main.hs
   hs-source-dirs: app
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
@@ -37,8 +37,8 @@ executable blay-draft
   build-depends:
     base >=4.7 && <5, logo-gen
 
--- Generate derived .blay files from the four master layouts.
--- Run locally before committing; CI only runs logo-gen.
+-- Transform .blay files: recolour and/or tile side-by-side.
+-- No filenames, colours, or project specifics are hardcoded.
 executable blay-compose
   main-is: Compose.hs
   hs-source-dirs: app
@@ -46,6 +46,24 @@ executable blay-compose
   default-language: GHC2021
   build-depends:
     base >=4.7 && <5, logo-gen
+
+-- Assemble pre-rendered PNG frames into animated GIF / WebP.
+executable blay-animate
+  main-is: Animate.hs
+  hs-source-dirs: app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: GHC2021
+  build-depends:
+    base >=4.7 && <5, logo-gen
+
+-- Generate design-guide JSON, JSON-LD, and Elm brand tokens.
+executable brand-gen
+  main-is: BrandGen.hs
+  hs-source-dirs: app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: GHC2021
+  build-depends:
+    base >=4.7 && <5, logo-gen, text, directory, filepath
 
 test-suite logo-gen-tests
   type: exitcode-stdio-1.0

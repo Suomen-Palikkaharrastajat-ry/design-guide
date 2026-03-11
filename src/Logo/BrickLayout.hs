@@ -61,7 +61,6 @@ import Data.Word (Word8)
 import qualified Data.Map.Strict as Map
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import System.Directory (createDirectoryIfMissing)

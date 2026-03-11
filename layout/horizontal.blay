@@ -6,10 +6,10 @@ pad-bottom: 0
 # palette: char = RRGGBB  (. = transparent)
 palette:
   . = transparent
-  A = 73dca1
-  B = 9fc3e9
-  C = 9195ca
-  D = ac78ba
+  A = f2cd37
+  B = f6d7b3
+  C = d09168
+  D = ad6140
   E = 151100
   F = 000000
 # grid: 70×13

@@ -425,7 +425,14 @@ viewTouchExample title isGood paddingLabel btnClass btnText =
                         "text-orange-500 font-semibold text-sm"
                     )
                 ]
-                [ Html.text (if isGood then "✓ " ++ title else "⚠ " ++ title) ]
+                [ Html.text
+                    (if isGood then
+                        "✓ " ++ title
+
+                     else
+                        "⚠ " ++ title
+                    )
+                ]
             ]
         , Html.div [ Attr.class "flex items-center gap-3" ]
             [ Html.button [ Attr.class btnClass ] [ Html.text btnText ]
