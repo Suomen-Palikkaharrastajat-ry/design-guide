@@ -1,4 +1,4 @@
-.PHONY: help all build run assets site dev dev-watch deploy install test check format clean watch watch-elm repl develop shell
+.PHONY: help all build blay-compose assets site dev dev-watch deploy install test check format clean watch watch-elm repl develop shell
 
 # When elm-pages comes from the Nix store the wrapper does not include the
 # package's own node_modules/.bin (elm-optimize-level-2, etc.) in PATH.
@@ -10,19 +10,14 @@ export PATH := $(_ELM_PAGES_ROOT)/lib/node_modules/.bin:$(PATH)
 endif
 
 # ── Pipeline constants ────────────────────────────────────────────────────────
-# These are the single documented source of truth for all tunable parameters.
-# Changing any value here invalidates logo/.stamp and triggers regeneration.
-# They are forwarded verbatim as CLI flags to logo-gen, so no Haskell rebuild
-# is needed when you change them.
+# Single documented source of truth for all tunable parameters.
+# Forwarded verbatim as CLI flags to logo-gen; no Haskell rebuild needed when
+# changing these values.
 
-SOURCE_SVG   := source.svg
 FONT_PATH    := fonts/Outfit-VariableFont_wght.ttf
 
-SQ_PX        := 14          # Square blockify target raster width (px)
-HZ_PX        := 62          # Horizontal blockify target raster width (px)
 BLK_W        := 24          # Brick SVG unit width
 BLK_H        := 20          # Brick SVG unit height
-PAD          := 1           # Transparent column padding each side
 SQ_PAD_V     := 20          # Vertical padding for square logos
 HZ_PAD_TOP   := 20          # Top padding for horizontal logos
 TXT_SIZE     := 57          # Subtitle font size (SVG units)
@@ -30,23 +25,23 @@ ANIM_MS      := 10000       # Animation frame duration (ms)
 RASTER_W     := 800         # PNG/WebP export width (px)
 
 LOGO_GEN_ARGS := \
-  --source     $(SOURCE_SVG) \
   --font-path  $(FONT_PATH) \
-  --sq-px      $(SQ_PX) \
-  --hz-px      $(HZ_PX) \
   --blk-w      $(BLK_W) \
   --blk-h      $(BLK_H) \
-  --pad        $(PAD) \
   --sq-pad-v   $(SQ_PAD_V) \
   --hz-pad-top $(HZ_PAD_TOP) \
   --txt-size   $(TXT_SIZE) \
   --anim-ms    $(ANIM_MS) \
   --raster-w   $(RASTER_W)
 
-# Haskell source files – stamp depends on these so code changes also invalidate it
+BLAY_COMPOSE_ARGS := \
+  --hz-pad-top $(HZ_PAD_TOP) \
+  --gap-studs  2
+
+# Haskell source files – stamp depends on these so code changes invalidate it
 HS_SOURCES := $(shell find src app -name '*.hs') logo.cabal $(wildcard cabal.project*)
 
-LOGO_STAMP  := logo/.stamp
+# All committed .blay files (masters + derived outputs of blay-compose)
 BLAY_FILES  := $(wildcard layout/*.blay)
 BLAY_STAMP  := logo/.blay-stamp
 
@@ -81,37 +76,36 @@ all: site ## Build everything: Haskell pipeline → assets → elm-pages → dis
 
 # ── Haskell pipeline ─────────────────────────────────────────────────────────
 
-build: ## Compile Haskell executable (no run)
+build: ## Compile all Haskell executables (no run)
 	$(CABAL) build --offline
 
-# Incremental: only re-runs logo-gen when source.svg, fonts/, Haskell source,
-# or any constant in this Makefile has changed.
-$(LOGO_STAMP): $(SOURCE_SVG) $(FONT_PATH) $(HS_SOURCES) Makefile scripts/text_to_path.py
-	$(CABAL) build --offline
-	$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS)
-	$(OUTLINE_TEXT)
-	@mkdir -p logo
-	touch $(LOGO_STAMP)
+# ── blay-compose (developer step, run locally before committing) ──────────────
+#
+# Reads layout/first.blay … fourth.blay (master layouts, human-authored) and
+# writes all derived .blay files: square skin-tone variants + rainbow horizontals.
+# Commit the outputs so CI only needs logo-gen.
+#
+# To draft a new master from source SVG use:
+#   cabal run --offline blay-draft -- --source source.svg --output layout/first.blay
 
-run: $(LOGO_STAMP) ## Haskell pipeline: generate logo/, favicon/, brand.json, Brand.Generated.elm (incremental)
+blay-compose: build ## Generate derived .blay files from masters (run locally before committing)
+	$(CABAL) run --offline blay-compose -- $(BLAY_COMPOSE_ARGS)
 
-run-force: ## Force-run logo-gen regardless of stamp
-	$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS)
-	$(OUTLINE_TEXT)
+# ── logo-gen render (CI-safe: reads only committed .blay files) ───────────────
 
-# Incremental: only re-runs logo-gen (stage 2) when .blay files, fonts, Haskell
-# source, or Makefile change.  rsvg-convert blockification is skipped entirely.
+# Incremental: only re-renders when .blay files, fonts, Haskell source, or
+# Makefile constants change.
 $(BLAY_STAMP): $(BLAY_FILES) $(FONT_PATH) $(HS_SOURCES) Makefile scripts/text_to_path.py
 	$(CABAL) build --offline
-	$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS) --from-blay true
+	$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS)
 	$(OUTLINE_TEXT)
 	@mkdir -p logo
 	touch $(BLAY_STAMP)
 
-render-blay: $(BLAY_STAMP) ## Re-render from .blay files (stamp-based; skips rasterisation)
+render: $(BLAY_STAMP) ## Render .blay files → logo/, favicon/, design tokens (incremental)
 
-render-blay-force: build ## Force re-render from .blay files regardless of stamp
-	$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS) --from-blay true
+render-force: build ## Force re-render from .blay files regardless of stamp
+	$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS)
 	$(OUTLINE_TEXT)
 
 # ── elm-pages site ────────────────────────────────────────────────────────────
@@ -119,11 +113,7 @@ render-blay-force: build ## Force re-render from .blay files regardless of stamp
 install: ## Install npm deps and resolve Elm packages (run once after checkout)
 	npm install
 
-assets: run ## Copy generated assets into public/ for elm-pages
-	rm -rf public/logo public/favicon public/fonts public/design-guide.json public/design-guide
-	cp -r logo favicon fonts design-guide.json design-guide public/
-
-assets-from-blay: render-blay ## CI: copy assets built from committed .blay files (skips rasterisation)
+assets: render ## Copy generated assets into public/ for elm-pages
 	rm -rf public/logo public/favicon public/fonts public/design-guide.json public/design-guide
 	cp -r logo favicon fonts design-guide.json design-guide public/
 
@@ -153,7 +143,7 @@ format: ## Format all hand-written Elm source files with elm-format
 dev-watch: assets ## Build all static assets, then watch with elm-pages dev (hot reload)
 	elm-pages dev
 
-watch: ## Re-run Haskell pipeline on .hs/.cabal changes (requires entr)
+watch: ## Re-run logo-gen on .hs/.cabal changes (requires entr)
 	find src app tests -name '*.hs' -o -name '*.cabal' | entr -r sh -c '$(CABAL) run --offline logo-gen -- $(LOGO_GEN_ARGS) && $(OUTLINE_TEXT)'
 
 watch-elm: ## elm-pages dev server only (assumes assets already in public/)
@@ -168,10 +158,10 @@ repl: ## Open GHCi REPL
 
 clean: ## Remove all generated files, build artifacts, and dist/
 	$(CABAL) clean
-	rm -rf design/ logo/ favicon/ brand.json design-guide.json design-guide/ __pycache__
+	rm -rf logo/ favicon/ design-guide.json design-guide/ __pycache__
 	rm -rf dist/ .elm-pages/
 	rm -f src/Brand/Generated.elm src/Brand/Tokens.elm
-	rm -rf public/brand.json public/design-guide.json public/design-guide public/logo public/favicon public/fonts
+	rm -rf public/design-guide.json public/design-guide public/logo public/favicon public/fonts
 
 # ── Devenv ────────────────────────────────────────────────────────────────────
 

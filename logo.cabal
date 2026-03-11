@@ -7,7 +7,7 @@ build-type:    Simple
 library
   exposed-modules:
     Brand.Colors, Brand.DesignData, Brand.Json, Brand.JsonLd, Brand.ElmGen,
-    Logo.Config, Logo.Designs, Logo.BrickLayout, Logo.Blockify, Logo.Compose,
+    Logo.Config, Logo.BrickLayout, Logo.Blockify, Logo.Compose,
     Logo.Animate, Logo.Raster, Logo.Favicons
   hs-source-dirs: src
   ghc-options: -Wall
@@ -17,6 +17,8 @@ library
     directory, filepath, process, xml-conduit,
     aeson, aeson-pretty, JuicyPixels, containers, vector
 
+-- Render committed .blay files → SVG / PNG / WebP / GIF / favicons / tokens.
+-- Used in CI and by the Makefile assets target.
 executable logo-gen
   main-is: Main.hs
   hs-source-dirs: app
@@ -25,12 +27,32 @@ executable logo-gen
   build-depends:
     base >=4.7 && <5, logo-gen, text, directory, filepath
 
+-- Draft a new .blay file from a source SVG (rasterise → blockify).
+-- Local developer tool only; not used in CI.
+executable blay-draft
+  main-is: Draft.hs
+  hs-source-dirs: app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: GHC2021
+  build-depends:
+    base >=4.7 && <5, logo-gen
+
+-- Generate derived .blay files from the four master layouts.
+-- Run locally before committing; CI only runs logo-gen.
+executable blay-compose
+  main-is: Compose.hs
+  hs-source-dirs: app
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language: GHC2021
+  build-depends:
+    base >=4.7 && <5, logo-gen
+
 test-suite logo-gen-tests
   type: exitcode-stdio-1.0
   main-is: TestSuite.hs
   other-modules:
     Brand.ColorsSpec, Brand.ElmGenSpec, Brand.JsonSpec,
-    Logo.BlockifySpec, Logo.DesignsSpec
+    Logo.BlockifySpec
   hs-source-dirs: tests
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language: GHC2021

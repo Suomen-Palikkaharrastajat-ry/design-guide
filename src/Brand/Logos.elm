@@ -66,26 +66,6 @@ squareVariants =
       , webpUrl = Just "/logo/square/png/square-animated.webp"
       , gifUrl = Just "/logo/square/png/square-animated.gif"
       }
-    , { id = "minifig-colorful"
-      , description = "Minifig head with face divided into horizontal skin-tone bands"
-      , theme = "light"
-      , animated = False
-      , withText = False
-      , svgUrl = Just "/logo/square/svg/minifig-colorful.svg"
-      , pngUrl = Just "/logo/square/png/minifig-colorful.png"
-      , webpUrl = Just "/logo/square/png/minifig-colorful.webp"
-      , gifUrl = Nothing
-      }
-    , { id = "minifig-rainbow"
-      , description = "Minifig head with face divided into horizontal rainbow bands"
-      , theme = "light"
-      , animated = False
-      , withText = False
-      , svgUrl = Just "/logo/square/svg/minifig-rainbow.svg"
-      , pngUrl = Just "/logo/square/png/minifig-rainbow.png"
-      , webpUrl = Just "/logo/square/png/minifig-rainbow.webp"
-      , gifUrl = Nothing
-      }
     ]
 
 

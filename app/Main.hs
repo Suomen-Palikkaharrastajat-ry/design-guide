@@ -4,19 +4,16 @@ import Brand.Colors (darkBg)
 import Brand.ElmGen (generateBrandModule)
 import Brand.Json (generateDesignGuide)
 import Brand.JsonLd (generateJsonLd)
-import Control.Monad (forM_, when)
+import Control.Monad (forM_)
 import Logo.Animate (assembleGif, assembleWebp)
 import Logo.BrickLayout
     ( BrickLayout (..)
     , layoutToSvg
     , layoutsToHorizontalSvg
-    , parseBrickLayout
-    , writeBrickLayout
+    , readBrickLayout
     )
-import Logo.Blockify (blockifyToLayout)
 import Logo.Compose (composeLogo)
 import Logo.Config (Config (..), parseConfig)
-import Logo.Designs (generateAllDesigns)
 import Logo.Favicons (generateFavicons)
 import Logo.Raster (exportPng, exportWebp)
 import System.Directory (createDirectoryIfMissing)
@@ -31,54 +28,31 @@ main = do
         hzSvg = cfgHzSvgDir cfg
         sqPng = cfgSqPngDir cfg
         hzPng = cfgHzPngDir cfg
-        dDir  = cfgDesignDir cfg
-        lDir  = cfgLayoutDir cfg
 
     mapM_ (createDirectoryIfMissing True)
-          [dDir, lDir, sqSvg, hzSvg, sqPng, hzPng]
+          [sqSvg, hzSvg, sqPng, hzPng]
 
-    -- Stage 1 (skip with --from-blay true)
-    when (not (cfgFromBlay cfg)) $ do
-        putStrLn "==> designs"
-        generateAllDesigns (cfgSourceSvg cfg) dDir
-        runStage1 cfg
-
-    -- Stage 2 always runs (reads .blay files produced by Stage 1)
-    runStage2 cfg
+    runRender cfg
 
     putStrLn "Done."
 
--- | Stage 1: rasterise design SVGs → .blay files.
--- Skip this with @--from-blay true@ to re-render after hand-editing a .blay.
-runStage1 :: Config -> IO ()
-runStage1 cfg = do
-    let dDir = cfgDesignDir cfg
-        lDir = cfgLayoutDir cfg
-    putStrLn "==> logos (stage 1: blockify → .blay)"
-    forM_ allSingleVariants $ \stem -> do
-        let (px, pTop, pBot) = variantPadding cfg stem
-        layout <- blockifyToLayout
-            (dDir ++ "/" ++ stem ++ ".svg")
-            px (cfgBlkW cfg) (cfgBlkH cfg)
-            (cfgPad cfg) pTop pBot
-        writeBrickLayout (lDir ++ "/" ++ stem ++ ".blay") layout
-
--- | Stage 2: .blay → SVG → PNG/WebP → GIF/WebP → favicons + codegen.
-runStage2 :: Config -> IO ()
-runStage2 cfg = do
+-- | Read all committed .blay files and produce SVG, PNG, WebP, GIF, favicons,
+-- and design-guide outputs.
+runRender :: Config -> IO ()
+runRender cfg = do
     let sqSvg = cfgSqSvgDir cfg
         hzSvg = cfgHzSvgDir cfg
         sqPng = cfgSqPngDir cfg
         hzPng = cfgHzPngDir cfg
 
-    -- 2a. Square SVGs from individual .blay files
-    putStrLn "==> logos (stage 2a: .blay → square SVGs)"
-    forM_ squareVariants $ \stem -> do
+    -- Square SVGs from the four skin-tone blays.
+    putStrLn "==> logos (square SVGs from .blay)"
+    forM_ squareSkinTones $ \stem -> do
         bl <- readBlayFile cfg stem
         writeSvg (sqSvg ++ "/" ++ stem ++ ".svg") (layoutToSvg bl)
 
-    -- 2b. Horizontal skin-tone SVGs: compose 4 square layouts side by side
-    putStrLn "==> logos (stage 2b: 4 × .blay → horizontal skin-tone SVGs)"
+    -- Horizontal skin-tone SVGs: compose 4 square layouts side by side.
+    putStrLn "==> logos (horizontal skin-tone SVGs)"
     let mkHz stems = do
             ls <- mapM (readBlayFile cfg) stems
             return $ layoutsToHorizontalSvg gapBricks (map (withHzPad cfg) ls)
@@ -88,13 +62,13 @@ runStage2 cfg = do
         svg <- mkHz stems
         writeSvg (hzSvg ++ "/horizontal-rot" ++ show i ++ ".svg") svg
 
-    -- 2c. Rainbow horizontal SVGs from their own .blay files
-    putStrLn "==> logos (stage 2c: rainbow .blay → horizontal SVGs)"
+    -- Horizontal rainbow SVGs from committed rainbow .blay files.
+    putStrLn "==> logos (rainbow horizontal SVGs from .blay)"
     forM_ rainbowHzVariants $ \stem -> do
         bl <- readBlayFile cfg stem
         writeSvg (hzSvg ++ "/" ++ stem ++ ".svg") (layoutToSvg bl)
 
-    -- Compose: add subtitle text
+    -- Compose: add subtitle text.
     putStrLn "==> compose (add subtitle)"
     forM_ allHorizontalVariants $ \stem -> do
         composeLogo (cfgFontPath cfg)
@@ -106,10 +80,10 @@ runStage2 cfg = do
             (hzSvg ++ "/" ++ stem ++ "-full-dark.svg")
             (cfgTxtSize cfg) (Just darkBg)
 
-    -- Raster: SVG → PNG + WebP
+    -- Raster: SVG → PNG + WebP.
     putStrLn "==> raster (PNG + WebP)"
     let rasterTargets =
-            [(sqSvg, sqPng, s) | s <- squareVariants]
+            [(sqSvg, sqPng, s) | s <- squareSkinTones]
                 ++ [(hzSvg, hzPng, s) | s <- allHorizontalVariants]
                 ++ [(hzSvg, hzPng, s ++ "-full") | s <- allHorizontalVariants]
                 ++ [(hzSvg, hzPng, s ++ "-full-dark") | s <- allHorizontalVariants]
@@ -119,7 +93,7 @@ runStage2 cfg = do
         exportWebp (svgDir ++ "/" ++ stem ++ ".svg")
                    (pngDir ++ "/" ++ stem ++ ".webp") (cfgRasterW cfg)
 
-    -- Animate: PNG frames → GIF + WebP
+    -- Animate: PNG frames → GIF + WebP.
     putStrLn "==> animate (GIF + WebP)"
     let mkFrames dir stems ext = map (\s -> dir ++ "/" ++ s ++ ext) stems
         ms = cfgAnimMs cfg
@@ -155,17 +129,17 @@ runStage2 cfg = do
     assembleWebp (mkFrames hzPng rainbowHzVariants "-full-dark.png")
                  (hzPng ++ "/horizontal-rainbow-full-dark-animated.webp") ms
 
-    -- Favicons
+    -- Favicons.
     putStrLn "==> favicons"
     generateFavicons (sqSvg ++ "/square.svg") (cfgFaviconDir cfg)
 
-    -- Design guide JSON + JSON-LD
+    -- Design guide JSON + JSON-LD.
     putStrLn "==> design-guide.json"
     generateDesignGuide
     putStrLn "==> design-guide/*.jsonld"
     generateJsonLd
 
-    -- Elm codegen
+    -- Elm codegen.
     putStrLn "==> elm codegen (Brand.Tokens)"
     let elmBrandSrc = "src/Brand"
     createDirectoryIfMissing True elmBrandSrc
@@ -181,19 +155,11 @@ writeSvg path svg = do
     putStrLn $ "  Saved " ++ path
 
 readBlayFile :: Config -> String -> IO BrickLayout
-readBlayFile cfg stem = do
-    txt <- TIO.readFile (cfgLayoutDir cfg ++ "/" ++ stem ++ ".blay")
-    case parseBrickLayout txt of
-        Left  err -> error $ "readBlayFile: " ++ stem ++ ".blay: " ++ err
-        Right bl  -> return bl
+readBlayFile cfg stem =
+    readBrickLayout (cfgLayoutDir cfg ++ "/" ++ stem ++ ".blay")
 
 withHzPad :: Config -> BrickLayout -> BrickLayout
 withHzPad cfg bl = bl { blPadTop = cfgHzPadTop cfg, blPadBottom = 0 }
-
-variantPadding :: Config -> String -> (Int, Int, Int)
-variantPadding cfg stem
-    | stem `elem` squareVariants = (cfgSqPx cfg, cfgSqPadV cfg, cfgSqPadV cfg)
-    | otherwise                  = (cfgHzPx cfg, cfgHzPadTop cfg, 0)
 
 gapBricks :: Int
 gapBricks = 2
@@ -202,9 +168,6 @@ gapBricks = 2
 
 squareSkinTones :: [String]
 squareSkinTones = ["square", "square-light-nougat", "square-nougat", "square-dark-nougat"]
-
-squareVariants :: [String]
-squareVariants = squareSkinTones ++ ["minifig-colorful", "minifig-rainbow"]
 
 horizontalSkinToneRots :: [[String]]
 horizontalSkinToneRots =
@@ -220,7 +183,3 @@ rainbowHzVariants =
 
 allHorizontalVariants :: [String]
 allHorizontalVariants = horizontalSkinTones ++ rainbowHzVariants
-
--- All variants that are individually blockified (have their own .blay file)
-allSingleVariants :: [String]
-allSingleVariants = squareVariants ++ rainbowHzVariants

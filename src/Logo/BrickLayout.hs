@@ -31,6 +31,7 @@ module Logo.BrickLayout
       BrickGeom (..)
     , mkBrickGeom
       -- * Layout type
+    , RGB
     , BrickColor
     , BrickRow
     , BrickLayout (..)
@@ -43,6 +44,9 @@ module Logo.BrickLayout
     , parseBrickLayout
     , writeBrickLayout
     , readBrickLayout
+      -- * Layout manipulation
+    , recolorLayout
+    , composeLayouts
       -- * SVG rendering
     , layoutToSvg
     , layoutsToHorizontalSvg
@@ -50,14 +54,16 @@ module Logo.BrickLayout
 
 import Codec.Picture (Image (..), PixelRGBA8 (..), pixelAt)
 import Data.Char (digitToInt, isHexDigit)
-import Data.List (intercalate, nub, sortBy)
+import Data.List (intercalate, nub, sortBy, transpose)
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import Data.Word (Word8)
 import qualified Data.Map.Strict as Map
+import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import System.Directory (createDirectoryIfMissing)
 import System.FilePath (takeDirectory)
 import Text.Printf (printf)
@@ -205,7 +211,7 @@ exportBrickLayout bl =
 writeBrickLayout :: FilePath -> BrickLayout -> IO ()
 writeBrickLayout path bl = do
     createDirectoryIfMissing True (takeDirectory path)
-    TIO.writeFile path (exportBrickLayout bl)
+    BS.writeFile path (encodeUtf8 (exportBrickLayout bl))
     putStrLn $ "  Saved " ++ path
 
 -- ── ASCII parsing ─────────────────────────────────────────────────────────────
@@ -297,13 +303,40 @@ parseRow palette l = mapM parseSeg (T.splitOn "|" l)
                         Just rgb -> Right (T.length seg, Just rgb)
                     else Left $ "mixed chars in segment: " ++ T.unpack seg
 
--- | Read and parse a @.blay@ file.
+-- | Read and parse a @.blay@ file (always decoded as UTF-8).
 readBrickLayout :: FilePath -> IO BrickLayout
 readBrickLayout path = do
-    txt <- TIO.readFile path
+    txt <- decodeUtf8 <$> BS.readFile path
     case parseBrickLayout txt of
         Left err -> error $ "readBrickLayout: " ++ path ++ ": " ++ err
         Right bl -> return bl
+
+-- ── Layout manipulation ───────────────────────────────────────────────────────
+
+-- | Replace every brick cell whose colour matches @old@ with @new@.
+-- Transparent cells are unaffected.
+recolorLayout :: RGB -> RGB -> BrickLayout -> BrickLayout
+recolorLayout old new bl =
+    bl { blRows = map (map recolorCell) (blRows bl) }
+  where
+    recolorCell (n, Just c)  | c == old = (n, Just new)
+    recolorCell cell                    = cell
+
+-- | Compose multiple 'BrickLayout' values side-by-side into a single layout,
+-- inserting @gapStuds@ transparent stud-columns between each adjacent pair.
+-- All layouts must share the same @blkW@, @blkH@, and row count.
+-- The result has @blPadBottom = 0@; @blPadTop@ is taken from the first layout.
+composeLayouts :: Int -> [BrickLayout] -> BrickLayout
+composeLayouts _        []         = error "composeLayouts: empty list"
+composeLayouts _        [bl]       = bl
+composeLayouts gapStuds bls@(bl0 : _) =
+    bl0
+        { blPadBottom = 0
+        , blRows      = map composeRow (transpose (map blRows bls))
+        }
+  where
+    gap        = [(gapStuds, Nothing)]
+    composeRow = foldr1 (\r acc -> r ++ gap ++ acc)
 
 -- ── SVG rendering ─────────────────────────────────────────────────────────────
 

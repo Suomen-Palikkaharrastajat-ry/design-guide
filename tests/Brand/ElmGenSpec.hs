@@ -18,8 +18,8 @@ tests =
     testGroup
         "Brand.ElmGen"
         [ testCase "module header is correct" $
-            assertBool "starts with module Brand.Generated exposing (..)" $
-                "module Brand.Generated exposing (..)" `T.isPrefixOf` generateBrandModule
+            assertBool "starts with module Brand.Tokens exposing (..)" $
+                "module Brand.Tokens exposing (..)" `T.isPrefixOf` generateBrandModule
         , testCase "contains associationName" $
             assertBool "has association name" $
                 "Suomen Palikkaharrastajat ry" `T.isInfixOf` generateBrandModule

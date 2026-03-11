@@ -15,29 +15,18 @@ import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
 import System.IO (hPutStr, hPutStrLn, stderr)
 
--- | All tunable constants for the logo pipeline.
+-- | All tunable constants for the logo render pipeline.
 data Config = Config
     { -- ── Inputs ────────────────────────────────────────────────────────────
-      cfgSourceSvg  :: FilePath
-      -- ^ Source minifig SVG (default: @source.svg@)
-    , cfgFontPath   :: FilePath
+      cfgFontPath   :: FilePath
       -- ^ Outfit variable font used in full logos
       --   (default: @fonts/Outfit-VariableFont_wght.ttf@)
-
-    -- ── Rasterisation widths (pixels) ─────────────────────────────────────
-    , cfgSqPx       :: Int
-      -- ^ Target raster width for square blockify pass (default: 14)
-    , cfgHzPx       :: Int
-      -- ^ Target raster width for horizontal blockify pass (default: 62)
 
     -- ── Brick geometry ────────────────────────────────────────────────────
     , cfgBlkW       :: Int
       -- ^ Brick SVG unit width in SVG units (default: 24)
     , cfgBlkH       :: Int
       -- ^ Brick SVG unit height in SVG units (default: 20)
-    , cfgPad        :: Int
-      -- ^ Transparent column padding on each side of blockified image
-      --   (default: 1)
 
     -- ── Logo layout ───────────────────────────────────────────────────────
     , cfgSqPadV     :: Int
@@ -58,44 +47,31 @@ data Config = Config
       -- ^ PNG/WebP export width in pixels (default: 800)
 
     -- ── Output directories ────────────────────────────────────────────────
-    , cfgDesignDir  :: FilePath -- ^ Raw design SVGs          (default: @design@)
-    , cfgLayoutDir  :: FilePath -- ^ Intermediate .blay files (default: @layout@)
-    , cfgSqSvgDir   :: FilePath -- ^ Square brick SVGs        (default: @logo/square/svg@)
-    , cfgHzSvgDir   :: FilePath -- ^ Horizontal brick SVGs    (default: @logo/horizontal/svg@)
-    , cfgSqPngDir   :: FilePath -- ^ Square raster outputs    (default: @logo/square/png@)
-    , cfgHzPngDir   :: FilePath -- ^ Horizontal raster outputs(default: @logo/horizontal/png@)
-    , cfgFaviconDir :: FilePath -- ^ Favicon outputs          (default: @favicon@)
-
-    -- ── Mode ──────────────────────────────────────────────────────────────
-    , cfgFromBlay   :: Bool
-      -- ^ Skip Stage 1 (rasterise → .blay) and read existing .blay files
-      --   directly.  Use this after hand-editing a .blay file to re-render
-      --   without re-running the slow rasterisation step.  (flag: @--from-blay@)
+    , cfgLayoutDir  :: FilePath -- ^ Committed .blay files         (default: @layout@)
+    , cfgSqSvgDir   :: FilePath -- ^ Square brick SVGs             (default: @logo/square/svg@)
+    , cfgHzSvgDir   :: FilePath -- ^ Horizontal brick SVGs         (default: @logo/horizontal/svg@)
+    , cfgSqPngDir   :: FilePath -- ^ Square raster outputs         (default: @logo/square/png@)
+    , cfgHzPngDir   :: FilePath -- ^ Horizontal raster outputs     (default: @logo/horizontal/png@)
+    , cfgFaviconDir :: FilePath -- ^ Favicon outputs               (default: @favicon@)
     } deriving (Show)
 
 -- | Default configuration matching the original hardcoded constants.
 defaultConfig :: Config
 defaultConfig = Config
-    { cfgSourceSvg  = "source.svg"
-    , cfgFontPath   = "fonts/Outfit-VariableFont_wght.ttf"
-    , cfgSqPx       = 14
-    , cfgHzPx       = 62
+    { cfgFontPath   = "fonts/Outfit-VariableFont_wght.ttf"
     , cfgBlkW       = 24
     , cfgBlkH       = 20
-    , cfgPad        = 1
     , cfgSqPadV     = 20
     , cfgHzPadTop   = 20
     , cfgTxtSize    = 57
     , cfgAnimMs     = 10000
     , cfgRasterW    = 800
-    , cfgDesignDir  = "design"
     , cfgLayoutDir  = "layout"
     , cfgSqSvgDir   = "logo/square/svg"
     , cfgHzSvgDir   = "logo/horizontal/svg"
     , cfgSqPngDir   = "logo/square/png"
     , cfgHzPngDir   = "logo/horizontal/png"
     , cfgFaviconDir = "favicon"
-    , cfgFromBlay   = False
     }
 
 -- | Parse CLI args and return a Config, or print usage and exit.
@@ -121,29 +97,20 @@ applyAll (flag : val : rest) cfg =
 
 applyOne :: String -> String -> Config -> Either String Config
 applyOne flag val cfg = case flag of
-    "--source"      -> Right cfg { cfgSourceSvg  = val }
     "--font-path"   -> Right cfg { cfgFontPath   = val }
-    "--sq-px"       -> int $ \n -> cfg { cfgSqPx      = n }
-    "--hz-px"       -> int $ \n -> cfg { cfgHzPx      = n }
     "--blk-w"       -> int $ \n -> cfg { cfgBlkW      = n }
     "--blk-h"       -> int $ \n -> cfg { cfgBlkH      = n }
-    "--pad"         -> int $ \n -> cfg { cfgPad       = n }
     "--sq-pad-v"    -> int $ \n -> cfg { cfgSqPadV    = n }
     "--hz-pad-top"  -> int $ \n -> cfg { cfgHzPadTop  = n }
     "--txt-size"    -> int $ \n -> cfg { cfgTxtSize   = n }
     "--anim-ms"     -> int $ \n -> cfg { cfgAnimMs    = n }
     "--raster-w"    -> int $ \n -> cfg { cfgRasterW   = n }
-    "--design-dir"  -> Right cfg { cfgDesignDir  = val }
     "--layout-dir"  -> Right cfg { cfgLayoutDir  = val }
     "--sq-svg-dir"  -> Right cfg { cfgSqSvgDir   = val }
     "--hz-svg-dir"  -> Right cfg { cfgHzSvgDir   = val }
     "--sq-png-dir"  -> Right cfg { cfgSqPngDir   = val }
     "--hz-png-dir"  -> Right cfg { cfgHzPngDir   = val }
     "--favicon-dir" -> Right cfg { cfgFaviconDir = val }
-    "--from-blay"   -> case val of
-        "true"  -> Right cfg { cfgFromBlay = True }
-        "false" -> Right cfg { cfgFromBlay = False }
-        _       -> Left $ "--from-blay expects true/false, got: " ++ val
     _               -> Left $ "unknown flag: " ++ flag
   where
     int f = case reads val of
@@ -155,25 +122,22 @@ usage :: String
 usage = unlines
     [ "Usage: logo-gen [OPTIONS]"
     , ""
+    , "Render committed .blay files to SVG, PNG, WebP, GIF, favicons, and"
+    , "design tokens.  Run blay-compose first to generate the .blay inputs."
+    , ""
     , "Options (all have defaults; see defaultConfig):"
-    , "  --source PATH       Source minifig SVG          [default: source.svg]"
     , "  --font-path PATH    Outfit variable font         [default: fonts/Outfit-VariableFont_wght.ttf]"
-    , "  --sq-px N           Square blockify target px    [default: 14]"
-    , "  --hz-px N           Horizontal blockify px       [default: 62]"
     , "  --blk-w N           Brick SVG unit width         [default: 24]"
     , "  --blk-h N           Brick SVG unit height        [default: 20]"
-    , "  --pad N             Column padding each side     [default: 1]"
     , "  --sq-pad-v N        Square logo vertical pad     [default: 20]"
     , "  --hz-pad-top N      Horizontal logo top pad      [default: 20]"
     , "  --txt-size N        Subtitle font size (SVG px)  [default: 57]"
     , "  --anim-ms N         Animation frame duration ms  [default: 10000]"
     , "  --raster-w N        PNG/WebP export width px     [default: 800]"
-    , "  --design-dir PATH   Raw design SVG output dir    [default: design]"
-  , "  --layout-dir PATH   Intermediate .blay files dir [default: layout]"
+    , "  --layout-dir PATH   Committed .blay files dir    [default: layout]"
     , "  --sq-svg-dir PATH   Square SVG output dir        [default: logo/square/svg]"
     , "  --hz-svg-dir PATH   Horizontal SVG output dir    [default: logo/horizontal/svg]"
     , "  --sq-png-dir PATH   Square PNG/WebP output dir   [default: logo/square/png]"
     , "  --hz-png-dir PATH   Horizontal PNG/WebP dir      [default: logo/horizontal/png]"
     , "  --favicon-dir PATH  Favicon output dir           [default: favicon]"
-  , "  --from-blay true    Skip stage 1; read existing .blay files and re-render"
     ]
