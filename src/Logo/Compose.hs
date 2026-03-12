@@ -4,8 +4,7 @@
 -- No brand constants are hardcoded here; all text and colours are supplied
 -- by the caller.
 module Logo.Compose
-    ( composeLogo
-    , composeLogoFrom
+    ( composeLogoFrom
     ) where
 
 import qualified Data.ByteString as BS
@@ -13,9 +12,6 @@ import qualified Data.ByteString.Base64 as B64
 import qualified Data.ByteString.Char8 as BC
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
-import System.Directory (createDirectoryIfMissing)
-import System.FilePath (takeDirectory)
 
 -- | Gap in SVG px between the brick grid and the subtitle text.
 _GAP :: Int
@@ -61,26 +57,6 @@ composeLogoFrom fontPath subtitleText subtitleColor srcText txtSize = do
         fontDataUri   = "data:font/truetype;base64," ++ fontB64
     return $ buildFullSvg srcText canvasW canvasH brickH
                            txtSize subtitleColor fontDataUri subtitleText
-
--- | File-based wrapper around 'composeLogoFrom'.
---
--- Reads @inSvg@, composes the logo, writes to @outSvg@ (creating parent
--- directories as needed).
-composeLogo
-    :: FilePath  -- ^ Outfit variable-font path
-    -> Text      -- ^ Subtitle text
-    -> Text      -- ^ Subtitle CSS colour (e.g. @\"#05131D\"@)
-    -> FilePath  -- ^ Input brick SVG path
-    -> FilePath  -- ^ Output composed SVG path
-    -> Int       -- ^ Font size in SVG units
-    -> IO ()
-composeLogo fontPath subtitleText subtitleColor inSvg outSvg txtSize = do
-    srcText <- TIO.readFile inSvg
-    newSvg  <- composeLogoFrom fontPath subtitleText subtitleColor srcText txtSize
-    createDirectoryIfMissing True (takeDirectory outSvg)
-    TIO.writeFile outSvg newSvg
-    let (w, h) = parseSvgDimensions newSvg
-    putStrLn $ "  Composed " ++ outSvg ++ "  (" ++ show w ++ "×" ++ show h ++ ")"
 
 -- ── Internal SVG builder ─────────────────────────────────────────────────────
 

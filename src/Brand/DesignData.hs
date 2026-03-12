@@ -16,8 +16,8 @@ type TypeScaleRow = (Text, Int, Double, Int, Double, Double, Text, Text)
 
 typeScale :: [TypeScaleRow]
 typeScale =
-    [ ("Display",   700, 3.0,   48, 1.1,  (-0.02), "text-5xl font-bold",                           "Hero headlines and landing-page titles only.")
-    , ("Heading1",  700, 1.875, 30, 1.2,  (-0.01), "text-3xl font-bold",                           "Page-level headings (one per page).")
+    [ ("Display",   700, 3.0,   48, 1.1,  -0.02, "text-5xl font-bold",                           "Hero headlines and landing-page titles only.")
+    , ("Heading1",  700, 1.875, 30, 1.2,  -0.01, "text-3xl font-bold",                           "Page-level headings (one per page).")
     , ("Heading2",  700, 1.5,   24, 1.3,  0.0,     "text-2xl font-bold",                           "Section headings.")
     , ("Heading3",  600, 1.25,  20, 1.35, 0.0,     "text-xl font-semibold",                        "Sub-section headings.")
     , ("Body",      400, 1.0,   16, 1.6,  0.0,     "text-base",                                    "Default body copy. Minimum size for accessible reading.")

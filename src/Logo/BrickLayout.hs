@@ -49,13 +49,12 @@ module Logo.BrickLayout
     , composeLayouts
       -- * SVG rendering
     , layoutToSvg
-    , layoutsToHorizontalSvg
     ) where
 
 import Codec.Picture (Image (..), PixelRGBA8 (..), pixelAt)
 import Data.Char (digitToInt, isHexDigit)
 import Data.List (intercalate, nub, sortBy, transpose)
-import Data.Maybe (mapMaybe)
+import Data.Maybe (catMaybes)
 import Data.Ord (comparing)
 import Data.Word (Word8)
 import qualified Data.Map.Strict as Map
@@ -264,7 +263,7 @@ findInt key ls =
 parsePaletteLines :: [Text] -> Either String (Map.Map Char RGB)
 parsePaletteLines ls = do
     pairs <- mapM parseLine ls
-    Right $ Map.fromList (mapMaybe id pairs)
+    Right $ Map.fromList (catMaybes pairs)
   where
     parseLine l =
         let ws = T.words (T.strip l)
@@ -282,7 +281,7 @@ parseHex h
     | T.length h == 6 && T.all isHexDigit h =
         let cs = T.unpack h
             hv x y = fromIntegral (digitToInt x * 16 + digitToInt y)
-            r = hv (cs !! 0) (cs !! 1)
+            r = hv (head cs) (cs !! 1)
             g = hv (cs !! 2) (cs !! 3)
             b = hv (cs !! 4) (cs !! 5)
          in Just (r, g, b)
@@ -437,38 +436,3 @@ layoutToSvg bl =
         bricks  = renderRows (blRows bl) geom vertOff 0
      in intercalate "\n" (header ++ bricks ++ footer)
 
--- | Compose multiple 'BrickLayout' values horizontally into one SVG, with
--- @gapStuds@ transparent stud-columns between each layout.
--- All layouts must share the same @blkW@, @blkH@, and row count.
-layoutsToHorizontalSvg :: Int -> [BrickLayout] -> String
-layoutsToHorizontalSvg _ [] = error "layoutsToHorizontalSvg: empty list"
-layoutsToHorizontalSvg gapStuds layouts@(bl0 : _) =
-    let geom       = mkBrickGeom (blBlkW bl0) (blBlkH bl0)
-        hP         = bgHPitch geom
-        innerBodyH = bgInnerBodyH geom
-        bodyH      = bgBodyH geom
-        nRows      = layoutRows bl0
-        colsList   = map layoutCols layouts
-        n          = length layouts
-        totalCols  = sum colsList + gapStuds * (n - 1)
-        svgW       = totalCols * hP
-        contentH   = (nRows - 1) * innerBodyH + bodyH
-        padTop     = blPadTop bl0
-        padBottom  = blPadBottom bl0
-        svgH       = contentH + padTop + padBottom
-        vertOff    = padTop
-        -- Pixel x-offset for each layout.
-        xOffsets   = [ (sum (take i colsList) + i * gapStuds) * hP
-                     | i <- [0 .. n - 1]
-                     ]
-        header     =
-            [ "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
-            , printf "<svg width=\"%d\" height=\"%d\" viewBox=\"0 0 %d %d\" "
-                  svgW svgH svgW svgH
-            , "     xmlns=\"http://www.w3.org/2000/svg\">"
-            , "  <desc>Brick-style blocky version - horizontal composite</desc>"
-            ]
-        footer     = ["</svg>"]
-        bricks     = concatMap (\(bl, xOff) -> renderRows (blRows bl) geom vertOff xOff)
-                               (zip layouts xOffsets)
-     in intercalate "\n" (header ++ bricks ++ footer)

@@ -1,6 +1,5 @@
 module Logo.Blockify
     ( blockifyToLayout
-    , blockifySvg
     , aspectCorrectionFactor
     ) where
 
@@ -15,11 +14,8 @@ import Logo.BrickLayout
     ( BrickGeom (..)
     , BrickLayout
     , imageAndMapToLayout
-    , layoutToSvg
     , mkBrickGeom
     )
-import System.Directory (createDirectoryIfMissing)
-import System.FilePath (takeDirectory)
 import System.Process (createProcess, proc, std_out, StdStream (..), waitForProcess)
 
 type RGB = (Word8, Word8, Word8)
@@ -306,22 +302,3 @@ blockifyToLayout inSvg sqPx blkW blkH pad padTop padBottom = do
 
     return $ imageAndMapToLayout padded sizes blkW blkH padTop padBottom
 
--- | Convenience wrapper: blockify a design SVG and write the brick SVG in one
--- step (without saving an intermediate @.blay@ file).
-blockifySvg
-    :: FilePath -- ^ input SVG
-    -> FilePath -- ^ output SVG
-    -> Int      -- ^ target pixel width (sqPx or hzPx)
-    -> Int      -- ^ blkW
-    -> Int      -- ^ blkH
-    -> Int      -- ^ pad
-    -> Int      -- ^ padTop
-    -> Int      -- ^ padBottom
-    -> IO ()
-blockifySvg inSvg outSvg sqPx blkW blkH pad padTop padBottom = do
-    putStrLn $ "  blockify " ++ inSvg ++ " -> " ++ outSvg
-    layout <- blockifyToLayout inSvg sqPx blkW blkH pad padTop padBottom
-    let svg = layoutToSvg layout
-    createDirectoryIfMissing True (takeDirectory outSvg)
-    writeFile outSvg svg
-    putStrLn $ "  Saved " ++ outSvg
