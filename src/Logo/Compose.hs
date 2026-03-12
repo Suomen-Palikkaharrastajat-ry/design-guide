@@ -4,7 +4,9 @@
 -- No brand constants are hardcoded here; all text and colours are supplied
 -- by the caller.
 module Logo.Compose
-    ( composeLogoFrom
+    ( loadFont
+    , composeLogoWith
+    , composeLogoFrom
     ) where
 
 import qualified Data.ByteString as BS
@@ -36,11 +38,32 @@ parseSvgDimensions t =
         [(n, _)] -> n
         _        -> 0
 
+-- | Load a font file and return it as a @data:@ URI string.
+loadFont :: FilePath -> IO String
+loadFont fontPath = do
+    fontBytes <- BS.readFile fontPath
+    return $ "data:font/truetype;base64," ++ BC.unpack (B64.encode fontBytes)
+
 -- | Compose a full logo from an in-memory brick SVG.
 --
--- @composeLogoFrom fontPath subtitleText subtitleColor svgText txtSize@
--- returns the composed SVG text.  'subtitleColor' should be a CSS colour
--- value, e.g. @\"#05131D\"@.
+-- Pure variant: the caller supplies an already-loaded font data URI
+-- (see 'loadFont').  'subtitleColor' should be a CSS colour value,
+-- e.g. @\"#05131D\"@.
+composeLogoWith
+    :: String    -- ^ Font data URI (from 'loadFont')
+    -> Text      -- ^ Subtitle text
+    -> Text      -- ^ Subtitle CSS colour (e.g. @\"#05131D\"@)
+    -> Text      -- ^ Input brick SVG text
+    -> Int       -- ^ Font size in SVG units
+    -> Text
+composeLogoWith fontDataUri subtitleText subtitleColor srcText txtSize =
+    let (brickW, brickH) = parseSvgDimensions srcText
+        canvasW = brickW
+        canvasH = brickH + _GAP + txtSize + _BOTTOM_PAD
+    in buildFullSvg srcText canvasW canvasH brickH
+                    txtSize subtitleColor fontDataUri subtitleText
+
+-- | Convenience wrapper: load the font from disk then call 'composeLogoWith'.
 composeLogoFrom
     :: FilePath  -- ^ Outfit variable-font path
     -> Text      -- ^ Subtitle text
@@ -49,14 +72,8 @@ composeLogoFrom
     -> Int       -- ^ Font size in SVG units
     -> IO Text
 composeLogoFrom fontPath subtitleText subtitleColor srcText txtSize = do
-    fontBytes <- BS.readFile fontPath
-    let (brickW, brickH) = parseSvgDimensions srcText
-        canvasW       = brickW
-        canvasH       = brickH + _GAP + txtSize + _BOTTOM_PAD
-        fontB64       = BC.unpack (B64.encode fontBytes)
-        fontDataUri   = "data:font/truetype;base64," ++ fontB64
-    return $ buildFullSvg srcText canvasW canvasH brickH
-                           txtSize subtitleColor fontDataUri subtitleText
+    fontDataUri <- loadFont fontPath
+    return $ composeLogoWith fontDataUri subtitleText subtitleColor srcText txtSize
 
 -- ── Internal SVG builder ─────────────────────────────────────────────────────
 

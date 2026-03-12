@@ -55,13 +55,17 @@ withFontConfigEnv action =
         return path
 
 -- | Collect every @\/nix\/store\/<entry>\/share\/fonts@ directory that exists.
--- Mirrors what @scripts/svg_to_png.py@ did so fallback fonts also work.
+-- Returns an empty list on non-Nix systems where @\/nix\/store@ is absent.
 nixStoreFontDirs :: IO [FilePath]
 nixStoreFontDirs = do
-    entries <- listDirectory "/nix/store"
-    let candidates = ["/nix/store" </> e </> "share" </> "fonts" | e <- entries]
-    flags <- mapM doesDirectoryExist candidates
-    return [d | (d, ok) <- zip candidates flags, ok]
+    storeExists <- doesDirectoryExist "/nix/store"
+    if not storeExists
+        then return []
+        else do
+            entries <- listDirectory "/nix/store"
+            let candidates = ["/nix/store" </> e </> "share" </> "fonts" | e <- entries]
+            flags <- mapM doesDirectoryExist candidates
+            return [d | (d, ok) <- zip candidates flags, ok]
 
 -- | Build a fontconfig XML config listing the given directories.
 -- A writable @cachedir@ under @\/tmp@ avoids read-only Nix-store cache failures.

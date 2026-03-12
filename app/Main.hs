@@ -24,7 +24,7 @@ import Control.Monad (forM_, when)
 import Data.Maybe (isJust)
 import qualified Data.Text as T
 import Logo.BrickLayout (layoutToSvg, readBrickLayout)
-import Logo.Compose (composeLogoFrom)
+import Logo.Compose (composeLogoWith, loadFont)
 import Logo.Favicons (generateFavicons)
 import Logo.Raster (exportPng, exportWebp)
 import System.Directory (createDirectoryIfMissing, removeFile)
@@ -121,19 +121,20 @@ runRender ra = do
                    || isJust (raComposeDarkWebpOut ra)
     when (lightNeeded || darkNeeded) $ do
         font <- requireArg "--compose-font" (raComposeFont ra)
+        fontDataUri <- loadFont font
         let subtitleText = T.pack (raComposeText ra)
             textSize     = raComposeTextSize ra
 
         when lightNeeded $ do
-            let col = T.pack $ "#" ++ raComposeLightColor ra
-            cSvg <- composeLogoFrom font subtitleText col svgText textSize
+            let col  = T.pack $ "#" ++ raComposeLightColor ra
+                cSvg = composeLogoWith fontDataUri subtitleText col svgText textSize
             renderComposeVariant ra cSvg
                 (raComposeSvgOut ra) (raComposePngOut ra) (raComposeWebpOut ra)
                 (raInput ra ++ ".light.tmp.svg")
 
         when darkNeeded $ do
-            let col = T.pack $ "#" ++ raComposeDarkColor ra
-            cSvg <- composeLogoFrom font subtitleText col svgText textSize
+            let col  = T.pack $ "#" ++ raComposeDarkColor ra
+                cSvg = composeLogoWith fontDataUri subtitleText col svgText textSize
             renderComposeVariant ra cSvg
                 (raComposeDarkSvgOut ra) (raComposeDarkPngOut ra) (raComposeDarkWebpOut ra)
                 (raInput ra ++ ".dark.tmp.svg")
