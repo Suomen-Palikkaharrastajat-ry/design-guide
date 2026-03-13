@@ -878,7 +878,7 @@ viewTimeline model =
         (Timeline.view
             [ Timeline.viewItem { date = "2026", title = "Brändiohjeistus julkaistu", children = [ Html.text "JSON-LD-pohjainen koneluettava ohjeistus." ] }
             , Timeline.viewItem { date = "2025", title = "Haskell-pipeline uudistettu", children = [ Html.text "Puhdas Haskell-rasterointi." ] }
-            , Timeline.viewItem { date = "2024", title = "Logo suunniteltu", children = [ Html.text "LEGO-minihahmon tiilimosaiikkilogo." ] }
+            , Timeline.viewItem { date = "2024", title = "Logo suunniteltu", children = [ Html.text "Minihahmon tiilimosaiikkilogo." ] }
             ]
         )
         """import Component.Timeline as Timeline

@@ -110,7 +110,7 @@ viewSkinTones =
     Html.section [ Attr.class "space-y-6" ]
         [ SectionHeader.view
             { title = "Ihoteemat"
-            , description = Just "Neljä virallista LEGO®-ihonsävyä edustavat erilaisia ihonsävyjä."
+            , description = Just "Neljä ihonsävyä. Keltainen on yhdistyksen pääaksenttiväri."
             }
         , Html.div [ Attr.class "flex flex-wrap gap-6" ]
             (List.map

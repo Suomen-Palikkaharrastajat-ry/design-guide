@@ -173,7 +173,7 @@ viewSquareLogos =
     Html.div [ Attr.class "space-y-4" ]
         [ SectionHeader.view
             { title = "Neliö (square)"
-            , description = Just "LEGO-minihahmon pää rakennuspalikoista koottuna. Sopii someen ja sovelluskuvakkeisiin."
+            , description = Just "Hymyilevä minihahmon pää rakennuspalikoista koottuna. Sopii someen ja sovelluskuvakkeisiin."
             }
         , Html.div [ Attr.class "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" ]
             (List.map LogoCard.view Logos.squareVariants)
@@ -231,7 +231,7 @@ viewSkinTones =
     Html.div [ Attr.class "space-y-4" ]
         [ SectionHeader.view
             { title = "Ihoteemat"
-            , description = Just "Neljä virallista LEGO®-ihonsävyä. Keltainen on yhdistyksen pääaksenttiväri."
+            , description = Just "Neljä ihonsävyä. Keltainen on yhdistyksen pääaksenttiväri."
             }
         , Html.div [ Attr.class "flex flex-wrap gap-6" ]
             (List.map

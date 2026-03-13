@@ -87,7 +87,7 @@ viewSquareSection =
     Html.section [ Attr.class "space-y-6" ]
         [ SectionHeader.view
             { title = "Neliö (square)"
-            , description = Just "Tunnuskuva on LEGO-minihahmon pää rakennuspalikoista koottuna. Neliömuoto sopii sosiaalisen median profiileihin ja sovelluskuvakkeisiin."
+            , description = Just "Tunnuskuva on minihahmon pää rakennuspalikoista koottuna. Neliömuoto sopii sosiaalisen median profiileihin ja sovelluskuvakkeisiin."
             }
         , Html.div
             [ Attr.class "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" ]
