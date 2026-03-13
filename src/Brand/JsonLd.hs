@@ -348,7 +348,7 @@ buildLogosLd =
             ]
         ]
     asset path = baseUrl <> "/" <> path
-    squareSkins = ["square", "square-light-nougat", "square-nougat", "square-dark-nougat"]
+    squareSkins = ["square-basic", "square-smile", "square-blink", "square-laugh"]
     squareTokens =
         [ A.object
             [ "@type"     .= ("LogoVariant" :: Text)
@@ -361,7 +361,11 @@ buildLogosLd =
             ]
         | stem <- squareSkins
         ]
-    horizontalSkins = ["horizontal", "horizontal-full", "horizontal-full-dark"]
+    horizontalSkins =
+        [ "horizontal", "horizontal-full", "horizontal-full-dark"
+        , "horizontal-rainbow", "horizontal-rainbow-full", "horizontal-rainbow-full-dark"
+        , "horizontal-skintone", "horizontal-skintone-full", "horizontal-skintone-full-dark"
+        ]
     horizontalTokens =
         [ A.object
             [ "@type"     .= ("LogoVariant" :: Text)

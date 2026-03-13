@@ -1,4 +1,4 @@
-module Logo.Raster (exportPng, exportWebp) where
+module Logo.Raster (exportPng, exportPngSquare, exportWebp) where
 
 import Control.Exception (bracket)
 import System.Directory (doesDirectoryExist, listDirectory, makeAbsolute, removeFile)
@@ -12,26 +12,35 @@ import System.Process (callProcess, createProcess, env, proc, waitForProcess)
 exportPng :: FilePath -> FilePath -> Int -> IO ()
 exportPng svgIn pngOut widthPx = do
     putStrLn $ "  raster " ++ svgIn ++ " -> " ++ pngOut
-    callRsvg svgIn pngOut widthPx
+    callRsvg ["-w", show widthPx] svgIn pngOut
+
+-- | Export SVG to a square PNG of the given side length.
+-- The source SVG is expected to already have a square canvas (ensured by
+-- pad-left/pad-right in the .blay file); this simply rasterizes at the
+-- requested size with -w, which produces an exact N×N output.
+exportPngSquare :: FilePath -> FilePath -> Int -> IO ()
+exportPngSquare svgIn pngOut sizePx = do
+    putStrLn $ "  raster (square) " ++ svgIn ++ " -> " ++ pngOut
+    callRsvg ["-w", show sizePx] svgIn pngOut
 
 -- | Export SVG to WebP at given width (via intermediate PNG and cwebp).
 exportWebp :: FilePath -> FilePath -> Int -> IO ()
 exportWebp svgIn webpOut widthPx = do
     putStrLn $ "  raster " ++ svgIn ++ " -> " ++ webpOut
     let tmpPng = webpOut ++ ".tmp.png"
-    callRsvg svgIn tmpPng widthPx
+    callRsvg ["-w", show widthPx] svgIn tmpPng
     callProcess "cwebp" ["-q", "90", tmpPng, "-o", webpOut]
     removeFile tmpPng
 
 -- | Run rsvg-convert with FONTCONFIG_FILE set to a temporary config that
 -- lists fonts/ plus every Nix-store share/fonts directory.
 -- This ensures Pango finds "Outfit" (and any fallback system fonts).
-callRsvg :: FilePath -> FilePath -> Int -> IO ()
-callRsvg svgIn pngOut widthPx =
+callRsvg :: [String] -> FilePath -> FilePath -> IO ()
+callRsvg sizeArgs svgIn pngOut =
     withFontConfigEnv $ \e -> do
         (_, _, _, ph) <-
             createProcess
-                (proc "rsvg-convert" ["-w", show widthPx, "-f", "png", "-o", pngOut, svgIn])
+                (proc "rsvg-convert" (sizeArgs ++ ["-f", "png", "-o", pngOut, svgIn]))
                     { env = Just e }
         _ <- waitForProcess ph
         return ()

@@ -53,7 +53,7 @@ All color and text constants live in the Makefile — no Haskell rebuild is
 required when changing them.
 
 ```
-master SVGs —blay-draft—► layout/first.blay … layout/fourth.blay
+master SVGs —blay-draft—► layout/smile-xx.blay … layout/smile-xx.blay
                                       │
                               blay-compose
                                       │
@@ -78,7 +78,7 @@ brand-gen —► design-guide.json, design-guide/*.jsonld, src/Brand/Tokens.elm
 ### Step 1 — Draft master blays (manual, once per design)
 
 ```bash
-cabal run blay-draft -- --source logo-head.svg --output layout/first.blay
+cabal run blay-draft -- --source block-head.svg --output layout/block-head.blay
 ```
 
 Each master `.blay` uses a placeholder face color (`F2CD37`) that is swapped
@@ -159,11 +159,11 @@ pre-rendered PNG frames into animated GIF and WebP. Called automatically by
 
 | File | Description |
 |------|-------------|
-| `layout/first.blay` … `layout/fourth.blay` | Master blays (placeholder face color `F2CD37`) |
-| `layout/square.blay` | Yellow square logo |
-| `layout/square-light-nougat.blay` | Light-nougat square |
-| `layout/square-nougat.blay` | Nougat square |
-| `layout/square-dark-nougat.blay` | Dark-nougat square |
+| `layout/smile-01.blay` … `layout/smile-04.blay` | Master blays (placeholder face color `F2CD37`) |
+| `layout/square-01.blay` | Yellow square logo |
+| `layout/square-01.blay` | Light-nougat square |
+| `layout/square-02.blay` | Nougat square |
+| `layout/square-04.blay` | Dark-nougat square |
 | `layout/horizontal.blay` | Four-face horizontal logo (skin tones) |
 | `layout/horizontal-rot{1-3}.blay` | Rotated skin-tone variants |
 | `layout/horizontal-rainbow.blay` | Rainbow horizontal (4-of-7 sliding window) |

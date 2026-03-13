@@ -16,48 +16,48 @@ type alias LogoVariant =
 
 squareVariants : List LogoVariant
 squareVariants =
-    [ { id = "square"
-      , description = "Yellow, classic minifig"
+    [ { id = "square-basic"
+      , description = "Basic / neutral expression"
       , theme = "light"
       , animated = False
       , withText = False
-      , svgUrl = Just "/logo/square/svg/square.svg"
-      , pngUrl = Just "/logo/square/png/square.png"
-      , webpUrl = Just "/logo/square/png/square.webp"
+      , svgUrl = Just "/logo/square/svg/square-basic.svg"
+      , pngUrl = Just "/logo/square/png/square-basic.png"
+      , webpUrl = Just "/logo/square/png/square-basic.webp"
       , gifUrl = Nothing
       }
-    , { id = "square-light-nougat"
-      , description = "Light Nougat skin tone"
+    , { id = "square-smile"
+      , description = "Smiling expression"
       , theme = "light"
       , animated = False
       , withText = False
-      , svgUrl = Just "/logo/square/svg/square-light-nougat.svg"
-      , pngUrl = Just "/logo/square/png/square-light-nougat.png"
-      , webpUrl = Just "/logo/square/png/square-light-nougat.webp"
+      , svgUrl = Just "/logo/square/svg/square-smile.svg"
+      , pngUrl = Just "/logo/square/png/square-smile.png"
+      , webpUrl = Just "/logo/square/png/square-smile.webp"
       , gifUrl = Nothing
       }
-    , { id = "square-nougat"
-      , description = "Nougat skin tone"
+    , { id = "square-blink"
+      , description = "Blinking expression"
       , theme = "light"
       , animated = False
       , withText = False
-      , svgUrl = Just "/logo/square/svg/square-nougat.svg"
-      , pngUrl = Just "/logo/square/png/square-nougat.png"
-      , webpUrl = Just "/logo/square/png/square-nougat.webp"
+      , svgUrl = Just "/logo/square/svg/square-blink.svg"
+      , pngUrl = Just "/logo/square/png/square-blink.png"
+      , webpUrl = Just "/logo/square/png/square-blink.webp"
       , gifUrl = Nothing
       }
-    , { id = "square-dark-nougat"
-      , description = "Dark Nougat skin tone"
+    , { id = "square-laugh"
+      , description = "Laughing expression"
       , theme = "light"
       , animated = False
       , withText = False
-      , svgUrl = Just "/logo/square/svg/square-dark-nougat.svg"
-      , pngUrl = Just "/logo/square/png/square-dark-nougat.png"
-      , webpUrl = Just "/logo/square/png/square-dark-nougat.webp"
+      , svgUrl = Just "/logo/square/svg/square-laugh.svg"
+      , pngUrl = Just "/logo/square/png/square-laugh.png"
+      , webpUrl = Just "/logo/square/png/square-laugh.webp"
       , gifUrl = Nothing
       }
     , { id = "square-animated"
-      , description = "Animated logo cycling through all four skin tones"
+      , description = "Animated logo cycling through all four expressions"
       , theme = "light"
       , animated = True
       , withText = False
@@ -190,5 +190,65 @@ horizontalVariants =
       , pngUrl = Nothing
       , webpUrl = Just "/logo/horizontal/png/horizontal-rainbow-full-dark-animated.webp"
       , gifUrl = Just "/logo/horizontal/png/horizontal-rainbow-full-dark-animated.gif"
+      }
+    , { id = "horizontal-skintone"
+      , description = "Skin-tone logo mark, sliding window of 4 tones"
+      , theme = "light"
+      , animated = False
+      , withText = False
+      , svgUrl = Just "/logo/horizontal/svg/horizontal-skintone.svg"
+      , pngUrl = Just "/logo/horizontal/png/horizontal-skintone.png"
+      , webpUrl = Just "/logo/horizontal/png/horizontal-skintone.webp"
+      , gifUrl = Nothing
+      }
+    , { id = "horizontal-skintone-animated"
+      , description = "Animated skin-tone logo mark cycling all 4 tones one step at a time"
+      , theme = "light"
+      , animated = True
+      , withText = False
+      , svgUrl = Nothing
+      , pngUrl = Nothing
+      , webpUrl = Just "/logo/horizontal/png/horizontal-skintone-animated.webp"
+      , gifUrl = Just "/logo/horizontal/png/horizontal-skintone-animated.gif"
+      }
+    , { id = "horizontal-skintone-full"
+      , description = "Skin-tone logo mark with subtitle, light theme"
+      , theme = "light"
+      , animated = False
+      , withText = True
+      , svgUrl = Just "/logo/horizontal/svg/horizontal-skintone-full.svg"
+      , pngUrl = Just "/logo/horizontal/png/horizontal-skintone-full.png"
+      , webpUrl = Just "/logo/horizontal/png/horizontal-skintone-full.webp"
+      , gifUrl = Nothing
+      }
+    , { id = "horizontal-skintone-full-animated"
+      , description = "Animated skin-tone logo with subtitle, light theme, 4 tones cycling"
+      , theme = "light"
+      , animated = True
+      , withText = True
+      , svgUrl = Nothing
+      , pngUrl = Nothing
+      , webpUrl = Just "/logo/horizontal/png/horizontal-skintone-full-animated.webp"
+      , gifUrl = Just "/logo/horizontal/png/horizontal-skintone-full-animated.gif"
+      }
+    , { id = "horizontal-skintone-full-dark"
+      , description = "Skin-tone logo mark with subtitle, dark theme"
+      , theme = "dark"
+      , animated = False
+      , withText = True
+      , svgUrl = Just "/logo/horizontal/svg/horizontal-skintone-full-dark.svg"
+      , pngUrl = Just "/logo/horizontal/png/horizontal-skintone-full-dark.png"
+      , webpUrl = Just "/logo/horizontal/png/horizontal-skintone-full-dark.webp"
+      , gifUrl = Nothing
+      }
+    , { id = "horizontal-skintone-full-dark-animated"
+      , description = "Animated skin-tone logo with subtitle, dark theme, 4 tones cycling"
+      , theme = "dark"
+      , animated = True
+      , withText = True
+      , svgUrl = Nothing
+      , pngUrl = Nothing
+      , webpUrl = Just "/logo/horizontal/png/horizontal-skintone-full-dark-animated.webp"
+      , gifUrl = Just "/logo/horizontal/png/horizontal-skintone-full-dark-animated.gif"
       }
     ]

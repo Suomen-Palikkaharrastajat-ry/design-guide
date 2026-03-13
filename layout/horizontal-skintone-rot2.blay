@@ -8,10 +8,10 @@ pad-right: 0
 # palette: char = RRGGBB  (. = transparent)
 palette:
   . = transparent
-  A = ac78ba
-  B = f2705e
-  C = f9ba61
-  D = f2cd37
+  A = d09168
+  B = ad6140
+  C = f2cd37
+  D = f6d7b3
   E = 151100
 # grid: 70×13
 grid:

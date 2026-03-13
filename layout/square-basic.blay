@@ -3,24 +3,25 @@ blk-w: 24
 blk-h: 20
 pad-top: 20
 pad-bottom: 20
+pad-left: 22
+pad-right: 23
 # palette: char = RRGGBB  (. = transparent)
 palette:
   . = transparent
-  A = d09168
-  B = 000000
-  C = 151100
+  A = f2cd37
+  B = 151100
 # grid: 16×13
 grid:
 .....|AAAA|AA|.....
 .....|AA|AAAA|.....
 ..|AAAA|AAAA|AAAA|..
 .|AAA|AAAA|AAAA|AAA|.
-.|AAAA|AAAA|AAAA|AA|.
+.|AAA|BBB|AA|BBB|AAA|.
 .|AAA|BBB|AA|BBB|AAA|.
 .|AAAA|AAAA|AAAA|AA|.
 .|AAA|AAAA|AAAA|AAA|.
-.|AAA|CC|CCCC|CC|AAA|.
-.|AAAA|CCCC|CC|AAAA|.
-.|AAAA|A|CCCC|AAAA|A|.
+.|AA|AAAA|AA|AAAA|AA|.
+.|AAAA|B|AAAA|B|AAAA|.
+.|AAAA|A|BBBB|AAAA|A|.
 ..|AAAA|AAAA|AAA|A|..
 ....|AAA|AAAA|A|....

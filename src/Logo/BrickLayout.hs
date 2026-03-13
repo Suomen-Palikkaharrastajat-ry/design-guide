@@ -15,6 +15,8 @@
 -- > blk-h: 20
 -- > pad-top: 20
 -- > pad-bottom: 20
+-- > pad-left: 0
+-- > pad-right: 0
 -- > palette:
 -- >   . = transparent
 -- >   A = d09168
@@ -104,6 +106,8 @@ data BrickLayout = BrickLayout
     , blBlkH      :: !Int       -- ^ Brick SVG unit height (e.g., 20)
     , blPadTop    :: !Int       -- ^ Extra SVG pixels above the brick grid
     , blPadBottom :: !Int       -- ^ Extra SVG pixels below the brick grid
+    , blPadLeft   :: !Int       -- ^ Extra SVG pixels left of the brick grid
+    , blPadRight  :: !Int       -- ^ Extra SVG pixels right of the brick grid
     , blRows      :: [BrickRow] -- ^ Grid rows, top-to-bottom
     } deriving (Show, Eq)
 
@@ -140,6 +144,8 @@ imageAndMapToLayout img brickMap blkW blkH padTop padBottom =
             , blBlkH      = blkH
             , blPadTop    = padTop
             , blPadBottom = padBottom
+            , blPadLeft   = 0
+            , blPadRight  = 0
             , blRows      = map (buildRow img brickMap hPitch (imageWidth img))
                                 [0 .. imageHeight img - 1]
             }
@@ -194,6 +200,8 @@ exportBrickLayout bl =
             , "blk-h: "      <> tshow (blBlkH bl)
             , "pad-top: "    <> tshow (blPadTop bl)
             , "pad-bottom: " <> tshow (blPadBottom bl)
+            , "pad-left: "   <> tshow (blPadLeft bl)
+            , "pad-right: "  <> tshow (blPadRight bl)
             ]
         palHeader  = "# palette: char = RRGGBB  (. = transparent)\npalette:\n  . = transparent\n"
         palLines   = T.unlines
@@ -235,10 +243,12 @@ parseBrickLayout txt = do
         [] -> Left "missing 'grid:' section"
         _  -> Right (drop 1 rest2)
 
-    blkW      <- findInt "blk-w"      kvLines
-    blkH      <- findInt "blk-h"      kvLines
-    padTop    <- findInt "pad-top"    kvLines
-    padBottom <- findInt "pad-bottom" kvLines
+    blkW      <- findInt        "blk-w"      kvLines
+    blkH      <- findInt        "blk-h"      kvLines
+    padTop    <- findInt        "pad-top"    kvLines
+    padBottom <- findInt        "pad-bottom" kvLines
+    let padLeft  = findIntDefault "pad-left"  0 kvLines
+        padRight = findIntDefault "pad-right" 0 kvLines
 
     palette   <- parsePaletteLines palLines
     rows      <- mapM (parseRow palette) gridLines
@@ -248,6 +258,8 @@ parseBrickLayout txt = do
         , blBlkH      = blkH
         , blPadTop    = padTop
         , blPadBottom = padBottom
+        , blPadLeft   = padLeft
+        , blPadRight  = padRight
         , blRows      = rows
         }
 
@@ -260,6 +272,16 @@ findInt key ls =
              in case reads (T.unpack v) of
                     [(n, "")] -> Right n
                     _         -> Left $ "bad integer for " ++ T.unpack key ++ ": " ++ T.unpack v
+
+findIntDefault :: Text -> Int -> [Text] -> Int
+findIntDefault key def ls =
+    case filter (T.isPrefixOf (key <> ": ")) ls of
+        [] -> def
+        (l : _) ->
+            let v = T.strip $ T.drop (T.length key + 2) l
+             in case reads (T.unpack v) of
+                    [(n, "")] -> n
+                    _         -> def
 
 parsePaletteLines :: [Text] -> Either String (Map.Map Char RGB)
 parsePaletteLines ls = do
@@ -418,10 +440,12 @@ layoutToSvg bl =
         nRows      = layoutRows bl
         padTop     = blPadTop bl
         padBottom  = blPadBottom bl
-        svgW       = cols * hP
+        padLeft    = blPadLeft bl
+        padRight   = blPadRight bl
+        svgW       = cols * hP + padLeft + padRight
         contentH   = (nRows - 1) * innerBodyH + bodyH
         (baseSvgH, baseVertOff)
-            | cols == nRows = let sh = max svgW contentH
+            | cols == nRows = let sh = max (cols * hP) contentH
                                in (sh, (sh - contentH) `div` 2)
             | otherwise     = (contentH, 0)
         svgH    = baseSvgH + padTop + padBottom
@@ -434,6 +458,6 @@ layoutToSvg bl =
             , "  <desc>Brick-style blocky version - auto bricks side view</desc>"
             ]
         footer  = ["</svg>"]
-        bricks  = renderRows (blRows bl) geom vertOff 0
+        bricks  = renderRows (blRows bl) geom vertOff padLeft
      in intercalate "\n" (header ++ bricks ++ footer)
 

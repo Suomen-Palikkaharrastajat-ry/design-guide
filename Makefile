@@ -43,7 +43,7 @@ RB_BLUE     := 9FC3E9
 RB_INDIGO   := 9195CA
 RB_LAVENDER := AC78BA
 
-_HZ_TILE := --tile --gap-studs $(GAP_STUDS) --pad-top $(HZ_PAD_TOP) --pad-bottom 0
+_HZ_TILE := --tile --gap-studs $(GAP_STUDS) --pad-top $(HZ_PAD_TOP) --pad-bottom $(HZ_PAD_TOP)
 
 # ── PATH trimming (prevents E2BIG when cabal spawns GHC) ─────────────────────
 _GHC_BIN    := $(shell dirname $(shell which ghc          2>/dev/null) 2>/dev/null)
@@ -79,73 +79,88 @@ build: ## Compile all Haskell executables (no run)
 
 # ── blay-compose: derive .blay files from masters (run locally; commit outputs)
 #
-# Masters: layout/first.blay ... layout/fourth.blay use FACE_PH as placeholder.
+# Masters: layout/head-basic.blay ... layout/head-laugh.blay use FACE_PH as placeholder.
 # Draft a new master from a source SVG:
-#   cabal run --offline blay-draft -- --source SRC.svg --output layout/first.blay
+#   cabal run --offline blay-draft -- --source SRC.svg --output layout/head-basic.blay
 
 _COMPOSE = $(CABAL) run --offline blay-compose --
 
-# Square skin-tone blays
-layout/square.blay: layout/first.blay $(HS_SOURCES)
-	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(SKIN_YELLOW) --output $@
+# Square smiley blays
+layout/square-basic.blay: layout/head-basic.blay $(HS_SOURCES)
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(SKIN_YELLOW) --output $@
 
-layout/square-light-nougat.blay: layout/second.blay $(HS_SOURCES)
-	$(_COMPOSE) --input layout/second.blay:$(FACE_PH):$(SKIN_LIGHT_NOUGAT) --output $@
+layout/square-smile.blay: layout/head-smile.blay $(HS_SOURCES)
+	$(_COMPOSE) --input layout/head-smile.blay:$(FACE_PH):$(SKIN_YELLOW) --output $@
 
-layout/square-nougat.blay: layout/third.blay $(HS_SOURCES)
-	$(_COMPOSE) --input layout/third.blay:$(FACE_PH):$(SKIN_NOUGAT) --output $@
+layout/square-blink.blay: layout/head-blink.blay $(HS_SOURCES)
+	$(_COMPOSE) --input layout/head-blink.blay:$(FACE_PH):$(SKIN_YELLOW) --output $@
 
-layout/square-dark-nougat.blay: layout/fourth.blay $(HS_SOURCES)
-	$(_COMPOSE) --input layout/fourth.blay:$(FACE_PH):$(SKIN_DARK_NOUGAT) --output $@
+layout/square-laugh.blay: layout/head-laugh.blay $(HS_SOURCES)
+	$(_COMPOSE) --input layout/head-laugh.blay:$(FACE_PH):$(SKIN_YELLOW) --output $@
 
-_SQ_BLAYS := layout/square.blay layout/square-light-nougat.blay layout/square-nougat.blay layout/square-dark-nougat.blay
+_SQ_BLAYS := layout/square-basic.blay layout/square-smile.blay layout/square-blink.blay layout/square-laugh.blay
 
-# Horizontal skin-tone blays
+# Horizontal smiley blays
 layout/horizontal.blay: $(_SQ_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/square.blay --input layout/square-light-nougat.blay --input layout/square-nougat.blay --input layout/square-dark-nougat.blay $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/square-basic.blay --input layout/square-smile.blay --input layout/square-blink.blay --input layout/square-laugh.blay $(_HZ_TILE) --output $@
 
 layout/horizontal-rot1.blay: $(_SQ_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/square-light-nougat.blay --input layout/square-nougat.blay --input layout/square-dark-nougat.blay --input layout/square.blay $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/square-smile.blay --input layout/square-blink.blay --input layout/square-laugh.blay --input layout/square-basic.blay $(_HZ_TILE) --output $@
 
 layout/horizontal-rot2.blay: $(_SQ_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/square-nougat.blay --input layout/square-dark-nougat.blay --input layout/square.blay --input layout/square-light-nougat.blay $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/square-blink.blay --input layout/square-laugh.blay --input layout/square-basic.blay --input layout/square-smile.blay $(_HZ_TILE) --output $@
 
 layout/horizontal-rot3.blay: $(_SQ_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/square-dark-nougat.blay --input layout/square.blay --input layout/square-light-nougat.blay --input layout/square-nougat.blay $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/square-laugh.blay --input layout/square-basic.blay --input layout/square-smile.blay --input layout/square-blink.blay $(_HZ_TILE) --output $@
 
-_MASTER_BLAYS := layout/first.blay layout/second.blay layout/third.blay layout/fourth.blay
+_MASTER_BLAYS := layout/square-basic.blay layout/square-smile.blay layout/square-blink.blay layout/square-laugh.blay
 
 # Horizontal rainbow blays — sliding windows of 4 from 7 rainbow colours
 layout/horizontal-rainbow.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_SALMON) --input layout/second.blay:$(FACE_PH):$(RB_ORANGE) --input layout/third.blay:$(FACE_PH):$(RB_YELLOW) --input layout/fourth.blay:$(FACE_PH):$(RB_GREEN) $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(RB_SALMON) --input layout/head-smile.blay:$(FACE_PH):$(RB_ORANGE) --input layout/head-blink.blay:$(FACE_PH):$(RB_YELLOW) --input layout/head-laugh.blay:$(FACE_PH):$(RB_GREEN) $(_HZ_TILE) --output $@
 
 layout/horizontal-rainbow-rot1.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_ORANGE) --input layout/second.blay:$(FACE_PH):$(RB_YELLOW) --input layout/third.blay:$(FACE_PH):$(RB_GREEN) --input layout/fourth.blay:$(FACE_PH):$(RB_BLUE) $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(RB_ORANGE) --input layout/head-smile.blay:$(FACE_PH):$(RB_YELLOW) --input layout/head-blink.blay:$(FACE_PH):$(RB_GREEN) --input layout/head-laugh.blay:$(FACE_PH):$(RB_BLUE) $(_HZ_TILE) --output $@
 
 layout/horizontal-rainbow-rot2.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_YELLOW) --input layout/second.blay:$(FACE_PH):$(RB_GREEN) --input layout/third.blay:$(FACE_PH):$(RB_BLUE) --input layout/fourth.blay:$(FACE_PH):$(RB_INDIGO) $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(RB_YELLOW) --input layout/head-smile.blay:$(FACE_PH):$(RB_GREEN) --input layout/head-blink.blay:$(FACE_PH):$(RB_BLUE) --input layout/head-laugh.blay:$(FACE_PH):$(RB_INDIGO) $(_HZ_TILE) --output $@
 
 layout/horizontal-rainbow-rot3.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_GREEN) --input layout/second.blay:$(FACE_PH):$(RB_BLUE) --input layout/third.blay:$(FACE_PH):$(RB_INDIGO) --input layout/fourth.blay:$(FACE_PH):$(RB_LAVENDER) $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(RB_GREEN) --input layout/head-smile.blay:$(FACE_PH):$(RB_BLUE) --input layout/head-blink.blay:$(FACE_PH):$(RB_INDIGO) --input layout/head-laugh.blay:$(FACE_PH):$(RB_LAVENDER) $(_HZ_TILE) --output $@
 
 layout/horizontal-rainbow-rot4.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_BLUE) --input layout/second.blay:$(FACE_PH):$(RB_INDIGO) --input layout/third.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/fourth.blay:$(FACE_PH):$(RB_SALMON) $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(RB_BLUE) --input layout/head-smile.blay:$(FACE_PH):$(RB_INDIGO) --input layout/head-blink.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/head-laugh.blay:$(FACE_PH):$(RB_SALMON) $(_HZ_TILE) --output $@
 
 layout/horizontal-rainbow-rot5.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_INDIGO) --input layout/second.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/third.blay:$(FACE_PH):$(RB_SALMON) --input layout/fourth.blay:$(FACE_PH):$(RB_ORANGE) $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(RB_INDIGO) --input layout/head-smile.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/head-blink.blay:$(FACE_PH):$(RB_SALMON) --input layout/head-laugh.blay:$(FACE_PH):$(RB_ORANGE) $(_HZ_TILE) --output $@
 
 layout/horizontal-rainbow-rot6.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
-	$(_COMPOSE) --input layout/first.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/second.blay:$(FACE_PH):$(RB_SALMON) --input layout/third.blay:$(FACE_PH):$(RB_ORANGE) --input layout/fourth.blay:$(FACE_PH):$(RB_YELLOW) $(_HZ_TILE) --output $@
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(RB_LAVENDER) --input layout/head-smile.blay:$(FACE_PH):$(RB_SALMON) --input layout/head-blink.blay:$(FACE_PH):$(RB_ORANGE) --input layout/head-laugh.blay:$(FACE_PH):$(RB_YELLOW) $(_HZ_TILE) --output $@
+
+# Horizontal skintone blays — sliding 4 skin colors
+layout/horizontal-skintone.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(SKIN_YELLOW) --input layout/head-smile.blay:$(FACE_PH):$(SKIN_LIGHT_NOUGAT) --input layout/head-blink.blay:$(FACE_PH):$(SKIN_NOUGAT) --input layout/head-laugh.blay:$(FACE_PH):$(SKIN_DARK_NOUGAT) $(_HZ_TILE) --output $@
+
+layout/horizontal-skintone-rot1.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(SKIN_LIGHT_NOUGAT) --input layout/head-smile.blay:$(FACE_PH):$(SKIN_NOUGAT) --input layout/head-blink.blay:$(FACE_PH):$(SKIN_DARK_NOUGAT) --input layout/head-laugh.blay:$(FACE_PH):$(SKIN_YELLOW) $(_HZ_TILE) --output $@
+
+layout/horizontal-skintone-rot2.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(SKIN_NOUGAT) --input layout/head-smile.blay:$(FACE_PH):$(SKIN_DARK_NOUGAT) --input layout/head-blink.blay:$(FACE_PH):$(SKIN_YELLOW) --input layout/head-laugh.blay:$(FACE_PH):$(SKIN_LIGHT_NOUGAT) $(_HZ_TILE) --output $@
+
+layout/horizontal-skintone-rot3.blay: $(_MASTER_BLAYS) $(HS_SOURCES)
+	$(_COMPOSE) --input layout/head-basic.blay:$(FACE_PH):$(SKIN_DARK_NOUGAT) --input layout/head-smile.blay:$(FACE_PH):$(SKIN_YELLOW) --input layout/head-blink.blay:$(FACE_PH):$(SKIN_LIGHT_NOUGAT) --input layout/head-laugh.blay:$(FACE_PH):$(SKIN_NOUGAT) $(_HZ_TILE) --output $@
 
 DERIVED_BLAYS := \
-  layout/square.blay layout/square-light-nougat.blay \
-  layout/square-nougat.blay layout/square-dark-nougat.blay \
+  layout/square-basic.blay layout/square-smile.blay \
+  layout/square-blink.blay layout/square-laugh.blay \
   layout/horizontal.blay layout/horizontal-rot1.blay \
   layout/horizontal-rot2.blay layout/horizontal-rot3.blay \
   layout/horizontal-rainbow.blay layout/horizontal-rainbow-rot1.blay \
   layout/horizontal-rainbow-rot2.blay layout/horizontal-rainbow-rot3.blay \
   layout/horizontal-rainbow-rot4.blay layout/horizontal-rainbow-rot5.blay \
-  layout/horizontal-rainbow-rot6.blay
+  layout/horizontal-rainbow-rot6.blay \
+  layout/horizontal-skintone.blay layout/horizontal-skintone-rot1.blay \
+  layout/horizontal-skintone-rot2.blay layout/horizontal-skintone-rot3.blay
 
 blay-compose-all: build $(DERIVED_BLAYS) ## Derive all .blay files (run locally; commit outputs)
 
@@ -160,10 +175,11 @@ _COMPOSE_FLAGS := \
   --compose-text '$(SUBTITLE)' \
   --compose-text-size $(TXT_SIZE) \
   --compose-light-color $(SUBTITLE_LIGHT) \
-  --compose-dark-color $(SUBTITLE_DARK)
+  --compose-dark-color $(SUBTITLE_DARK) \
+  --compose-pad-bottom 0
 
-# Macro: render a square blay => SVG + PNG + WebP (no subtitle composition)
-# $(1) = stem (e.g. square)
+# Macro: render a square-basic.blay => SVG + PNG + WebP (no subtitle composition)
+# $(1) = stem (e.g. square-basic)
 define render_square
 $(SQ_SVG)/$(1).svg $(SQ_PNG)/$(1).png $(SQ_PNG)/$(1).webp &: layout/$(1).blay $(HS_SOURCES) | build
 	@mkdir -p $(SQ_SVG) $(SQ_PNG)
@@ -197,26 +213,29 @@ $(HZ_SVG)/$(1)-full-dark.svg $(HZ_PNG)/$(1)-full-dark.png $(HZ_PNG)/$(1)-full-da
 	  --compose-dark-webp-out $(HZ_PNG)/$(1)-full-dark.webp
 endef
 
-# 'square' itself is rendered by the favicon rule below (single grouped target).
-_SQ_DERIVED := square-light-nougat square-nougat square-dark-nougat
-SQ_STEMS    := square $(_SQ_DERIVED)
+# square-basic is rendered by the favicon rule below (single grouped target);
+# the remaining square faces go through the render_square macro.
+_SQ_DERIVED := square-smile square-blink square-basic
+SQ_STEMS    := square-laugh $(_SQ_DERIVED)
 HZ_STEMS    := \
   horizontal horizontal-rot1 horizontal-rot2 horizontal-rot3 \
   horizontal-rainbow horizontal-rainbow-rot1 horizontal-rainbow-rot2 \
   horizontal-rainbow-rot3 horizontal-rainbow-rot4 \
-  horizontal-rainbow-rot5 horizontal-rainbow-rot6
+  horizontal-rainbow-rot5 horizontal-rainbow-rot6 \
+  horizontal-skintone horizontal-skintone-rot1 horizontal-skintone-rot2 \
+  horizontal-skintone-rot3
 
 $(foreach s,$(_SQ_DERIVED),$(eval $(call render_square,$(s))))
 $(foreach s,$(HZ_STEMS),$(eval $(call render_horizontal,$(s))))
 
-# Favicons — generated alongside the default square PNG
-$(SQ_SVG)/square.svg $(SQ_PNG)/square.png $(SQ_PNG)/square.webp favicon/favicon.ico &: layout/square.blay $(HS_SOURCES) | build
+# Favicons — generated alongside the square-laugh PNG (the primary neutral face)
+$(SQ_SVG)/square-laugh.svg $(SQ_PNG)/square-laugh.png $(SQ_PNG)/square-laugh.webp favicon/favicon.ico &: layout/square-laugh.blay $(HS_SOURCES) | build
 	@mkdir -p $(SQ_SVG) $(SQ_PNG) favicon
 	$(_RENDER) \
-	  --input    layout/square.blay \
-	  --svg-out  $(SQ_SVG)/square.svg \
-	  --png-out  $(SQ_PNG)/square.png \
-	  --webp-out $(SQ_PNG)/square.webp \
+	  --input    layout/square-laugh.blay \
+	  --svg-out  $(SQ_SVG)/square-laugh.svg \
+	  --png-out  $(SQ_PNG)/square-laugh.png \
+	  --webp-out $(SQ_PNG)/square-laugh.webp \
 	  --width $(RASTER_W) \
 	  --favicon-dir favicon
 
@@ -232,12 +251,16 @@ _ANIMATE = $(CABAL) run --offline blay-animate --
 _SQ_FRAMES       := $(foreach s,$(SQ_STEMS),$(SQ_PNG)/$(s).png)
 _HZ_SKIN_STEMS   := horizontal horizontal-rot1 horizontal-rot2 horizontal-rot3
 _RB_STEMS        := horizontal-rainbow horizontal-rainbow-rot1 horizontal-rainbow-rot2 horizontal-rainbow-rot3 horizontal-rainbow-rot4 horizontal-rainbow-rot5 horizontal-rainbow-rot6
+_SC_STEMS        := horizontal-skintone horizontal-skintone-rot1 horizontal-skintone-rot2 horizontal-skintone-rot3
 _HZ_FRAMES       := $(foreach s,$(_HZ_SKIN_STEMS),$(HZ_PNG)/$(s).png)
 _HZ_FULL_FRAMES  := $(foreach s,$(_HZ_SKIN_STEMS),$(HZ_PNG)/$(s)-full.png)
 _HZ_DARK_FRAMES  := $(foreach s,$(_HZ_SKIN_STEMS),$(HZ_PNG)/$(s)-full-dark.png)
 _RB_FRAMES       := $(foreach s,$(_RB_STEMS),$(HZ_PNG)/$(s).png)
 _RB_FULL_FRAMES  := $(foreach s,$(_RB_STEMS),$(HZ_PNG)/$(s)-full.png)
 _RB_DARK_FRAMES  := $(foreach s,$(_RB_STEMS),$(HZ_PNG)/$(s)-full-dark.png)
+_SC_FRAMES       := $(foreach s,$(_SC_STEMS),$(HZ_PNG)/$(s).png)
+_SC_FULL_FRAMES  := $(foreach s,$(_SC_STEMS),$(HZ_PNG)/$(s)-full.png)
+_SC_DARK_FRAMES  := $(foreach s,$(_SC_STEMS),$(HZ_PNG)/$(s)-full-dark.png)
 
 $(SQ_PNG)/square-animated.gif $(SQ_PNG)/square-animated.webp &: $(_SQ_FRAMES) | build
 	@mkdir -p $(SQ_PNG)
@@ -267,6 +290,19 @@ $(HZ_PNG)/horizontal-rainbow-full-dark-animated.gif $(HZ_PNG)/horizontal-rainbow
 	@mkdir -p $(HZ_PNG)
 	$(_ANIMATE) $(foreach f,$(_RB_DARK_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-rainbow-full-dark-animated.gif --webp-out $(HZ_PNG)/horizontal-rainbow-full-dark-animated.webp --anim-ms $(ANIM_MS)
 
+$(HZ_PNG)/horizontal-skintone-animated.gif $(HZ_PNG)/horizontal-skintone-animated.webp &: $(_SC_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_SC_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-skintone-animated.gif --webp-out $(HZ_PNG)/horizontal-skintone-animated.webp --anim-ms $(ANIM_MS)
+
+$(HZ_PNG)/horizontal-skintone-full-animated.gif $(HZ_PNG)/horizontal-skintone-full-animated.webp &: $(_SC_FULL_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_SC_FULL_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-skintone-full-animated.gif --webp-out $(HZ_PNG)/horizontal-skintone-full-animated.webp --anim-ms $(ANIM_MS)
+
+$(HZ_PNG)/horizontal-skintone-full-dark-animated.gif $(HZ_PNG)/horizontal-skintone-full-dark-animated.webp &: $(_SC_DARK_FRAMES) | build
+	@mkdir -p $(HZ_PNG)
+	$(_ANIMATE) $(foreach f,$(_SC_DARK_FRAMES),--input $(f)) --gif-out $(HZ_PNG)/horizontal-skintone-full-dark-animated.gif --webp-out $(HZ_PNG)/horizontal-skintone-full-dark-animated.webp --anim-ms $(ANIM_MS)
+
+
 ALL_ANIMATIONS := \
   $(SQ_PNG)/square-animated.gif $(SQ_PNG)/square-animated.webp \
   $(HZ_PNG)/horizontal-animated.gif $(HZ_PNG)/horizontal-animated.webp \
@@ -274,7 +310,10 @@ ALL_ANIMATIONS := \
   $(HZ_PNG)/horizontal-full-dark-animated.gif $(HZ_PNG)/horizontal-full-dark-animated.webp \
   $(HZ_PNG)/horizontal-rainbow-animated.gif $(HZ_PNG)/horizontal-rainbow-animated.webp \
   $(HZ_PNG)/horizontal-rainbow-full-animated.gif $(HZ_PNG)/horizontal-rainbow-full-animated.webp \
-  $(HZ_PNG)/horizontal-rainbow-full-dark-animated.gif $(HZ_PNG)/horizontal-rainbow-full-dark-animated.webp
+  $(HZ_PNG)/horizontal-rainbow-full-dark-animated.gif $(HZ_PNG)/horizontal-rainbow-full-dark-animated.webp \
+  $(HZ_PNG)/horizontal-skintone-animated.gif $(HZ_PNG)/horizontal-skintone-animated.webp \
+  $(HZ_PNG)/horizontal-skintone-full-animated.gif $(HZ_PNG)/horizontal-skintone-full-animated.webp \
+  $(HZ_PNG)/horizontal-skintone-full-dark-animated.gif $(HZ_PNG)/horizontal-skintone-full-dark-animated.webp
 
 # ── brand-gen: design-guide.json + JSON-LD + Elm tokens ──────────────────────
 

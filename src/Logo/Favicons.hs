@@ -1,17 +1,20 @@
 module Logo.Favicons (generateFavicons) where
 
-import Logo.Raster (exportPng)
+import Logo.Raster (exportPngSquare)
 import System.Directory (createDirectoryIfMissing)
 import System.Process (callProcess)
 import Control.Monad (forM_)
 
 -- | Generate all favicon assets from the square logo SVG.
+-- The source SVG may not be perfectly square; exportPngSquare fits it
+-- into an exact N×N canvas (with transparent padding) so all outputs are
+-- square, as required by browser and OS favicon specifications.
 generateFavicons :: FilePath -> FilePath -> IO ()
 generateFavicons squareSvgPath faviconDir = do
     createDirectoryIfMissing True faviconDir
 
     forM_ sizes $ \(sz, name) ->
-        exportPng squareSvgPath (faviconDir ++ "/" ++ name ++ ".png") sz
+        exportPngSquare squareSvgPath (faviconDir ++ "/" ++ name ++ ".png") sz
 
     -- Bundle 16, 32, 48px PNGs into a multi-size favicon.ico
     callProcess

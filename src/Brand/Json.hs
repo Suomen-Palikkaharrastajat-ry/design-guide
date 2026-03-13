@@ -325,9 +325,9 @@ buildMotion =
 -- ---------------------------------------------------------------------------
 
 sqVariant :: Text -> Text -> Text -> A.Value
-sqVariant stem skinToneId description =
+sqVariant stem expression description =
     A.object
-        [ "id" .= stem, "description" .= description, "skinTone" .= skinToneId
+        [ "id" .= stem, "description" .= description, "expression" .= expression
         , "animated" .= False, "theme" .= ("light" :: Text)
         , "svg" .= asset ("logo/square/svg/" <> stem <> ".svg")
         , "png" .= asset ("logo/square/png/" <> stem <> ".png")
@@ -368,7 +368,7 @@ buildLogoUsageRules =
             , "print" .= ("SVG or high-resolution PNG (300dpi minimum)." :: Text)
             ]
         , "themeSelection" .= A.object
-            [ "lightBackground" .= ("Use any non-dark variant. Default: square (yellow) or horizontal-full." :: Text)
+            [ "lightBackground" .= ("Use any non-dark variant. Default: square-basic or horizontal-full." :: Text)
             , "darkBackground"  .= ("Use the -dark theme variant. Never place light-theme logo on dark background." :: Text)
             ]
         , "prohibitions" .= A.toJSON
@@ -386,19 +386,17 @@ buildLogoUsageRules =
 buildLogos :: A.Value
 buildLogos =
     A.object
-        [ "primaryLogo" .= ("square/square" :: Text)
+        [ "primaryLogo" .= ("square/square-basic" :: Text)
         , "usageRules" .= buildLogoUsageRules
         , "square" .= A.object
             [ "description" .= ("Square minifig-head logo mark" :: Text)
             , "aspectRatio" .= ("1:1" :: Text)
             , "variants" .= A.toJSON
-                [ sqVariant "square" "yellow" "Yellow, classic minifig"
-                , sqVariant "square-light-nougat" "light-nougat" "Light Nougat skin tone"
-                , sqVariant "square-nougat" "nougat" "Nougat skin tone"
-                , sqVariant "square-dark-nougat" "dark-nougat" "Dark Nougat skin tone"
-                , A.object ["id" .= ("square-animated" :: Text), "description" .= ("Animated logo cycling through all four skin tones" :: Text), "animated" .= True, "frameDurationMs" .= (10000 :: Int), "frames" .= (["yellow", "light-nougat", "nougat", "dark-nougat"] :: [Text]), "gif" .= asset "logo/square/png/square-animated.gif", "webp" .= asset "logo/square/png/square-animated.webp"]
-                , A.object ["id" .= ("minifig-colorful" :: Text), "description" .= ("Minifig head with horizontal skin-tone bands" :: Text), "animated" .= False, "theme" .= ("light" :: Text), "svg" .= asset "logo/square/svg/minifig-colorful.svg", "png" .= asset "logo/square/png/minifig-colorful.png", "webp" .= asset "logo/square/png/minifig-colorful.webp"]
-                , A.object ["id" .= ("minifig-rainbow" :: Text), "description" .= ("Minifig head with horizontal rainbow bands" :: Text), "animated" .= False, "theme" .= ("light" :: Text), "svg" .= asset "logo/square/svg/minifig-rainbow.svg", "png" .= asset "logo/square/png/minifig-rainbow.png", "webp" .= asset "logo/square/png/minifig-rainbow.webp"]
+                [ sqVariant "square-basic" "basic" "Basic / neutral expression"
+                , sqVariant "square-smile" "smile" "Smiling expression"
+                , sqVariant "square-blink" "blink" "Blinking expression"
+                , sqVariant "square-laugh" "laugh" "Laughing expression"
+                , A.object ["id" .= ("square-animated" :: Text), "description" .= ("Animated logo cycling through all four expressions" :: Text), "animated" .= True, "frameDurationMs" .= (10000 :: Int), "frames" .= (["basic", "smile", "blink", "laugh"] :: [Text]), "gif" .= asset "logo/square/png/square-animated.gif", "webp" .= asset "logo/square/png/square-animated.webp"]
                 ]
             ]
         , "horizontal" .= A.object
@@ -417,6 +415,12 @@ buildLogos =
                 , hzAnimated "horizontal-rainbow-full-animated" "Animated rainbow logo with subtitle, light theme" "light" True ["frameCount" .= (7 :: Int)]
                 , hzStatic "horizontal-rainbow-full-dark" "Rainbow logo with subtitle, dark theme" "dark" True
                 , hzAnimated "horizontal-rainbow-full-dark-animated" "Animated rainbow logo with subtitle, dark theme" "dark" True ["frameCount" .= (7 :: Int)]
+                , hzStatic "horizontal-skintone" "Skin-tone logo mark, sliding window of 4 tones" "light" False
+                , hzAnimated "horizontal-skintone-animated" "Animated skin-tone logo mark cycling all 4 tones" "light" False ["frameCount" .= (4 :: Int)]
+                , hzStatic "horizontal-skintone-full" "Skin-tone logo with subtitle, light theme" "light" True
+                , hzAnimated "horizontal-skintone-full-animated" "Animated skin-tone logo with subtitle, light theme" "light" True ["frameCount" .= (4 :: Int)]
+                , hzStatic "horizontal-skintone-full-dark" "Skin-tone logo with subtitle, dark theme" "dark" True
+                , hzAnimated "horizontal-skintone-full-dark-animated" "Animated skin-tone logo with subtitle, dark theme" "dark" True ["frameCount" .= (4 :: Int)]
                 ]
             ]
         ]

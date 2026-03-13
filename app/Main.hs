@@ -7,6 +7,7 @@
 -- blay-render --input FILE.blay
 --             [--svg-out FILE]
 --             [--png-out FILE]  [--webp-out FILE]  [--width N]
+--             [--compose-pad-bottom N]
 --             [--compose-font PATH  --compose-text TEXT  [--compose-text-size N]
 --              [--compose-light-color RRGGBB]  [--compose-dark-color RRGGBB]
 --              [--compose-svg-out FILE]      [--compose-dark-svg-out FILE]
@@ -23,7 +24,7 @@ import Control.Exception (finally)
 import Control.Monad (forM_, when)
 import Data.Maybe (isJust)
 import qualified Data.Text as T
-import Logo.BrickLayout (layoutToSvg, readBrickLayout)
+import Logo.BrickLayout (BrickLayout (..), layoutToSvg, readBrickLayout)
 import Logo.Compose (composeLogoWith, loadFont)
 import Logo.Favicons (generateFavicons)
 import Logo.Raster (exportPng, exportWebp)
@@ -42,6 +43,7 @@ data RenderArgs = RenderArgs
     , raWebpOut            :: Maybe FilePath
     , raWidth              :: Int
     -- subtitle composition
+    , raComposePadBottom   :: Maybe Int  -- override pad-bottom for compose SVG
     , raComposeFont        :: Maybe FilePath
     , raComposeText        :: String
     , raComposeTextSize    :: Int
@@ -64,6 +66,7 @@ defaultArgs = RenderArgs
     , raPngOut             = Nothing
     , raWebpOut            = Nothing
     , raWidth              = 800
+    , raComposePadBottom   = Nothing
     , raComposeFont        = Nothing
     , raComposeText        = ""
     , raComposeTextSize    = 57
@@ -98,6 +101,11 @@ runRender ra = do
     putStrLn $ "==> blay-render: " ++ raInput ra
     bl <- readBrickLayout (raInput ra)
     let svgText = T.pack (layoutToSvg bl)
+        -- For composition, optionally override pad-bottom (e.g. to 0 so the
+        -- subtitle sits closer to the logo mark regardless of the layout's
+        -- own pad-bottom value).
+        blForCompose  = maybe bl (\n -> bl { blPadBottom = n }) (raComposePadBottom ra)
+        svgTextForCompose = T.pack (layoutToSvg blForCompose)
 
     -- 1. Write raw brick SVG
     forM_ (raSvgOut ra) $ \p -> writeSvgText p svgText
@@ -127,14 +135,14 @@ runRender ra = do
 
         when lightNeeded $ do
             let col  = T.pack $ "#" ++ raComposeLightColor ra
-                cSvg = composeLogoWith fontDataUri subtitleText col svgText textSize
+                cSvg = composeLogoWith fontDataUri subtitleText col svgTextForCompose textSize
             renderComposeVariant ra cSvg
                 (raComposeSvgOut ra) (raComposePngOut ra) (raComposeWebpOut ra)
                 (raInput ra ++ ".light.tmp.svg")
 
         when darkNeeded $ do
             let col  = T.pack $ "#" ++ raComposeDarkColor ra
-                cSvg = composeLogoWith fontDataUri subtitleText col svgText textSize
+                cSvg = composeLogoWith fontDataUri subtitleText col svgTextForCompose textSize
             renderComposeVariant ra cSvg
                 (raComposeDarkSvgOut ra) (raComposeDarkPngOut ra) (raComposeDarkWebpOut ra)
                 (raInput ra ++ ".dark.tmp.svg")
@@ -200,6 +208,7 @@ parseArgs (f : v : rest) ra = case f of
     "--png-out"              -> parseArgs rest ra { raPngOut             = Just v }
     "--webp-out"             -> parseArgs rest ra { raWebpOut            = Just v }
     "--width"                -> readInt f v >>= \n -> parseArgs rest ra { raWidth = n }
+    "--compose-pad-bottom"   -> readInt f v >>= \n -> parseArgs rest ra { raComposePadBottom = Just n }
     "--compose-font"         -> parseArgs rest ra { raComposeFont        = Just v }
     "--compose-text"         -> parseArgs rest ra { raComposeText        = v }
     "--compose-text-size"    -> readInt f v >>= \n -> parseArgs rest ra { raComposeTextSize = n }
@@ -238,6 +247,7 @@ usageText = unlines
     , ""
     , "Subtitle composition (all compose-* outputs require --compose-font and"
     , "--compose-text to be set):"
+    , "  --compose-pad-bottom N      Override pad-bottom for the compose SVG (e.g. 0)"
     , "  --compose-font PATH         Outfit variable font path"
     , "  --compose-text TEXT         Subtitle text to embed"
     , "  --compose-text-size N       Subtitle font size (SVG px) [default: 57]"
