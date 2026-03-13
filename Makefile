@@ -215,8 +215,8 @@ endef
 
 # square-basic is rendered by the favicon rule below (single grouped target);
 # the remaining square faces go through the render_square macro.
-_SQ_DERIVED := square-smile square-blink square-basic
-SQ_STEMS    := square-laugh $(_SQ_DERIVED)
+_SQ_DERIVED := square-laugh square-blink square-basic
+SQ_STEMS    := square-smile $(_SQ_DERIVED)
 HZ_STEMS    := \
   horizontal horizontal-rot1 horizontal-rot2 horizontal-rot3 \
   horizontal-rainbow horizontal-rainbow-rot1 horizontal-rainbow-rot2 \
@@ -228,14 +228,14 @@ HZ_STEMS    := \
 $(foreach s,$(_SQ_DERIVED),$(eval $(call render_square,$(s))))
 $(foreach s,$(HZ_STEMS),$(eval $(call render_horizontal,$(s))))
 
-# Favicons — generated alongside the square-laugh PNG (the primary neutral face)
-$(SQ_SVG)/square-laugh.svg $(SQ_PNG)/square-laugh.png $(SQ_PNG)/square-laugh.webp favicon/favicon.ico &: layout/square-laugh.blay $(HS_SOURCES) | build
+# Favicons — generated alongside the square-smile PNG (the primary neutral face)
+$(SQ_SVG)/square-smile.svg $(SQ_PNG)/square-smile.png $(SQ_PNG)/square-smile.webp favicon/favicon.ico &: layout/square-smile.blay $(HS_SOURCES) | build
 	@mkdir -p $(SQ_SVG) $(SQ_PNG) favicon
 	$(_RENDER) \
-	  --input    layout/square-laugh.blay \
-	  --svg-out  $(SQ_SVG)/square-laugh.svg \
-	  --png-out  $(SQ_PNG)/square-laugh.png \
-	  --webp-out $(SQ_PNG)/square-laugh.webp \
+	  --input    layout/square-smile.blay \
+	  --svg-out  $(SQ_SVG)/square-smile.svg \
+	  --png-out  $(SQ_PNG)/square-smile.png \
+	  --webp-out $(SQ_PNG)/square-smile.webp \
 	  --width $(RASTER_W) \
 	  --favicon-dir favicon
 
