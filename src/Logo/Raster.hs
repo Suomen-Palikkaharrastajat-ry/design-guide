@@ -14,14 +14,17 @@ exportPng svgIn pngOut widthPx = do
     putStrLn $ "  raster " ++ svgIn ++ " -> " ++ pngOut
     callRsvg ["-w", show widthPx] svgIn pngOut
 
--- | Export SVG to a square PNG of the given side length.
--- The source SVG is expected to already have a square canvas (ensured by
--- pad-left/pad-right in the .blay file); this simply rasterizes at the
--- requested size with -w, which produces an exact N×N output.
+-- | Export SVG to a square PNG of exactly sizePx × sizePx.
+-- The SVG is scaled to fit within the square while preserving its aspect
+-- ratio (--keep-aspect-ratio), and the output canvas is forced to the
+-- requested square dimensions via --page-width/--page-height.  Any
+-- letterbox/pillarbox area is transparent.
 exportPngSquare :: FilePath -> FilePath -> Int -> IO ()
 exportPngSquare svgIn pngOut sizePx = do
     putStrLn $ "  raster (square) " ++ svgIn ++ " -> " ++ pngOut
-    callRsvg ["-w", show sizePx] svgIn pngOut
+    let sz = show sizePx
+    callRsvg ["-w", sz, "-h", sz, "--keep-aspect-ratio",
+              "--page-width", sz, "--page-height", sz] svgIn pngOut
 
 -- | Export SVG to WebP at given width (via intermediate PNG and cwebp).
 exportWebp :: FilePath -> FilePath -> Int -> IO ()
