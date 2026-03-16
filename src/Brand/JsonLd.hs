@@ -98,6 +98,7 @@ buildContext =
             , "MotionToken"          .= ("vocab:MotionToken" :: Text)
             , "EasingToken"          .= ("vocab:EasingToken" :: Text)
             , "LogoVariant"          .= ("vocab:LogoVariant" :: Text)
+            , "FaviconAsset"         .= ("vocab:FaviconAsset" :: Text)
             , "ComponentSpec"        .= ("vocab:ComponentSpec" :: Text)
             , "BreakpointToken"      .= ("vocab:BreakpointToken" :: Text)
             , "ResponsiveGridToken"  .= ("vocab:ResponsiveGridToken" :: Text)
@@ -328,7 +329,7 @@ buildLogosLd =
         , "name"        .= ("Logot" :: Text)
         , "description" .= ("All logo variants with usage rules and prohibitions." :: Text)
         , "usageRules"  .= logoUsageRules
-        , "tokens"      .= A.toJSON (squareTokens ++ horizontalTokens)
+        , "tokens"      .= A.toJSON (squareTokens ++ horizontalTokens ++ faviconTokens)
         ]
   where
     logoUsageRules = A.object
@@ -378,6 +379,38 @@ buildLogosLd =
             ]
         | stem <- horizontalSkins
         ]
+    faviconTokens =
+        -- Browser favicons
+        [ favTok "favicon-16"  16  "Browser favicon (16×16)"
+        , favTok "favicon-32"  32  "Browser favicon (32×32)"
+        , favTok "favicon-48"  48  "Browser favicon (48×48)"
+        , favTok "favicon-64"  64  "Browser favicon (64×64)"
+        -- Apple touch icons
+        , favTok "apple-touch-icon-120" 120 "Apple touch icon for iPhone retina (120×120)"
+        , favTok "apple-touch-icon-152" 152 "Apple touch icon for iPad (152×152)"
+        , favTok "apple-touch-icon-167" 167 "Apple touch icon for iPad Pro (167×167)"
+        , favTok "apple-touch-icon"     180 "Apple touch icon default (180×180)"
+        -- PWA / maskable icons
+        , favTok "icon-192" 192 "PWA icon (192×192)"
+        , favTok "icon-512" 512 "PWA icon and splash screen (512×512)"
+        -- Multi-size ICO bundle
+        , A.object
+            [ "@type"       .= ("FaviconAsset" :: Text)
+            , "@id"         .= tokenId "logos" "favicon/favicon"
+            , "name"        .= ("favicon" :: Text)
+            , "description" .= ("Multi-size ICO bundle (16, 32, 48, 64px)" :: Text)
+            , "ico"         .= asset ("favicon/favicon.ico" :: Text)
+            ]
+        ]
+    favTok stem sz desc =
+        A.object
+            [ "@type"       .= ("FaviconAsset" :: Text)
+            , "@id"         .= tokenId "logos" ("favicon/" <> stem)
+            , "name"        .= (stem :: Text)
+            , "sizePx"      .= (sz :: Int)
+            , "description" .= (desc :: Text)
+            , "png"         .= asset ("favicon/" <> stem <> ".png")
+            ]
 
 -- ── Components ────────────────────────────────────────────────────────────────
 
