@@ -42,13 +42,17 @@ exportPngSquareTrimmed svgIn pngOut sizePx = do
         tmpRaw  = pngOut ++ ".raw.tmp.png"
     callRsvg ["-w", renderSz, "-h", renderSz, "--keep-aspect-ratio",
               "--page-width", renderSz, "--page-height", renderSz] svgIn tmpRaw
-    callProcess "convert"
+    -- Use "magick" (ImageMagick 7 CLI).  The -extent geometry cannot use
+    -- inline FX expressions, so we store max(w,h) in a named option first.
+    callProcess "magick"
         [ tmpRaw
         , "-trim", "+repage"
+        -- record max(w,h) before any further processing
+        , "-set", "option:dim", "%[fx:max(w,h)]"
         -- pad to square in case content w ≠ h
         , "-gravity", "center"
         , "-background", "transparent"
-        , "-extent", "%[fx:max(w,h)]x%[fx:max(w,h)]"
+        , "-extent", "%[option:dim]x%[option:dim]"
         , "-resize", sz ++ "x" ++ sz
         , pngOut
         ]
