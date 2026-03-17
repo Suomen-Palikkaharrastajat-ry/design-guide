@@ -153,7 +153,6 @@ viewLogotSection =
         , viewLogoUsageRules
         , viewSquareLogos
         , viewHorizontalLogos
-        , viewBwLogos
         ]
 
 
@@ -192,17 +191,6 @@ viewHorizontalLogos =
             (List.map LogoCard.view Logos.horizontalVariants)
         ]
 
-
-viewBwLogos : Html msg
-viewBwLogos =
-    Html.div [ Attr.class "space-y-4" ]
-        [ SectionHeader.view
-            { title = "Mustavalkoinen (black & white)"
-            , description = Just "Mustavalkoiset versiot on tarkoitettu ensisijaisesti painokäyttöön."
-            }
-        , Html.div [ Attr.class "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" ]
-            (List.map LogoCard.view Logos.bwVariants)
-        ]
 
 
 
