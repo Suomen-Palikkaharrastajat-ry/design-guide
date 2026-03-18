@@ -361,10 +361,9 @@ viewFontLoadingGuide =
                 , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
                     [ Html.code []
                         [ Html.text """@theme {
-  --font-sans: "Outfit", system-ui, sans-serif;
+  --font-family-sans: "Outfit", system-ui, sans-serif;
   --color-brand: #05131D;
   --color-brand-yellow: #FAC80A;
-  --color-brand-red: #C91A09;
 }""" ]
                     ]
                 , Html.p [ Attr.class "text-xs text-gray-500" ]
@@ -392,14 +391,13 @@ viewFrameworkIntegrationSection =
                 , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
                     [ Html.code []
                         [ Html.text """:root {
-  --font-sans: "Outfit", system-ui, sans-serif;
+  --font-family-sans: "Outfit", system-ui, sans-serif;
   --color-brand: #05131D;
   --color-brand-yellow: #FAC80A;
-  --color-brand-red: #C91A09;
   --color-white: #FFFFFF;
 }
 
-body { font-family: var(--font-sans); color: var(--color-brand); }
+body { font-family: var(--font-family-sans); color: var(--color-brand); }
 .btn-primary { background: var(--color-brand-yellow); color: var(--color-brand); }""" ]
                     ]
                 ]
@@ -415,7 +413,6 @@ module.exports = {
       colors: {
         brand: \"#05131D\",
         \"brand-yellow\": \"#FAC80A\",
-        \"brand-red\":    \"#C91A09\",
       },
     },
   },
@@ -437,10 +434,9 @@ module.exports = {
 }
 
 @theme {
-  --font-sans: \"Outfit\", system-ui, sans-serif;
+  --font-family-sans: \"Outfit\", system-ui, sans-serif;
   --color-brand: #05131D;
   --color-brand-yellow: #FAC80A;
-  --color-brand-red: #C91A09;
 }""" ]
                     ]
                 , Html.p [ Attr.class "text-xs text-gray-500" ]
@@ -477,15 +473,16 @@ viewTypeScale =
 
 typeScaleRows : List { name : String, weight : String, size : String, lineHeight : String }
 typeScaleRows =
-    [ { name = "Display", weight = "800", size = "3.5rem", lineHeight = "1.1" }
-    , { name = "H1", weight = "700", size = "2.25rem", lineHeight = "1.2" }
-    , { name = "H2", weight = "700", size = "1.875rem", lineHeight = "1.25" }
-    , { name = "H3", weight = "600", size = "1.5rem", lineHeight = "1.3" }
-    , { name = "H4", weight = "600", size = "1.25rem", lineHeight = "1.4" }
-    , { name = "Body", weight = "400", size = "1rem", lineHeight = "1.6" }
-    , { name = "BodySmall", weight = "400", size = "0.875rem", lineHeight = "1.6" }
-    , { name = "Caption", weight = "400", size = "0.75rem", lineHeight = "1.5" }
-    , { name = "Overline", weight = "600", size = "0.75rem", lineHeight = "1.5" }
+    [ { name = "Display",   weight = "700", size = "3.0rem",   lineHeight = "1.1"  }
+    , { name = "Heading1",  weight = "700", size = "1.875rem", lineHeight = "1.2"  }
+    , { name = "Heading2",  weight = "700", size = "1.5rem",   lineHeight = "1.3"  }
+    , { name = "Heading3",  weight = "600", size = "1.25rem",  lineHeight = "1.35" }
+    , { name = "Heading4",  weight = "600", size = "1.125rem", lineHeight = "1.4"  }
+    , { name = "Body",      weight = "400", size = "1rem",     lineHeight = "1.6"  }
+    , { name = "BodySmall", weight = "500", size = "0.875rem", lineHeight = "1.5"  }
+    , { name = "Caption",   weight = "400", size = "0.875rem", lineHeight = "1.4"  }
+    , { name = "Mono",      weight = "400", size = "0.875rem", lineHeight = "1.6"  }
+    , { name = "Overline",  weight = "600", size = "0.75rem",  lineHeight = "1.4"  }
     ]
 
 
