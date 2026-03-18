@@ -28,7 +28,9 @@ jobs:
 
       - uses: cachix/cachix-action@v16
         with:
-          name: devenv
+          name: palikkaharrastajat
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+          extraPullNames: devenv
 
       - name: Install devenv.sh
         shell: bash
