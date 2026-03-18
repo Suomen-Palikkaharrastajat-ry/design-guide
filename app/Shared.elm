@@ -126,9 +126,15 @@ viewNavbar model toMsg =
                         ]
                     ]
                 , Html.button
-                    [ Attr.class "sm:hidden text-white p-2 ml-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow"
+                    [ Attr.class "sm:hidden text-white p-2 ml-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow cursor-pointer"
                     , Html.Events.onClick (toMsg ToggleMenu)
-                    , Attr.attribute "aria-label" "Avaa valikko"
+                    , Attr.attribute "aria-label"
+                        (if model.menuOpen then
+                            "Sulje valikko"
+
+                         else
+                            "Avaa valikko"
+                        )
                     , Attr.attribute "aria-expanded"
                         (if model.menuOpen then
                             "true"
@@ -136,6 +142,7 @@ viewNavbar model toMsg =
                          else
                             "false"
                         )
+                    , Attr.attribute "aria-controls" "mobile-nav"
                     ]
                     [ Html.span [ Attr.class "block w-6 h-0.5 bg-white mb-1.5" ] []
                     , Html.span [ Attr.class "block w-6 h-0.5 bg-white mb-1.5" ] []
@@ -150,7 +157,9 @@ viewNavbar model toMsg =
                 ]
             , if model.menuOpen then
                 Html.ul
-                    [ Attr.class "sm:hidden flex flex-col items-end gap-1 list-none m-0 p-0 pb-3" ]
+                    [ Attr.id "mobile-nav"
+                    , Attr.class "sm:hidden flex flex-col items-end gap-1 list-none m-0 p-0 pb-3"
+                    ]
                     [ navLink "/" "Logot, värit ja fontit"
                     , navLink "/komponentit" "Komponentit"
                     , navLink "/responsiivisuus" "Responsiivisuus"
@@ -168,7 +177,7 @@ navLink href label =
     Html.li []
         [ Html.a
             [ Attr.href href
-            , Attr.class "text-white/80 hover:text-brand-yellow font-medium px-2 sm:px-3 py-1 rounded transition-colors text-sm"
+            , Attr.class "text-white/80 hover:text-brand-yellow font-medium px-2 sm:px-3 py-1 rounded transition-colors text-sm cursor-pointer"
             ]
             [ Html.text label ]
         ]

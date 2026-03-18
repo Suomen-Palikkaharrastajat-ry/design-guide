@@ -79,10 +79,10 @@ view _ _ =
                 , Html.p [ Attr.class "text-sm sm:text-base text-gray-500" ]
                     [ Html.text "WCAG 2.1 AA -ohjeistus kontrasteista, värisokeustuesta, animaatioista ja saavutettavasta nimeämisestä. Koneluettava: "
                     , Html.a
-                        [ Attr.href "/design-guide/logos.jsonld"
+                        [ Attr.href "/design-guide/index.jsonld"
                         , Attr.class "underline hover:text-brand transition-colors font-mono text-sm"
                         ]
-                        [ Html.text "design-guide/logos.jsonld" ]
+                        [ Html.text "design-guide/" ]
                     , Html.text "."
                     ]
                 ]

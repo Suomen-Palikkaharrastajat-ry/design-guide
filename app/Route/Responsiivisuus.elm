@@ -522,8 +522,16 @@ viewEasingDemo model { name, label, easingValue, description } =
         isPlaying =
             Set.member name model.playingEasings
     in
-    Html.div
-        [ Attr.class "border border-gray-200 rounded-xl p-4 space-y-3 cursor-pointer hover:border-gray-300 transition-colors"
+    Html.button
+        [ Attr.class "block w-full text-left border border-gray-200 rounded-xl p-4 space-y-3 cursor-pointer hover:border-gray-300 transition-colors bg-transparent"
+        , Attr.type_ "button"
+        , Attr.attribute "aria-pressed"
+            (if isPlaying then
+                "true"
+
+             else
+                "false"
+            )
         , Events.onClick (PagesMsg.fromMsg (ToggleEasing name))
         ]
         [ Html.div [ Attr.class "flex items-center justify-between" ]
