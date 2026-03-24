@@ -9,7 +9,20 @@ in {
   profiles.shell.module = {
     languages.elm.enable = true;
     languages.haskell.enable = true;
-    languages.haskell.package = pkgs.haskell.packages.ghc96.ghc;
+    # ghcWithPackages pre-compiles all library deps into the GHC package DB so
+    # cabal can resolve them with --offline (no Hackage access needed at build time).
+    languages.haskell.package = pkgs.haskell.packages.ghc96.ghcWithPackages (ps: with ps; [
+      xml-conduit
+      aeson
+      aeson-pretty
+      JuicyPixels
+      vector
+      base64-bytestring
+      temporary
+      tasty
+      tasty-hunit
+      tasty-quickcheck
+    ]);
 
     dotenv.enable = true;
 
