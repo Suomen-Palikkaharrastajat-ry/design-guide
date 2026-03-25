@@ -5,7 +5,7 @@ import System.Directory (doesDirectoryExist, listDirectory, makeAbsolute, remove
 import System.Environment (getEnvironment)
 import System.FilePath ((</>))
 import System.IO (hClose, hPutStr, openTempFile)
-import System.Process (callProcess, createProcess, env, proc, waitForProcess)
+import System.Process (callProcess, createProcess, env, proc, readProcess, waitForProcess)
 
 -- | Export SVG to PNG at given width using rsvg-convert.
 -- Sets up a fontconfig config so Pango can find the Outfit font by name.
@@ -42,21 +42,26 @@ exportPngSquareTrimmed svgIn pngOut sizePx = do
         tmpRaw  = pngOut ++ ".raw.tmp.png"
     callRsvg ["-w", renderSz, "-h", renderSz, "--keep-aspect-ratio",
               "--page-width", renderSz, "--page-height", renderSz] svgIn tmpRaw
-    -- Use "magick" (ImageMagick 7 CLI).  The -extent geometry cannot use
-    -- inline FX expressions, so we store max(w,h) in a named option first.
+    -- Step 1: trim transparent edges into a second temp file.
+    let tmpTrim = pngOut ++ ".trim.tmp.png"
+    callProcess "magick" [tmpRaw, "-trim", "+repage", tmpTrim]
+    removeFile tmpRaw
+    -- Step 2: read back the trimmed dimensions so we can pad to a square
+    -- with a concrete geometry string.  Using %w/%h avoids FX expressions
+    -- that are not supported by ImageMagick 6's -extent argument.
+    dimStr <- readProcess "magick" ["identify", "-format", "%w %h", tmpTrim] ""
+    let [w, h] = map (read :: String -> Int) (words dimStr)
+        dim    = show (max w h)
+    -- Step 3: pad to square and scale to final size.
     callProcess "magick"
-        [ tmpRaw
-        , "-trim", "+repage"
-        -- record max(w,h) before any further processing
-        , "-set", "option:dim", "%[fx:max(w,h)]"
-        -- pad to square in case content w ≠ h
+        [ tmpTrim
         , "-gravity", "center"
         , "-background", "transparent"
-        , "-extent", "%[option:dim]x%[option:dim]"
+        , "-extent", dim ++ "x" ++ dim
         , "-resize", sz ++ "x" ++ sz
         , pngOut
         ]
-    removeFile tmpRaw
+    removeFile tmpTrim
 
 -- | Export SVG to WebP at given width (via intermediate PNG and cwebp).
 exportWebp :: FilePath -> FilePath -> Int -> IO ()
