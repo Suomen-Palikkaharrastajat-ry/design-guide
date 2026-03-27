@@ -324,7 +324,7 @@ viewFooter =
                 , -- Col 2: service links
                   Html.div [ Attr.class "space-y-3 pl-29 sm:pl-0" ]
                     [ Html.p [ Attr.class "text-xs font-semibold text-white/50 uppercase tracking-wider" ]
-                        [ Html.text "Linkit" ]
+                        [ Html.text "Yhdistys" ]
                     , Html.ul [ Attr.class "space-y-2 list-none m-0 p-0" ]
                         [ Html.li []
                             [ Html.a
