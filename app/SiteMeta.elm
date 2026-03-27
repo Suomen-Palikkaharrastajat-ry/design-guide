@@ -8,7 +8,7 @@ organizationName =
 
 siteTitle : String
 siteTitle =
-    "Logo ja värit — Suomen Palikkaharrastajat ry"
+    "Palikkatyylit"
 
 
 description : String

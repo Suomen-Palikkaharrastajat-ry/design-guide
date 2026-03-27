@@ -33,7 +33,7 @@ viewButton config =
 viewEllipsis : Html msg
 viewEllipsis =
     Html.span
-        [ Attr.class "inline-flex items-center px-3 py-2 text-sm font-medium border border-gray-300 border-r-0 bg-white text-gray-400 select-none" ]
+        [ Attr.class "inline-flex items-center px-3 py-2 type-body-small border border-gray-300 border-r-0 bg-white text-gray-400 select-none" ]
         [ Html.text "⋯" ]
 
 
@@ -48,7 +48,7 @@ buttonClass : Bool -> Position -> String
 buttonClass active position =
     let
         base =
-            "px-4 py-2 text-sm font-medium border transition-colors cursor-pointer focus:z-10 focus:outline-none focus:ring-2 focus:ring-brand "
+            "px-4 py-2 type-body-small border transition-colors cursor-pointer focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand "
 
         corners =
             case position of

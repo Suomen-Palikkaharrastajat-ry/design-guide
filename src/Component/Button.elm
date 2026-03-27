@@ -18,7 +18,7 @@ type Size
     | Large
 
 
-view : { label : String, variant : Variant, size : Size, onClick : msg, disabled : Bool, loading : Bool } -> Html msg
+view : { label : String, variant : Variant, size : Size, onClick : msg, disabled : Bool, loading : Bool, ariaPressedState : Maybe Bool } -> Html msg
 view config =
     let
         isInactive =
@@ -46,6 +46,21 @@ view config =
 
             else
                 []
+
+        pressedAttrs =
+            case config.ariaPressedState of
+                Just pressed ->
+                    [ Attr.attribute "aria-pressed"
+                        (if pressed then
+                            "true"
+
+                         else
+                            "false"
+                        )
+                    ]
+
+                Nothing ->
+                    []
 
         clickAttrs =
             if isInactive then
@@ -78,7 +93,7 @@ view config =
                 Html.text config.label
     in
     Html.button
-        (baseAttrs ++ loadingAttrs ++ clickAttrs)
+        (baseAttrs ++ loadingAttrs ++ pressedAttrs ++ clickAttrs)
         [ content ]
 
 
@@ -93,7 +108,7 @@ viewLink config =
 
 buttonClasses : Variant -> Size -> String
 buttonClasses variant size =
-    "inline-flex items-center justify-center font-semibold rounded transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 "
+    "inline-flex items-center justify-center font-semibold rounded transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 "
         ++ variantClasses variant
         ++ " "
         ++ sizeClasses size
@@ -103,16 +118,16 @@ variantClasses : Variant -> String
 variantClasses variant =
     case variant of
         Primary ->
-            "bg-brand-yellow text-brand hover:opacity-90 focus:ring-brand-yellow"
+            "bg-brand-yellow text-brand hover:opacity-90 focus-visible:ring-brand-yellow"
 
         Secondary ->
-            "bg-white text-brand border border-brand hover:bg-gray-50 focus:ring-brand"
+            "bg-white text-brand border border-brand hover:bg-gray-50 focus-visible:ring-brand"
 
         Ghost ->
-            "bg-transparent text-brand hover:bg-brand/5 focus:ring-brand"
+            "bg-transparent text-brand hover:bg-brand/5 focus-visible:ring-brand"
 
         Danger ->
-            "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500"
+            "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500"
 
 
 sizeClasses : Size -> String

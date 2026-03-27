@@ -30,10 +30,10 @@ view config =
                 ]
                 [ Html.div
                     [ Attr.class "flex items-center justify-between px-6 py-4" ]
-                    [ Html.h2 [ Attr.class "text-lg font-semibold text-brand" ] [ Html.text config.title ]
+                    [ Html.h2 [ Attr.class "type-h4 text-brand" ] [ Html.text config.title ]
                     , Html.button
                         [ Attr.type_ "button"
-                        , Attr.class "inline-flex items-center justify-center w-11 h-11 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand"
+                        , Attr.class "inline-flex items-center justify-center w-11 h-11 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
                         , Attr.attribute "aria-label" "Sulje"
                         , Attr.attribute "autofocus" ""
                         , Events.onClick config.onClose

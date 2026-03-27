@@ -27,6 +27,11 @@ import Component.Toast as Toast
 import FeatherIcons
 import Component.Toggle as Toggle
 import Component.Tooltip as Tooltip
+import Component.FeatureGrid as FeatureGrid
+import Component.Footer as Footer
+import Component.Hero as Hero
+import Component.Navbar as Navbar
+import Component.Pricing as Pricing
 import Dict exposing (Dict)
 import Effect exposing (Effect)
 import FatalError exposing (FatalError)
@@ -213,6 +218,7 @@ view _ _ model =
                 , viewToggle model
                 , viewTooltip model
                 , viewToolbar
+                , viewSivupohjat
                 ]
             ]
         ]
@@ -227,7 +233,7 @@ viewConventions =
         , Html.ul [ Attr.class "list-disc list-inside space-y-1 text-blue-800" ]
             [ Html.li [] [ Html.text "Kaikilla painikemaisilla elementeillä tulee olla ", Html.code [ Attr.class "font-mono bg-blue-100 px-1 rounded" ] [ Html.text "cursor-pointer" ], Html.text " — myös ButtonGroup, CloseButton, Pagination ja ListGroup." ]
             , Html.li [] [ Html.text "Poistettu/disabled-tila käyttää ", Html.code [ Attr.class "font-mono bg-blue-100 px-1 rounded" ] [ Html.text "cursor-not-allowed" ], Html.text "." ]
-            , Html.li [] [ Html.text "Kaikki interaktiiviset elementit tarjoavat ", Html.code [ Attr.class "font-mono bg-blue-100 px-1 rounded" ] [ Html.text "focus:ring-2 focus:ring-brand" ], Html.text " näppäimistökäyttöä varten." ]
+            , Html.li [] [ Html.text "Kaikki interaktiiviset elementit tarjoavat ", Html.code [ Attr.class "font-mono bg-blue-100 px-1 rounded" ] [ Html.text "focus-visible:ring-2 focus-visible:ring-brand" ], Html.text " näppäimistökäyttöä varten (ei hiirellä, vain näppäimistöllä)." ]
             ]
         ]
 
@@ -265,6 +271,11 @@ viewCompIndex =
             , "Toast"
             , "Toggle"
             , "Tooltip"
+            , "FeatureGrid"
+            , "Hero"
+            , "Navbar"
+            , "Footer"
+            , "Pricing"
             ]
         )
 
@@ -511,9 +522,9 @@ viewButton model =
                 , Button.viewLink { label = "Large", variant = Button.Primary, size = Button.Large, href = "#" }
                 ]
             , Html.div [ Attr.class "flex flex-wrap gap-3 items-center" ]
-                [ Button.view { label = "Normal", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = False, loading = False }
-                , Button.view { label = "Disabled", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = True, loading = False }
-                , Button.view { label = "Lataa", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = False, loading = True }
+                [ Button.view { label = "Normal", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = False, loading = False, ariaPressedState = Nothing }
+                , Button.view { label = "Disabled", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = True, loading = False, ariaPressedState = Nothing }
+                , Button.view { label = "Lataa", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = False, loading = True, ariaPressedState = Nothing }
                 ]
             ]
         )
@@ -788,6 +799,7 @@ viewDialog model =
                 , onClick = PagesMsg.fromMsg OpenDialog
                 , disabled = False
                 , loading = False
+                , ariaPressedState = Nothing
                 }
             , Dialog.view
                 { title = "Esimerkki-modaali"
@@ -795,7 +807,7 @@ viewDialog model =
                 , footer =
                     Just
                         (Html.div [ Attr.class "flex justify-end gap-2" ]
-                            [ Button.view { label = "Sulje", variant = Button.Secondary, size = Button.Medium, onClick = PagesMsg.fromMsg CloseDialog, disabled = False, loading = False }
+                            [ Button.view { label = "Sulje", variant = Button.Secondary, size = Button.Medium, onClick = PagesMsg.fromMsg CloseDialog, disabled = False, loading = False, ariaPressedState = Nothing }
                             ]
                         )
                 , isOpen = model.dialogOpen
@@ -1242,6 +1254,7 @@ viewTooltip model =
                         , onClick = PagesMsg.fromMsg (SelectTab "Tooltip" PreviewTab)
                         , disabled = False
                         , loading = False
+                        , ariaPressedState = Nothing
                         }
                     ]
                 }
@@ -1440,5 +1453,191 @@ viewLightToolbar =
   </div>
 </nav>""" ]
                 ]
+            ]
+        ]
+
+
+-- ── Sivupohjat ────────────────────────────────────────────────────────────────
+
+
+viewSivupohjat : Html (PagesMsg Msg)
+viewSivupohjat =
+    Html.section [ Attr.id "sivupohjat", Attr.class "scroll-mt-28 space-y-8 sm:space-y-10" ]
+        [ Html.h2 [ Attr.class "text-xl sm:text-2xl font-bold text-brand" ] [ Html.text "Sivupohjat" ]
+        , Html.p [ Attr.class "text-sm text-gray-500" ]
+            [ Html.text "Valmiit sivupohjakomponentit: Hero, Navbar, FeatureGrid, Footer, Pricing. Sopivat suoraan uusille sivustoille." ]
+        , viewHeroComp
+        , viewNavbarComp
+        , viewFeatureGridComp
+        , viewFooterComp
+        , viewPricingComp
+        ]
+
+
+viewHeroComp : Html (PagesMsg Msg)
+viewHeroComp =
+    Html.div [ Attr.class "space-y-4" ]
+        [ SectionHeader.viewSub
+            { title = "Hero"
+            , description = Just "Sivun yläosan hero-osio. Otsikko, alaotsikko ja CTA-nappulat."
+            }
+        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200" ]
+            [ Hero.view
+                { title = "Tervetuloa!"
+                , subtitle = Just "Lyhyt kuvaus sivustosta tai palvelusta."
+                , cta =
+                    [ Button.viewLink { label = "Aloita", variant = Button.Primary, size = Button.Large, href = "#" }
+                    , Button.viewLink { label = "Lue lisää", variant = Button.Ghost, size = Button.Large, href = "#" }
+                    ]
+                }
+            ]
+        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+            [ Html.code []
+                [ Html.text """import Component.Hero as Hero
+
+Hero.view
+    { title    = "Tervetuloa!"
+    , subtitle = Just "Lyhyt kuvaus."
+    , cta      = [ Button.viewLink { label = "Aloita", ... } ]
+    }""" ]
+            ]
+        ]
+
+
+viewNavbarComp : Html (PagesMsg Msg)
+viewNavbarComp =
+    Html.div [ Attr.class "space-y-4" ]
+        [ SectionHeader.viewSub
+            { title = "Navbar"
+            , description = Just "Yksinkertainen vaalea navigaatiopalkki. Logolle, linkeille ja toimintopainikkeelle."
+            }
+        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200" ]
+            [ Navbar.view
+                { logo = Html.span [ Attr.class "font-bold text-brand text-lg" ] [ Html.text "Logo" ]
+                , links =
+                    [ { label = "Etusivu", href = "#" }
+                    , { label = "Tapahtumat", href = "#" }
+                    , { label = "Yhteystiedot", href = "#" }
+                    ]
+                , action = Just (Button.viewLink { label = "Kirjaudu", variant = Button.Primary, size = Button.Small, href = "#" })
+                }
+            ]
+        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+            [ Html.code []
+                [ Html.text """import Component.Navbar as Navbar
+
+Navbar.view
+    { logo   = Html.img [ Attr.src "/logo.svg" ] []
+    , links  = [ { label = "Etusivu", href = "/" } ]
+    , action = Just (Button.viewLink { label = "Kirjaudu", ... })
+    }""" ]
+            ]
+        ]
+
+
+viewFeatureGridComp : Html (PagesMsg Msg)
+viewFeatureGridComp =
+    Html.div [ Attr.class "space-y-4" ]
+        [ SectionHeader.viewSub
+            { title = "FeatureGrid"
+            , description = Just "Ominaisuuksien esittelyruudukko. 2–4 saraketta."
+            }
+        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200 bg-white" ]
+            [ FeatureGrid.view
+                { columns = 3
+                , features =
+                    [ { icon = Just "🧱", title = "Helppo aloittaa", description = [ Html.text "Kopioi komponentit ja käytä heti." ] }
+                    , { icon = Just "🎨", title = "Yhtenäinen ilme", description = [ Html.text "Kaikki noudattavat samaa design-tokenia." ] }
+                    , { icon = Just "♿", title = "Saavutettava", description = [ Html.text "WCAG 2.1 AA -tason fokusrenkaat ja ARIA." ] }
+                    ]
+                }
+            ]
+        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+            [ Html.code []
+                [ Html.text """import Component.FeatureGrid as FeatureGrid
+
+FeatureGrid.view
+    { columns  = 3
+    , features =
+        [ { icon = Just "🧱", title = "Otsikko"
+          , description = [ Html.text "Kuvaus." ] }
+        ]
+    }""" ]
+            ]
+        ]
+
+
+viewFooterComp : Html (PagesMsg Msg)
+viewFooterComp =
+    Html.div [ Attr.class "space-y-4" ]
+        [ SectionHeader.viewSub
+            { title = "Footer"
+            , description = Just "Sivun alatunniste linkkiryhmillä ja copyright-tekstillä."
+            }
+        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200" ]
+            [ Footer.view
+                { groups =
+                    [ { heading = "Palvelut"
+                      , links = [ { label = "Kotisivut", href = "#" }, { label = "Kalenteri", href = "#" } ]
+                      }
+                    , { heading = "Yhdistys"
+                      , links = [ { label = "Tietoa meistä", href = "#" }, { label = "Yhteystiedot", href = "#" } ]
+                      }
+                    ]
+                , copyright = "© 2026 Suomen Palikkaharrastajat ry"
+                }
+            ]
+        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+            [ Html.code []
+                [ Html.text """import Component.Footer as Footer
+
+Footer.view
+    { groups =
+        [ { heading = "Palvelut"
+          , links   = [ { label = "Kotisivut", href = "/" } ]
+          }
+        ]
+    , copyright = "© 2026 Organisaatio"
+    }""" ]
+            ]
+        ]
+
+
+viewPricingComp : Html (PagesMsg Msg)
+viewPricingComp =
+    Html.div [ Attr.class "space-y-4" ]
+        [ SectionHeader.viewSub
+            { title = "Pricing"
+            , description = Just "Hinnoitteluruudukko. Yksi taso voidaan nostaa esiin (highlighted)."
+            }
+        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200 bg-white" ]
+            [ Pricing.view
+                [ { name = "Ilmainen"
+                  , price = "0 €"
+                  , period = Just "kk"
+                  , features = [ "Ominaisuus A", "Ominaisuus B" ]
+                  , cta = Button.viewLink { label = "Aloita ilmaiseksi", variant = Button.Secondary, size = Button.Medium, href = "#" }
+                  , highlighted = False
+                  }
+                , { name = "Pro"
+                  , price = "9 €"
+                  , period = Just "kk"
+                  , features = [ "Kaikki ilmaiset", "Ominaisuus C", "Prioriteettituki" ]
+                  , cta = Button.viewLink { label = "Valitse Pro", variant = Button.Primary, size = Button.Medium, href = "#" }
+                  , highlighted = True
+                  }
+                ]
+            ]
+        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+            [ Html.code []
+                [ Html.text """import Component.Pricing as Pricing
+
+Pricing.view
+    [ { name = "Pro", price = "9 €", period = Just "kk"
+      , features = [ "Ominaisuus" ]
+      , cta = Button.viewLink { ... }
+      , highlighted = True
+      }
+    ]""" ]
             ]
         ]

@@ -34,7 +34,7 @@ view config =
         ]
         [ Html.button
             [ Attr.type_ "button"
-            , Attr.class "list-none cursor-pointer inline-flex items-center gap-1 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand select-none"
+            , Attr.class "list-none cursor-pointer inline-flex items-center gap-1 px-4 py-2 type-body-small bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand select-none"
             , Attr.attribute "aria-haspopup" "menu"
             , Attr.attribute "aria-expanded"
                 (if config.isOpen then
