@@ -47,7 +47,7 @@ colorTextPrimary =
 
 colorTextPrimaryTw : String
 colorTextPrimaryTw =
-    "text-brand"
+    "text-text-primary"
 
 -- Text on dark or brand-colored backgrounds.
 colorTextOnDark : String
@@ -56,7 +56,7 @@ colorTextOnDark =
 
 colorTextOnDarkTw : String
 colorTextOnDarkTw =
-    "text-white"
+    "text-text-on-dark"
 
 -- Secondary labels, captions, helper text on light backgrounds.
 colorTextMuted : String
@@ -65,7 +65,7 @@ colorTextMuted =
 
 colorTextMutedTw : String
 colorTextMutedTw =
-    "text-gray-500"
+    "text-text-muted"
 
 -- De-emphasised metadata; use only for large text.
 colorTextSubtle : String
@@ -74,7 +74,7 @@ colorTextSubtle =
 
 colorTextSubtleTw : String
 colorTextSubtleTw =
-    "text-gray-400"
+    "text-text-subtle"
 
 -- Default page/document background.
 colorBgPage : String
@@ -83,7 +83,7 @@ colorBgPage =
 
 colorBgPageTw : String
 colorBgPageTw =
-    "bg-white"
+    "bg-bg-page"
 
 -- Dark section backgrounds. Pair with colorTextOnDark.
 colorBgDark : String
@@ -92,7 +92,7 @@ colorBgDark =
 
 colorBgDarkTw : String
 colorBgDarkTw =
-    "bg-brand"
+    "bg-bg-dark"
 
 -- Light card and section backgrounds.
 colorBgSubtle : String
@@ -101,7 +101,7 @@ colorBgSubtle =
 
 colorBgSubtleTw : String
 colorBgSubtleTw =
-    "bg-gray-50"
+    "bg-bg-subtle"
 
 -- Brand accent CTA color. Always pair with colorTextPrimary.
 colorBgAccent : String
@@ -110,7 +110,7 @@ colorBgAccent =
 
 colorBgAccentTw : String
 colorBgAccentTw =
-    "bg-brand-yellow"
+    "bg-bg-accent"
 
 -- Standard card and section divider borders.
 colorBorderDefault : String
@@ -119,7 +119,7 @@ colorBorderDefault =
 
 colorBorderDefaultTw : String
 colorBorderDefaultTw =
-    "border-gray-200"
+    "border-border-default"
 
 -- Brand-colored borders, left-accent rules, focus rings.
 colorBorderBrand : String
@@ -128,7 +128,16 @@ colorBorderBrand =
 
 colorBorderBrandTw : String
 colorBorderBrandTw =
-    "border-brand"
+    "border-border-brand"
+
+-- Error states, destructive actions, required field indicators.
+colorBrandRed : String
+colorBrandRed =
+    "#C91A09"
+
+colorBrandRedTw : String
+colorBrandRedTw =
+    "text-brand-red"
 
 -- ---------------------------------------------------------------------------
 -- Skin tones
@@ -190,22 +199,23 @@ type alias TypeStyle =
 
 typeScale : List TypeStyle
 typeScale =
-    [ { name = "Display", weight = 700, sizePx = 48, sizeRem = 3.0, lineHeight = 1.1, letterSpacingEm = -2.0e-2, cssClass = "text-5xl font-bold", description = "Hero headlines and landing-page titles only." }
-    , { name = "Heading1", weight = 700, sizePx = 30, sizeRem = 1.875, lineHeight = 1.2, letterSpacingEm = -1.0e-2, cssClass = "text-3xl font-bold", description = "Page-level headings (one per page)." }
-    , { name = "Heading2", weight = 700, sizePx = 24, sizeRem = 1.5, lineHeight = 1.3, letterSpacingEm = 0.0, cssClass = "text-2xl font-bold", description = "Section headings." }
-    , { name = "Heading3", weight = 600, sizePx = 20, sizeRem = 1.25, lineHeight = 1.35, letterSpacingEm = 0.0, cssClass = "text-xl font-semibold", description = "Sub-section headings." }
-    , { name = "Body", weight = 400, sizePx = 16, sizeRem = 1.0, lineHeight = 1.6, letterSpacingEm = 0.0, cssClass = "text-base", description = "Default body copy. Minimum size for accessible reading." }
-    , { name = "BodySmall", weight = 500, sizePx = 14, sizeRem = 0.875, lineHeight = 1.5, letterSpacingEm = 0.0, cssClass = "text-sm font-medium", description = "Secondary labels, UI controls, and form hints." }
-    , { name = "Caption", weight = 400, sizePx = 14, sizeRem = 0.875, lineHeight = 1.4, letterSpacingEm = 2.0e-2, cssClass = "text-sm", description = "Image captions, footnotes, and metadata." }
-    , { name = "Mono", weight = 400, sizePx = 14, sizeRem = 0.875, lineHeight = 1.6, letterSpacingEm = 0.0, cssClass = "font-mono text-sm", description = "Hex values, IDs, and code snippets." }
-    , { name = "Overline", weight = 600, sizePx = 12, sizeRem = 0.75, lineHeight = 1.4, letterSpacingEm = 8.0e-2, cssClass = "text-xs font-semibold uppercase tracking-wider", description = "Section category labels. Always uppercase." }
+    [ { name = "Display", weight = 700, sizePx = 48, sizeRem = 3.0, lineHeight = 1.1, letterSpacingEm = -2.0e-2, cssClass = "type-display", description = "Hero headlines and landing-page titles only." }
+    , { name = "Heading1", weight = 700, sizePx = 30, sizeRem = 1.875, lineHeight = 1.2, letterSpacingEm = -1.0e-2, cssClass = "type-h1", description = "Page-level headings (one per page)." }
+    , { name = "Heading2", weight = 700, sizePx = 24, sizeRem = 1.5, lineHeight = 1.3, letterSpacingEm = 0.0, cssClass = "type-h2", description = "Section headings." }
+    , { name = "Heading3", weight = 600, sizePx = 20, sizeRem = 1.25, lineHeight = 1.35, letterSpacingEm = 0.0, cssClass = "type-h3", description = "Sub-section headings." }
+    , { name = "Heading4", weight = 600, sizePx = 18, sizeRem = 1.125, lineHeight = 1.4, letterSpacingEm = 0.0, cssClass = "type-h4", description = "Card and widget headings. Use below Heading3." }
+    , { name = "Body", weight = 400, sizePx = 16, sizeRem = 1.0, lineHeight = 1.6, letterSpacingEm = 0.0, cssClass = "type-body", description = "Default body copy. Minimum size for accessible reading." }
+    , { name = "BodySmall", weight = 500, sizePx = 14, sizeRem = 0.875, lineHeight = 1.5, letterSpacingEm = 0.0, cssClass = "type-body-small", description = "Secondary labels, UI controls, and form hints." }
+    , { name = "Caption", weight = 400, sizePx = 14, sizeRem = 0.875, lineHeight = 1.4, letterSpacingEm = 2.0e-2, cssClass = "type-caption", description = "Image captions, footnotes, and metadata." }
+    , { name = "Mono", weight = 400, sizePx = 14, sizeRem = 0.875, lineHeight = 1.6, letterSpacingEm = 0.0, cssClass = "type-mono", description = "Hex values, IDs, and code snippets." }
+    , { name = "Overline", weight = 600, sizePx = 12, sizeRem = 0.75, lineHeight = 1.4, letterSpacingEm = 8.0e-2, cssClass = "type-overline", description = "Section category labels. Always uppercase." }
     ]
 
 
 -- Display: 48px / weight 700
 typeDisplay : String
 typeDisplay =
-    "text-5xl font-bold"
+    "type-display"
 
 typeDisplayWeight : Int
 typeDisplayWeight =
@@ -214,7 +224,7 @@ typeDisplayWeight =
 -- Heading1: 30px / weight 700
 typeHeading1 : String
 typeHeading1 =
-    "text-3xl font-bold"
+    "type-h1"
 
 typeHeading1Weight : Int
 typeHeading1Weight =
@@ -223,7 +233,7 @@ typeHeading1Weight =
 -- Heading2: 24px / weight 700
 typeHeading2 : String
 typeHeading2 =
-    "text-2xl font-bold"
+    "type-h2"
 
 typeHeading2Weight : Int
 typeHeading2Weight =
@@ -232,7 +242,7 @@ typeHeading2Weight =
 -- Heading3: 20px / weight 600
 typeHeading3 : String
 typeHeading3 =
-    "text-xl font-semibold"
+    "type-h3"
 
 typeHeading3Weight : Int
 typeHeading3Weight =
@@ -241,7 +251,7 @@ typeHeading3Weight =
 -- Body: 16px / weight 400
 typeBody : String
 typeBody =
-    "text-base"
+    "type-body"
 
 typeBodyWeight : Int
 typeBodyWeight =
@@ -250,7 +260,7 @@ typeBodyWeight =
 -- BodySmall: 14px / weight 500
 typeBodySmall : String
 typeBodySmall =
-    "text-sm font-medium"
+    "type-body-small"
 
 typeBodySmallWeight : Int
 typeBodySmallWeight =
@@ -259,7 +269,7 @@ typeBodySmallWeight =
 -- Caption: 14px / weight 400
 typeCaption : String
 typeCaption =
-    "text-sm"
+    "type-caption"
 
 typeCaptionWeight : Int
 typeCaptionWeight =
@@ -268,7 +278,7 @@ typeCaptionWeight =
 -- Mono: 14px / weight 400
 typeMono : String
 typeMono =
-    "font-mono text-sm"
+    "type-mono"
 
 typeMonoWeight : Int
 typeMonoWeight =
@@ -277,10 +287,19 @@ typeMonoWeight =
 -- Overline: 12px / weight 600
 typeOverline : String
 typeOverline =
-    "text-xs font-semibold uppercase tracking-wider"
+    "type-overline"
 
 typeOverlineWeight : Int
 typeOverlineWeight =
+    600
+
+-- Heading4: 18px / weight 600
+typeHeading4 : String
+typeHeading4 =
+    "type-h4"
+
+typeHeading4Weight : Int
+typeHeading4Weight =
     600
 
 -- ---------------------------------------------------------------------------
@@ -307,9 +326,22 @@ spacingScale =
     ]
 
 
+{-| Canonical page wrapper. Apply to the top-level container on every page.
+    Value: "max-w-5xl mx-auto px-4"
+-}
 pageWrapper : String
 pageWrapper =
     "max-w-5xl mx-auto px-4"
+
+{-| Apply to animated logo elements. brand.css hides this class under prefers-reduced-motion. -}
+logoAnimatedClass : String
+logoAnimatedClass =
+    "logo-animated"
+
+{-| Canonical URL for the Outfit variable font hosted by the logo site. -}
+fontUrl : String
+fontUrl =
+    "https://logo.palikkaharrastajat.fi/fonts/Outfit-VariableFont_wght.ttf"
 
 -- ---------------------------------------------------------------------------
 -- Motion

@@ -16,16 +16,16 @@ type TypeScaleRow = (Text, Int, Double, Int, Double, Double, Text, Text)
 
 typeScale :: [TypeScaleRow]
 typeScale =
-    [ ("Display",   700, 3.0,   48, 1.1,  -0.02, "text-5xl font-bold",                           "Hero headlines and landing-page titles only.")
-    , ("Heading1",  700, 1.875, 30, 1.2,  -0.01, "text-3xl font-bold",                           "Page-level headings (one per page).")
-    , ("Heading2",  700, 1.5,   24, 1.3,  0.0,     "text-2xl font-bold",                           "Section headings.")
-    , ("Heading3",  600, 1.25,  20, 1.35, 0.0,     "text-xl font-semibold",                        "Sub-section headings.")
-    , ("Heading4",  600, 1.125, 18, 1.4,  0.0,     "text-lg font-semibold",                        "Card and widget headings. Use below Heading3.")
-    , ("Body",      400, 1.0,   16, 1.6,  0.0,     "text-base",                                    "Default body copy. Minimum size for accessible reading.")
-    , ("BodySmall", 500, 0.875, 14, 1.5,  0.0,     "text-sm font-medium",                          "Secondary labels, UI controls, and form hints.")
-    , ("Caption",   400, 0.875, 14, 1.4,  0.02,    "text-sm",                                      "Image captions, footnotes, and metadata.")
-    , ("Mono",      400, 0.875, 14, 1.6,  0.0,     "font-mono text-sm",                            "Hex values, IDs, and code snippets.")
-    , ("Overline",  600, 0.75,  12, 1.4,  0.08,    "text-xs font-semibold uppercase tracking-wider","Section category labels. Always uppercase.")
+    [ ("Display",   700, 3.0,   48, 1.1,  -0.02, "type-display",    "Hero headlines and landing-page titles only.")
+    , ("Heading1",  700, 1.875, 30, 1.2,  -0.01, "type-h1",         "Page-level headings (one per page).")
+    , ("Heading2",  700, 1.5,   24, 1.3,  0.0,   "type-h2",         "Section headings.")
+    , ("Heading3",  600, 1.25,  20, 1.35, 0.0,   "type-h3",         "Sub-section headings.")
+    , ("Heading4",  600, 1.125, 18, 1.4,  0.0,   "type-h4",         "Card and widget headings. Use below Heading3.")
+    , ("Body",      400, 1.0,   16, 1.6,  0.0,   "type-body",       "Default body copy. Minimum size for accessible reading.")
+    , ("BodySmall", 500, 0.875, 14, 1.5,  0.0,   "type-body-small", "Secondary labels, UI controls, and form hints.")
+    , ("Caption",   400, 0.875, 14, 1.4,  0.02,  "type-caption",    "Image captions, footnotes, and metadata.")
+    , ("Mono",      400, 0.875, 14, 1.6,  0.0,   "type-mono",       "Hex values, IDs, and code snippets.")
+    , ("Overline",  600, 0.75,  12, 1.4,  0.08,  "type-overline",   "Section category labels. Always uppercase.")
     ]
 
 typographyUsageRules :: [Text]
@@ -99,16 +99,17 @@ type SemanticColorRow = (Text, Text, Text, Text, Text, Text)
 
 semanticColors :: [SemanticColorRow]
 semanticColors =
-    [ ("colorTextPrimary",   "text.primary",       hexText subtitleOnLight, "text-brand",        "--color-brand",        "Primary body text; use on white or light-gray backgrounds.")
-    , ("colorTextOnDark",    "text.onDark",         hexText subtitleOnDark,  "text-white",        "--color-white",        "Text on dark or brand-colored backgrounds.")
-    , ("colorTextMuted",     "text.muted",          "#6B7280",               "text-gray-500",     "--color-gray-500",     "Secondary labels, captions, helper text on light backgrounds.")
-    , ("colorTextSubtle",    "text.subtle",         "#9CA3AF",               "text-gray-400",     "--color-gray-400",     "De-emphasised metadata; use only for large text.")
-    , ("colorBgPage",        "background.page",     "#FFFFFF",               "bg-white",          "--color-white",        "Default page/document background.")
-    , ("colorBgDark",        "background.dark",     hexText darkBg,          "bg-brand",          "--color-brand",        "Dark section backgrounds. Pair with colorTextOnDark.")
-    , ("colorBgSubtle",      "background.subtle",   "#F9FAFB",               "bg-gray-50",        "--color-gray-50",      "Light card and section backgrounds.")
-    , ("colorBgAccent",      "background.accent",   "#FAC80A",               "bg-brand-yellow",   "--color-brand-yellow", "Brand accent CTA color. Always pair with colorTextPrimary.")
-    , ("colorBorderDefault", "border.default",      "#E5E7EB",               "border-gray-200",   "--color-gray-200",     "Standard card and section divider borders.")
-    , ("colorBorderBrand",   "border.brand",        hexText darkBg,          "border-brand",      "--color-brand",        "Brand-colored borders, left-accent rules, focus rings.")
+    [ ("colorTextPrimary",   "text.primary",       hexText subtitleOnLight, "text-text-primary",    "--color-text-primary",    "Primary body text; use on white or light-gray backgrounds.")
+    , ("colorTextOnDark",    "text.onDark",         hexText subtitleOnDark,  "text-text-on-dark",    "--color-text-on-dark",    "Text on dark or brand-colored backgrounds.")
+    , ("colorTextMuted",     "text.muted",          "#6B7280",               "text-text-muted",      "--color-text-muted",      "Secondary labels, captions, helper text on light backgrounds.")
+    , ("colorTextSubtle",    "text.subtle",         "#9CA3AF",               "text-text-subtle",     "--color-text-subtle",     "De-emphasised metadata; use only for large text.")
+    , ("colorBgPage",        "background.page",     "#FFFFFF",               "bg-bg-page",           "--color-bg-page",         "Default page/document background.")
+    , ("colorBgDark",        "background.dark",     hexText darkBg,          "bg-bg-dark",           "--color-bg-dark",         "Dark section backgrounds. Pair with colorTextOnDark.")
+    , ("colorBgSubtle",      "background.subtle",   "#F9FAFB",               "bg-bg-subtle",         "--color-bg-subtle",       "Light card and section backgrounds.")
+    , ("colorBgAccent",      "background.accent",   "#FAC80A",               "bg-bg-accent",         "--color-bg-accent",       "Brand accent CTA color. Always pair with colorTextPrimary.")
+    , ("colorBorderDefault", "border.default",      "#E5E7EB",               "border-border-default","--color-border-default",  "Standard card and section divider borders.")
+    , ("colorBorderBrand",   "border.brand",        hexText darkBg,          "border-border-brand",  "--color-border-brand",    "Brand-colored borders, left-accent rules, focus rings.")
+    , ("colorBrandRed",      "color.brandRed",      "#C91A09",               "text-brand-red",       "--color-brand-red",       "Error states, destructive actions, required field indicators.")
     ]
 
 -- ---------------------------------------------------------------------------

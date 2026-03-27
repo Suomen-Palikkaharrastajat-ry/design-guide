@@ -6,7 +6,7 @@ build-type:    Simple
 
 library
   exposed-modules:
-    Guide.Colors, Guide.DesignData, Guide.Json, Guide.JsonLd, Guide.ElmGen,
+    Guide.Colors, Guide.DesignData, Guide.Json, Guide.JsonLd, Guide.ElmGen, Guide.CssGen,
     Logo.BrickLayout, Logo.Blockify, Logo.Compose,
     Logo.Animate, Logo.Raster, Logo.Favicons
   hs-source-dirs: src
@@ -63,7 +63,7 @@ executable brand-gen
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language: GHC2021
   build-depends:
-    base >=4.7 && <5, logo-gen, text, directory, filepath
+    base >=4.7 && <5, logo-gen, text, bytestring, directory, filepath
 
 test-suite logo-gen-tests
   type: exitcode-stdio-1.0

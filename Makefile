@@ -439,10 +439,12 @@ ALL_ANIMATIONS := \
   $(HZ_PNG)/horizontal-skintone-full-animated.gif $(HZ_PNG)/horizontal-skintone-full-animated.webp \
   $(HZ_PNG)/horizontal-skintone-full-dark-animated.gif $(HZ_PNG)/horizontal-skintone-full-dark-animated.webp
 
-# ── brand-gen: design-guide.json + JSON-LD + Elm tokens ──────────────────────
+# ── brand-gen: design-guide.json + JSON-LD + Elm tokens + brand.css ──────────
 
-design-guide.json src/Brand/Tokens.elm &: $(HS_SOURCES) | build
-	$(CABAL) run --offline brand-gen -- --elm-tokens-out src/Brand/Tokens.elm
+design-guide.json src/Brand/Tokens.elm public/brand.css &: $(HS_SOURCES) | build
+	$(CABAL) run --offline brand-gen -- \
+	  --elm-tokens-out src/Brand/Tokens.elm \
+	  --css-out public/brand.css
 
 # ── Text outlining (post-process full composed SVGs) ─────────────────────────
 ALL_FULL_SVGS := $(foreach s,$(HZ_STEMS),$(HZ_SVG)/$(s)-full.svg $(HZ_SVG)/$(s)-full-dark.svg $(HZ_SVG)/$(s)-full-bold.svg $(HZ_SVG)/$(s)-full-dark-bold.svg) \

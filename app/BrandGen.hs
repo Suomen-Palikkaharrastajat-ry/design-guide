@@ -1,32 +1,37 @@
 -- | brand-gen: generate project design-guide assets from Guide.* modules.
 --
--- Writes design-guide.json, design-guide/*.jsonld, and optionally an Elm
--- Guide.Tokens module.  No .blay files are read; this step is independent of
--- the blay render pipeline.
+-- Writes design-guide.json, design-guide/*.jsonld, an Elm Guide.Tokens module,
+-- and optionally public/brand.css.  No .blay files are read; this step is
+-- independent of the blay render pipeline.
 --
 -- == Usage
 --
 -- @
--- brand-gen [--elm-tokens-out FILE]
+-- brand-gen [--elm-tokens-out FILE] [--css-out FILE]
 -- @
 module Main where
 
 import Guide.ElmGen (generateBrandModule)
+import Guide.CssGen (generateBrandCss)
 import Guide.Json (generateDesignGuide)
 import Guide.JsonLd (generateJsonLd)
+import qualified Data.ByteString as BS
+import qualified Data.Text.Encoding as TE
 import qualified Data.Text.IO as TIO
 import System.Directory (createDirectoryIfMissing)
 import System.Environment (getArgs)
 import System.Exit (exitSuccess)
 import System.FilePath (takeDirectory)
 
-newtype BrandArgs = BrandArgs
+data BrandArgs = BrandArgs
     { baElmTokensOut :: FilePath
+    , baCssOut       :: Maybe FilePath
     }
 
 defaultBrandArgs :: BrandArgs
 defaultBrandArgs = BrandArgs
     { baElmTokensOut = "src/Brand/Tokens.elm"
+    , baCssOut       = Nothing
     }
 
 main :: IO ()
@@ -45,27 +50,35 @@ runBrandGen ba = do
     generateDesignGuide
     putStrLn "==> design-guide/*.jsonld"
     generateJsonLd
-    putStrLn $ "==> " ++ baElmTokensOut ba
     let elmOut = baElmTokensOut ba
+    putStrLn $ "==> " ++ elmOut
     createDirectoryIfMissing True (takeDirectory elmOut)
     TIO.writeFile elmOut generateBrandModule
     putStrLn $ "Wrote " ++ elmOut
+    case baCssOut ba of
+        Nothing     -> return ()
+        Just cssOut -> do
+            putStrLn $ "==> " ++ cssOut
+            createDirectoryIfMissing True (takeDirectory cssOut)
+            BS.writeFile cssOut (TE.encodeUtf8 generateBrandCss)
+            putStrLn $ "Wrote " ++ cssOut
     putStrLn "brand-gen: done."
 
 parseArgs :: [String] -> BrandArgs -> Either String BrandArgs
-parseArgs []           ba = Right ba
-parseArgs [f]          _  = Left $ "missing value for flag: " ++ f
+parseArgs []             ba = Right ba
+parseArgs [f]            _  = Left $ "missing value for flag: " ++ f
 parseArgs (f : v : rest) ba = case f of
     "--elm-tokens-out" -> parseArgs rest ba { baElmTokensOut = v }
+    "--css-out"        -> parseArgs rest ba { baCssOut = Just v }
     _                  -> Left $ "unknown flag: " ++ f
 
 usageText :: String
 usageText = unlines
-    [ "Usage: brand-gen [--elm-tokens-out FILE]"
+    [ "Usage: brand-gen [--elm-tokens-out FILE] [--css-out FILE]"
     , ""
     , "Generate project design-guide assets from Guide.* modules."
     , ""
     , "Options:"
-    , "  --elm-tokens-out FILE   Elm tokens output path"
-    , "                          [default: src/Brand/Tokens.elm]"
+    , "  --elm-tokens-out FILE   Elm tokens output path [default: src/Brand/Tokens.elm]"
+    , "  --css-out FILE          Brand CSS output path  [default: none]"
     ]
