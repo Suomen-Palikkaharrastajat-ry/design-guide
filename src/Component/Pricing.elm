@@ -57,14 +57,14 @@ viewTier tier =
 viewFeature : Bool -> String -> Html msg
 viewFeature highlighted feature =
     Html.li
-        [ Attr.class "flex items-center gap-x-3 text-sm" ]
+        [ Attr.class "flex items-center gap-x-3 type-caption" ]
         [ Html.span
             [ Attr.class
                 (if highlighted then
-                    "text-brand-yellow"
+                    "text-white/70 type-h4"
 
                  else
-                    "text-brand"
+                    "text-brand-yellow type-h4"
                 )
             ]
             [ FeatherIcons.check |> FeatherIcons.withSize 16 |> FeatherIcons.toHtml [] ]
@@ -74,7 +74,7 @@ viewFeature highlighted feature =
                     "text-white"
 
                  else
-                    "text-gray-700"
+                    "text-text-primary"
                 )
             ]
             [ Html.text feature ]
@@ -88,38 +88,38 @@ tierClasses highlighted =
                 "bg-brand border-brand"
 
             else
-                "bg-white border-gray-200 shadow-sm"
+                "bg-white border-border-default shadow-sm"
            )
 
 
 tierNameClass : Bool -> String
 tierNameClass highlighted =
-    "text-lg font-semibold "
+    "type-h4 "
         ++ (if highlighted then
                 "text-white"
 
             else
-                "text-gray-900"
+                "text-text-primary"
            )
 
 
 priceClass : Bool -> String
 priceClass highlighted =
-    "text-4xl font-bold tracking-tight "
+    "type-display tracking-tight "
         ++ (if highlighted then
                 "text-white"
 
             else
-                "text-gray-900"
+                "text-text-primary"
            )
 
 
 periodClass : Bool -> String
 periodClass highlighted =
-    "text-sm font-semibold "
+    "type-body-small "
         ++ (if highlighted then
-                "text-brand-yellow"
+                "text-white/70"
 
             else
-                "text-gray-500"
+                "text-text-muted"
            )
