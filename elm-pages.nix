@@ -17,7 +17,7 @@ let
   # elm / elm-format come from Nix packages instead.
   patchedSrc = pkgs.runCommand "elm-pages-npm-src" { nativeBuildInputs = [ pkgs.jq ]; } ''
     mkdir $out
-    jq 'del(.scripts.postinstall)' ${./package.json} > $out/package.json
+    jq 'del(.scripts.postinstall) | del(.devDependencies.lamdera)' ${./package.json} > $out/package.json
     cp ${./package-lock.json} $out/package-lock.json
   '';
 in
