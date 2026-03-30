@@ -3,6 +3,9 @@ module Component.ColorSwatch exposing (ColorSwatchConfig, view)
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
 type alias ColorSwatchConfig =
@@ -16,29 +19,29 @@ type alias ColorSwatchConfig =
 view : ColorSwatchConfig -> Html msg
 view config =
     Html.div
-        [ Attr.class "flex flex-col gap-2" ]
+        [ classes [ Tw.flex, Tw.flex_col, Tw.gap (Th.s2) ] ]
         [ Html.div
-            [ Attr.class "h-20 rounded-lg border border-black/10 shadow-sm"
+            [ classes [ Tw.h (Th.s20), Tw.rounded_lg, Tw.border, Tw.raw "border-black/10", Tw.shadow_sm ]
             , Attr.style "background-color" config.hex
             ]
             []
-        , Html.div [ Attr.class "space-y-1" ]
-            [ Html.div [ Attr.class "type-body-small text-brand" ]
+        , Html.div [ classes [ Tw.raw "space-y-1" ] ]
+            [ Html.div [ classes [ Tw.type_body_small, Tw.text_simple TC.brand ] ]
                 [ Html.text config.name ]
-            , Html.div [ Attr.class "font-mono text-xs text-gray-500" ]
+            , Html.div [ classes [ Tw.font_mono, Tw.text_xs, Tw.raw "text-gray-500" ] ]
                 [ Html.text config.hex ]
             , viewContrastInfo config.hex
             , if String.isEmpty config.description then
                 Html.text ""
 
               else
-                Html.div [ Attr.class "text-xs text-gray-400" ]
+                Html.div [ classes [ Tw.text_xs, Tw.raw "text-gray-400" ] ]
                     [ Html.text config.description ]
             , if List.isEmpty config.usageTags then
                 Html.text ""
 
               else
-                Html.div [ Attr.class "flex flex-wrap gap-1 mt-1" ]
+                Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s1), Tw.mt (Th.s1) ] ]
                     (List.map viewTag config.usageTags)
             ]
         ]
@@ -47,7 +50,7 @@ view config =
 viewTag : String -> Html msg
 viewTag tag =
     Html.span
-        [ Attr.class "text-xs bg-brand/10 text-brand px-2 py-0.5 rounded-full" ]
+        [ classes [ Tw.text_xs, Tw.raw "bg-brand/10", Tw.text_simple TC.brand, Tw.px (Th.s2), Tw.py (Th.s0_dot_5), Tw.rounded_full ] ]
         [ Html.text tag ]
 
 
@@ -105,12 +108,12 @@ viewContrastInfo hex =
                         |> FeatherIcons.withSize 12
                         |> FeatherIcons.toHtml [ Attr.attribute "aria-hidden" "true" ]
             in
-            Html.div [ Attr.class "space-y-0.5 mt-1" ]
-                [ Html.div [ Attr.class "text-xs font-mono text-gray-400 flex items-center gap-1" ]
+            Html.div [ classes [ Tw.raw "space-y-0.5", Tw.mt (Th.s1) ] ]
+                [ Html.div [ classes [ Tw.text_xs, Tw.font_mono, Tw.raw "text-gray-400", Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                     [ Html.text ("vs #FFF: " ++ fmt ratioVsWhite ++ " " ++ gradeLabel ratioVsWhite)
                     , gradeIcon ratioVsWhite
                     ]
-                , Html.div [ Attr.class "text-xs font-mono text-gray-400 flex items-center gap-1" ]
+                , Html.div [ classes [ Tw.text_xs, Tw.font_mono, Tw.raw "text-gray-400", Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                     [ Html.text ("vs #1A1A2E: " ++ fmt ratioVsDark ++ " " ++ gradeLabel ratioVsDark)
                     , gradeIcon ratioVsDark
                     ]

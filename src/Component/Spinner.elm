@@ -2,18 +2,29 @@ module Component.Spinner exposing (Size(..), view)
 
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Theme as Th
 
 
 view : { size : Size, label : String } -> Html msg
 view config =
     Html.div
-        [ Attr.class "inline-flex items-center gap-2"
+        [ classes [ Tw.inline_flex, Tw.items_center, Tw.gap (Th.s2) ]
         , Attr.attribute "role" "status"
         ]
         [ Html.div
-            [ Attr.class ("animate-spin rounded-full border-2 border-gray-200 border-t-brand " ++ sizeClass config.size) ]
+            [ classes
+                ([ Tw.animate_spin
+                 , Tw.rounded_full
+                 , Tw.border_2
+                 , Tw.raw "border-gray-200"
+                 , Tw.raw "border-t-brand"
+                 ]
+                    ++ sizeTw config.size
+                )
+            ]
             []
-        , Html.span [ Attr.class "sr-only" ] [ Html.text config.label ]
+        , Html.span [ classes [ Tw.sr_only ] ] [ Html.text config.label ]
         ]
 
 
@@ -23,14 +34,14 @@ type Size
     | Large
 
 
-sizeClass : Size -> String
-sizeClass size =
+sizeTw : Size -> List Tw.Tailwind
+sizeTw size =
     case size of
         Small ->
-            "w-4 h-4"
+            [ Tw.w (Th.s4), Tw.h (Th.s4) ]
 
         Medium ->
-            "w-6 h-6"
+            [ Tw.w (Th.s6), Tw.h (Th.s6) ]
 
         Large ->
-            "w-10 h-10"
+            [ Tw.w (Th.s10), Tw.h (Th.s10) ]

@@ -13,29 +13,30 @@ Provides three primitives that callers compose:
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
-{-| The responsive breakpoint above which the drawer (and overlay) are hidden.
-Maps to a Tailwind hidden utility so all class strings appear literally in source
-for JIT purging.
--}
+{-| The responsive breakpoint above which the drawer (and overlay) are hidden. -}
 type Breakpoint
     = Sm
     | Md
     | Lg
 
 
-breakpointClass : Breakpoint -> String
-breakpointClass bp =
+breakpointTw : Breakpoint -> Tw.Tailwind
+breakpointTw bp =
     case bp of
         Sm ->
-            "sm:hidden "
+            Bp.sm [ Tw.hidden ]
 
         Md ->
-            "md:hidden "
+            Bp.md [ Tw.hidden ]
 
         Lg ->
-            "lg:hidden "
+            Bp.lg [ Tw.hidden ]
 
 
 {-| Configuration for a single navigation link inside the drawer. -}
@@ -53,7 +54,7 @@ viewOverlay : { isOpen : Bool, onClose : msg, breakpoint : Breakpoint } -> Html 
 viewOverlay config =
     if config.isOpen then
         Html.div
-            [ Attr.class (breakpointClass config.breakpoint ++ "fixed inset-0 z-40 bg-black/50")
+            [ classes [ breakpointTw config.breakpoint, Tw.fixed, Tw.raw "inset-0", Tw.z_40, Tw.raw "bg-black/50" ]
             , Html.Events.onClick config.onClose
             ]
             []
@@ -74,22 +75,32 @@ view :
     -> Html msg
 view config =
     Html.div
-        [ Attr.class
-            (breakpointClass config.breakpoint
-                ++ "fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-50 "
-                ++ "transform overflow-y-auto transition-transform duration-300 ease-in-out motion-reduce:transition-none "
-                ++ (if config.isOpen then
-                        "translate-x-0"
+        [ classes
+            [ breakpointTw config.breakpoint
+            , Tw.fixed
+            , Tw.raw "inset-y-0"
+            , Tw.raw "left-0"
+            , Tw.w (Th.s64)
+            , Tw.raw "bg-white"
+            , Tw.shadow_lg
+            , Tw.z_50
+            , Tw.transform
+            , Tw.overflow_y_auto
+            , Tw.transition_transform
+            , Tw.duration_300
+            , Tw.ease_in_out
+            , Bp.withVariant "motion-reduce" [ Tw.transition_none ]
+            , if config.isOpen then
+                Tw.raw "translate-x-0"
 
-                    else
-                        "-translate-x-full"
-                   )
-            )
+              else
+                Tw.neg_translate_x_full
+            ]
         , Attr.id config.id
         ]
         (Html.button
             [ Html.Events.onClick config.onClose
-            , Attr.class "sr-only"
+            , classes [ Tw.sr_only ]
             , Attr.attribute "aria-label" "Sulje valikko"
             ]
             [ Html.text "Sulje valikko" ]
@@ -109,7 +120,20 @@ viewNavLink config =
     Html.li []
         [ Html.a
             ([ Attr.href config.href
-             , Attr.class "flex items-center gap-2 text-brand font-medium px-3 py-2 rounded hover:bg-gray-100 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow"
+             , classes
+                [ Tw.flex
+                , Tw.items_center
+                , Tw.gap (Th.s2)
+                , Tw.text_simple TC.brand
+                , Tw.font_medium
+                , Tw.px (Th.s3)
+                , Tw.py (Th.s2)
+                , Tw.rounded
+                , Bp.hover [ Tw.raw "bg-gray-100" ]
+                , Tw.transition_colors
+                , Tw.text_sm
+                , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, Tw.raw "ring-brand-yellow" ]
+                ]
              , Html.Events.onClick config.onClose
              ]
                 ++ (if config.isActive then
@@ -120,12 +144,14 @@ viewNavLink config =
                    )
             )
             [ Html.span
-                [ Attr.class
-                    (if config.isActive then
-                        "w-2 h-2 rounded-full bg-brand-yellow flex-shrink-0"
+                [ classes
+                    ([ Tw.w (Th.s2), Tw.h (Th.s2), Tw.rounded_full, Tw.shrink_0 ]
+                        ++ (if config.isActive then
+                                [ Tw.bg_simple TC.brandYellow ]
 
-                     else
-                        "w-2 h-2 rounded-full flex-shrink-0 invisible"
+                            else
+                                [ Tw.invisible ]
+                           )
                     )
                 ]
                 []

@@ -3,6 +3,10 @@ module Component.Pagination exposing (view)
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
 view :
@@ -15,7 +19,7 @@ view config =
     Html.nav
         [ Attr.attribute "aria-label" "Sivutus" ]
         [ Html.ul
-            [ Attr.class "inline-flex items-center gap-1 text-sm" ]
+            [ classes [ Tw.inline_flex, Tw.items_center, Tw.gap (Th.s1), Tw.text_sm ] ]
             (prevButton config
                 :: List.map (pageButton config) (List.range 1 config.totalPages)
                 ++ [ nextButton config ]
@@ -28,7 +32,7 @@ prevButton config =
     Html.li []
         [ Html.button
             [ Attr.type_ "button"
-            , Attr.class (navBtnClass (config.currentPage <= 1))
+            , classes (navBtnTw (config.currentPage <= 1))
             , Attr.disabled (config.currentPage <= 1)
             , Events.onClick (config.onPageClick (config.currentPage - 1))
             , Attr.attribute "aria-label" "Edellinen"
@@ -42,7 +46,7 @@ nextButton config =
     Html.li []
         [ Html.button
             [ Attr.type_ "button"
-            , Attr.class (navBtnClass (config.currentPage >= config.totalPages))
+            , classes (navBtnTw (config.currentPage >= config.totalPages))
             , Attr.disabled (config.currentPage >= config.totalPages)
             , Events.onClick (config.onPageClick (config.currentPage + 1))
             , Attr.attribute "aria-label" "Seuraava"
@@ -56,7 +60,7 @@ pageButton config page =
     Html.li []
         [ Html.button
             [ Attr.type_ "button"
-            , Attr.class (pageBtnClass (page == config.currentPage))
+            , classes (pageBtnTw (page == config.currentPage))
             , Events.onClick (config.onPageClick page)
             , Attr.attribute "aria-current"
                 (if page == config.currentPage then
@@ -70,23 +74,40 @@ pageButton config page =
         ]
 
 
-pageBtnClass : Bool -> String
-pageBtnClass active =
-    "w-9 h-9 flex items-center justify-center rounded-md type-body-small transition-colors cursor-pointer "
+pageBtnTw : Bool -> List Tw.Tailwind
+pageBtnTw active =
+    [ Tw.w (Th.s9)
+    , Tw.h (Th.s9)
+    , Tw.flex
+    , Tw.items_center
+    , Tw.justify_center
+    , Tw.rounded_md
+    , Tw.type_body_small
+    , Tw.transition_colors
+    , Tw.cursor_pointer
+    ]
         ++ (if active then
-                "bg-brand text-white"
+                [ Tw.bg_simple TC.brand, Tw.raw "text-white" ]
 
             else
-                "text-gray-700 hover:bg-gray-100"
+                [ Tw.raw "text-gray-700", Bp.hover [ Tw.raw "bg-gray-100" ] ]
            )
 
 
-navBtnClass : Bool -> String
-navBtnClass disabled =
-    "w-9 h-9 flex items-center justify-center rounded-md text-sm transition-colors "
-        ++ (if disabled then
-                "text-gray-300 cursor-not-allowed"
+navBtnTw : Bool -> List Tw.Tailwind
+navBtnTw isDisabled =
+    [ Tw.w (Th.s9)
+    , Tw.h (Th.s9)
+    , Tw.flex
+    , Tw.items_center
+    , Tw.justify_center
+    , Tw.rounded_md
+    , Tw.text_sm
+    , Tw.transition_colors
+    ]
+        ++ (if isDisabled then
+                [ Tw.raw "text-gray-300", Tw.cursor_not_allowed ]
 
             else
-                "text-gray-700 hover:bg-gray-100 cursor-pointer"
+                [ Tw.raw "text-gray-700", Bp.hover [ Tw.raw "bg-gray-100" ], Tw.cursor_pointer ]
            )

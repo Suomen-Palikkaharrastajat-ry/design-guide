@@ -3,12 +3,16 @@ module Component.ButtonGroup exposing (Position(..), view, viewButton, viewEllip
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
 view : List (Html msg) -> Html msg
 view buttons =
     Html.div
-        [ Attr.class "inline-flex rounded-md shadow-sm"
+        [ classes [ Tw.inline_flex, Tw.rounded_md, Tw.shadow_sm ]
         , Attr.attribute "role" "group"
         ]
         buttons
@@ -24,7 +28,7 @@ viewButton :
 viewButton config =
     Html.button
         [ Attr.type_ "button"
-        , Attr.class (buttonClass config.active config.position)
+        , classes (buttonTw config.active config.position)
         , Events.onClick config.onClick
         ]
         [ Html.text config.label ]
@@ -33,7 +37,20 @@ viewButton config =
 viewEllipsis : Html msg
 viewEllipsis =
     Html.span
-        [ Attr.class "inline-flex items-center px-3 py-2 type-body-small border border-gray-300 border-r-0 bg-white text-gray-400 select-none" ]
+        [ classes
+            [ Tw.inline_flex
+            , Tw.items_center
+            , Tw.px (Th.s3)
+            , Tw.py (Th.s2)
+            , Tw.type_body_small
+            , Tw.border
+            , Tw.raw "border-gray-300"
+            , Tw.border_r_0
+            , Tw.raw "bg-white"
+            , Tw.raw "text-gray-400"
+            , Tw.select_none
+            ]
+        ]
         [ Html.text "⋯" ]
 
 
@@ -44,31 +61,41 @@ type Position
     | Only
 
 
-buttonClass : Bool -> Position -> String
-buttonClass active position =
-    let
-        base =
-            "px-4 py-2 type-body-small border transition-colors cursor-pointer focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand "
+buttonTw : Bool -> Position -> List Tw.Tailwind
+buttonTw active position =
+    [ Tw.px (Th.s4)
+    , Tw.py (Th.s2)
+    , Tw.type_body_small
+    , Tw.border
+    , Tw.transition_colors
+    , Tw.cursor_pointer
+    , Tw.z_10
+    , Bp.focus_visible [ Tw.z_10, Tw.outline_none, Tw.ring_2, Tw.raw "ring-brand" ]
+    ]
+        ++ cornersTw position
+        ++ colorsTw active
 
-        corners =
-            case position of
-                First ->
-                    "rounded-l-md rounded-r-none border-r-0 "
 
-                Middle ->
-                    "rounded-none border-r-0 "
+cornersTw : Position -> List Tw.Tailwind
+cornersTw position =
+    case position of
+        First ->
+            [ Tw.rounded_l_md, Tw.rounded_r_none, Tw.border_r_0 ]
 
-                Last ->
-                    "rounded-r-md rounded-l-none "
+        Middle ->
+            [ Tw.rounded_none, Tw.border_r_0 ]
 
-                Only ->
-                    "rounded-md "
+        Last ->
+            [ Tw.rounded_r_md, Tw.rounded_l_none ]
 
-        colors =
-            if active then
-                "bg-brand text-white border-brand"
+        Only ->
+            [ Tw.rounded_md ]
 
-            else
-                "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-    in
-    base ++ corners ++ colors
+
+colorsTw : Bool -> List Tw.Tailwind
+colorsTw active =
+    if active then
+        [ Tw.bg_simple TC.brand, Tw.raw "text-white", Tw.border_simple TC.brand ]
+
+    else
+        [ Tw.raw "bg-white", Tw.raw "text-gray-700", Tw.raw "border-gray-300", Bp.hover [ Tw.raw "bg-gray-50" ] ]

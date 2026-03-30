@@ -2,6 +2,10 @@ module Component.Navbar exposing (NavLink, view)
 
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
 type alias NavLink =
@@ -18,14 +22,14 @@ view :
     -> Html msg
 view config =
     Html.nav
-        [ Attr.class "bg-white border-b border-border-default" ]
+        [ classes [ Tw.raw "bg-white", Tw.border_b, Tw.border_simple TC.borderDefault ] ]
         [ Html.div
-            [ Attr.class "mx-auto max-w-7xl px-6 lg:px-8" ]
+            [ classes [ Tw.mx_auto, Tw.raw "max-w-7xl", Tw.px (Th.s6), Bp.lg [ Tw.px (Th.s8) ] ] ]
             [ Html.div
-                [ Attr.class "flex h-16 items-center justify-between" ]
-                [ Html.div [ Attr.class "flex items-center gap-x-8" ]
+                [ classes [ Tw.flex, Tw.h (Th.s16), Tw.items_center, Tw.justify_between ] ]
+                [ Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap_x (Th.s8) ] ]
                     [ config.logo
-                    , Html.div [ Attr.class "hidden md:flex items-center gap-x-6" ]
+                    , Html.div [ classes [ Tw.hidden, Bp.md [ Tw.flex ], Tw.items_center, Tw.gap_x (Th.s6) ] ]
                         (List.map viewLink config.links)
                     ]
                 , case config.action of
@@ -43,6 +47,11 @@ viewLink : NavLink -> Html msg
 viewLink link =
     Html.a
         [ Attr.href link.href
-        , Attr.class "type-body-small text-text-muted hover:text-text-primary motion-safe:transition-colors"
+        , classes
+            [ Tw.type_body_small
+            , Tw.text_simple TC.textMuted
+            , Bp.hover [ Tw.text_simple TC.textPrimary ]
+            , Bp.withVariant "motion-safe" [ Tw.transition_colors ]
+            ]
         ]
         [ Html.text link.label ]

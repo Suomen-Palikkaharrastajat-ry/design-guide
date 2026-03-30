@@ -4,6 +4,10 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
 type Variant
@@ -22,19 +26,32 @@ view :
     -> Html msg
 view config =
     Html.div
-        [ Attr.class ("flex items-start gap-3 w-80 rounded-lg border p-4 shadow-lg bg-white " ++ borderClass config.variant) ]
+        [ classes
+            ([ Tw.flex
+             , Tw.items_start
+             , Tw.gap (Th.s3)
+             , Tw.w (Th.s80)
+             , Tw.rounded_lg
+             , Tw.border
+             , Tw.p (Th.s4)
+             , Tw.shadow_lg
+             , Tw.raw "bg-white"
+             ]
+                ++ borderTw config.variant
+            )
+        ]
         [ Html.div
-            [ Attr.class ("mt-0.5 flex-shrink-0 leading-none " ++ iconColorClass config.variant) ]
+            [ classes ([ Tw.mt (Th.s0_dot_5), Tw.shrink_0, Tw.leading_none ] ++ iconColorTw config.variant) ]
             [ icon config.variant ]
-        , Html.div [ Attr.class "flex-1 min-w-0" ]
-            [ Html.p [ Attr.class "type-body-small text-gray-900" ] [ Html.text config.title ]
-            , Html.p [ Attr.class "mt-0.5 text-sm text-gray-500" ] [ Html.text config.body ]
+        , Html.div [ classes [ Tw.flex_1, Tw.min_w (Th.s0) ] ]
+            [ Html.p [ classes [ Tw.type_body_small, Tw.raw "text-gray-900" ] ] [ Html.text config.title ]
+            , Html.p [ classes [ Tw.mt (Th.s0_dot_5), Tw.text_sm, Tw.raw "text-gray-500" ] ] [ Html.text config.body ]
             ]
         , case config.onClose of
             Just onClose ->
                 Html.button
                     [ Attr.type_ "button"
-                    , Attr.class "flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+                    , classes [ Tw.shrink_0, Tw.raw "text-gray-400", Bp.hover [ Tw.raw "text-gray-600" ], Tw.transition_colors ]
                     , Attr.attribute "aria-label" "Sulje"
                     , Events.onClick onClose
                     ]
@@ -45,36 +62,36 @@ view config =
         ]
 
 
-borderClass : Variant -> String
-borderClass variant =
+borderTw : Variant -> List Tw.Tailwind
+borderTw variant =
     case variant of
         Default ->
-            "border-gray-200"
+            [ Tw.raw "border-gray-200" ]
 
         Success ->
-            "border-green-200"
+            [ Tw.raw "border-green-200" ]
 
         Warning ->
-            "border-yellow-200"
+            [ Tw.raw "border-yellow-200" ]
 
         Danger ->
-            "border-red-200"
+            [ Tw.raw "border-red-200" ]
 
 
-iconColorClass : Variant -> String
-iconColorClass variant =
+iconColorTw : Variant -> List Tw.Tailwind
+iconColorTw variant =
     case variant of
         Default ->
-            "text-brand"
+            [ Tw.text_simple TC.brand ]
 
         Success ->
-            "text-green-500"
+            [ Tw.raw "text-green-500" ]
 
         Warning ->
-            "text-yellow-500"
+            [ Tw.raw "text-yellow-500" ]
 
         Danger ->
-            "text-red-500"
+            [ Tw.raw "text-red-500" ]
 
 
 icon : Variant -> Html msg

@@ -3,6 +3,10 @@ module Component.Button exposing (Size(..), Variant(..), view, viewLink)
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
 type Variant
@@ -25,13 +29,13 @@ view config =
             config.disabled || config.loading
 
         baseAttrs =
-            [ Attr.class
-                (buttonClasses config.variant config.size
+            [ classes
+                (buttonTw config.variant config.size
                     ++ (if isInactive then
-                            " cursor-not-allowed opacity-50"
+                            [ Tw.cursor_not_allowed, Tw.opacity_50 ]
 
                         else
-                            ""
+                            []
                        )
                 )
             , Attr.type_ "button"
@@ -71,19 +75,19 @@ view config =
 
         content =
             if config.loading then
-                Html.div [ Attr.class "flex items-center gap-1" ]
+                Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                     [ Html.span
-                        [ Attr.class "w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, Tw.raw "bg-current", Tw.animate_bounce ]
                         , Attr.style "animation-delay" "0ms"
                         ]
                         []
                     , Html.span
-                        [ Attr.class "w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, Tw.raw "bg-current", Tw.animate_bounce ]
                         , Attr.style "animation-delay" "150ms"
                         ]
                         []
                     , Html.span
-                        [ Attr.class "w-1.5 h-1.5 rounded-full bg-current animate-bounce"
+                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, Tw.raw "bg-current", Tw.animate_bounce ]
                         , Attr.style "animation-delay" "300ms"
                         ]
                         []
@@ -101,43 +105,68 @@ viewLink : { label : String, variant : Variant, size : Size, href : String } -> 
 viewLink config =
     Html.a
         [ Attr.href config.href
-        , Attr.class (buttonClasses config.variant config.size)
+        , classes (buttonTw config.variant config.size)
         ]
         [ Html.text config.label ]
 
 
-buttonClasses : Variant -> Size -> String
-buttonClasses variant size =
-    "inline-flex items-center justify-center font-semibold rounded transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 "
-        ++ variantClasses variant
-        ++ " "
-        ++ sizeClasses size
+buttonTw : Variant -> Size -> List Tw.Tailwind
+buttonTw variant size =
+    [ Tw.inline_flex
+    , Tw.items_center
+    , Tw.justify_center
+    , Tw.font_semibold
+    , Tw.rounded
+    , Tw.transition_all
+    , Tw.cursor_pointer
+    , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, Tw.ring_offset_2 ]
+    ]
+        ++ variantTw variant
+        ++ sizeTw size
 
 
-variantClasses : Variant -> String
-variantClasses variant =
+variantTw : Variant -> List Tw.Tailwind
+variantTw variant =
     case variant of
         Primary ->
-            "bg-brand-yellow text-brand hover:opacity-90 focus-visible:ring-brand-yellow"
+            [ Tw.bg_simple TC.brandYellow
+            , Tw.text_simple TC.brand
+            , Bp.hover [ Tw.opacity_90 ]
+            , Bp.focus_visible [ Tw.raw "ring-brand-yellow" ]
+            ]
 
         Secondary ->
-            "bg-white text-brand border border-brand hover:bg-gray-50 focus-visible:ring-brand"
+            [ Tw.raw "bg-white"
+            , Tw.text_simple TC.brand
+            , Tw.border
+            , Tw.border_simple TC.brand
+            , Bp.hover [ Tw.raw "bg-gray-50" ]
+            , Bp.focus_visible [ Tw.raw "ring-brand" ]
+            ]
 
         Ghost ->
-            "bg-transparent text-brand hover:bg-brand/5 focus-visible:ring-brand"
+            [ Tw.raw "bg-transparent"
+            , Tw.text_simple TC.brand
+            , Bp.hover [ Tw.raw "bg-brand/5" ]
+            , Bp.focus_visible [ Tw.raw "ring-brand" ]
+            ]
 
         Danger ->
-            "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500"
+            [ Tw.raw "bg-red-600"
+            , Tw.raw "text-white"
+            , Bp.hover [ Tw.raw "bg-red-700" ]
+            , Bp.focus_visible [ Tw.raw "ring-red-500" ]
+            ]
 
 
-sizeClasses : Size -> String
-sizeClasses size =
+sizeTw : Size -> List Tw.Tailwind
+sizeTw size =
     case size of
         Small ->
-            "px-3 py-1.5 text-sm"
+            [ Tw.px (Th.s3), Tw.py (Th.s1_dot_5), Tw.text_sm ]
 
         Medium ->
-            "px-4 py-2 text-sm"
+            [ Tw.px (Th.s4), Tw.py (Th.s2), Tw.text_sm ]
 
         Large ->
-            "px-6 py-3 text-base"
+            [ Tw.px (Th.s6), Tw.py (Th.s3), Tw.text_base ]

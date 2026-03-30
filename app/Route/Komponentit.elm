@@ -39,6 +39,8 @@ import Head
 import Head.Seo as Seo
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Tailwind as Tw
+import Tailwind.Theme as Th
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App)
@@ -960,11 +962,11 @@ viewPlaceholder model =
         "Placeholder"
         "Animoitu latausluuranko sisältöä odotellessa."
         (Placeholder.view
-            [ Placeholder.viewBlock { widthClass = "w-16", heightClass = "h-16" }
+            [ Placeholder.viewBlock { widthClass = [ Tw.w (Th.s16) ], heightClass = [ Tw.h (Th.s16) ] }
             , Placeholder.view
-                [ Placeholder.viewLine { widthClass = "w-3/4" }
-                , Placeholder.viewLine { widthClass = "w-full" }
-                , Placeholder.viewLine { widthClass = "w-1/2" }
+                [ Placeholder.viewLine { widthClass = [ Tw.w_3over4 ] }
+                , Placeholder.viewLine { widthClass = [ Tw.w_full ] }
+                , Placeholder.viewLine { widthClass = [ Tw.w_1over2 ] }
                 ]
             ]
         )

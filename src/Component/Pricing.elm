@@ -2,7 +2,10 @@ module Component.Pricing exposing (Tier, view)
 
 import FeatherIcons
 import Html exposing (Html)
-import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
 type alias Tier msg =
@@ -18,9 +21,9 @@ type alias Tier msg =
 view : List (Tier msg) -> Html msg
 view tiers =
     Html.div
-        [ Attr.class "py-12" ]
+        [ classes [ Tw.py (Th.s12) ] ]
         [ Html.div
-            [ Attr.class "grid gap-8 sm:grid-cols-2 lg:grid-cols-3" ]
+            [ classes [ Tw.grid, Tw.gap (Th.s8), Bp.sm [ Tw.grid_cols_2 ], Bp.lg [ Tw.grid_cols_3 ] ] ]
             (List.map viewTier tiers)
         ]
 
@@ -28,28 +31,28 @@ view tiers =
 viewTier : Tier msg -> Html msg
 viewTier tier =
     Html.div
-        [ Attr.class (tierClasses tier.highlighted) ]
-        [ Html.div [ Attr.class "p-8" ]
+        [ classes (tierTw tier.highlighted) ]
+        [ Html.div [ classes [ Tw.p (Th.s8) ] ]
             [ Html.h3
-                [ Attr.class (tierNameClass tier.highlighted) ]
+                [ classes (tierNameTw tier.highlighted) ]
                 [ Html.text tier.name ]
-            , Html.div [ Attr.class "mt-4 flex items-baseline gap-x-2" ]
+            , Html.div [ classes [ Tw.mt (Th.s4), Tw.flex, Tw.items_baseline, Tw.gap_x (Th.s2) ] ]
                 [ Html.span
-                    [ Attr.class (priceClass tier.highlighted) ]
+                    [ classes (priceTw tier.highlighted) ]
                     [ Html.text tier.price ]
                 , case tier.period of
                     Just p ->
                         Html.span
-                            [ Attr.class (periodClass tier.highlighted) ]
+                            [ classes (periodTw tier.highlighted) ]
                             [ Html.text ("/ " ++ p) ]
 
                     Nothing ->
                         Html.text ""
                 ]
             , Html.ul
-                [ Attr.class "mt-8 space-y-3" ]
+                [ classes [ Tw.mt (Th.s8), Tw.raw "space-y-3" ] ]
                 (List.map (viewFeature tier.highlighted) tier.features)
-            , Html.div [ Attr.class "mt-8" ] [ tier.cta ]
+            , Html.div [ classes [ Tw.mt (Th.s8) ] ] [ tier.cta ]
             ]
         ]
 
@@ -57,69 +60,71 @@ viewTier tier =
 viewFeature : Bool -> String -> Html msg
 viewFeature highlighted feature =
     Html.li
-        [ Attr.class "flex items-center gap-x-3 type-caption" ]
+        [ classes [ Tw.flex, Tw.items_center, Tw.gap_x (Th.s3), Tw.type_caption ] ]
         [ Html.span
-            [ Attr.class
-                (if highlighted then
-                    "text-white/70 type-h4"
+            [ classes
+                (Tw.type_h4
+                    :: (if highlighted then
+                            [ Tw.raw "text-white/70" ]
 
-                 else
-                    "text-brand-yellow type-h4"
+                        else
+                            [ Tw.text_simple TC.brandYellow ]
+                       )
                 )
             ]
             [ FeatherIcons.check |> FeatherIcons.withSize 16 |> FeatherIcons.toHtml [] ]
         , Html.span
-            [ Attr.class
+            [ classes
                 (if highlighted then
-                    "text-white"
+                    [ Tw.raw "text-white" ]
 
                  else
-                    "text-text-primary"
+                    [ Tw.text_simple TC.textPrimary ]
                 )
             ]
             [ Html.text feature ]
         ]
 
 
-tierClasses : Bool -> String
-tierClasses highlighted =
-    "rounded-2xl border overflow-hidden "
+tierTw : Bool -> List Tw.Tailwind
+tierTw highlighted =
+    [ Tw.rounded_n2xl, Tw.border, Tw.overflow_hidden ]
         ++ (if highlighted then
-                "bg-brand border-brand"
+                [ Tw.bg_simple TC.brand, Tw.border_simple TC.brand ]
 
             else
-                "bg-white border-border-default shadow-sm"
+                [ Tw.raw "bg-white", Tw.border_simple TC.borderDefault, Tw.shadow_sm ]
            )
 
 
-tierNameClass : Bool -> String
-tierNameClass highlighted =
-    "type-h4 "
-        ++ (if highlighted then
-                "text-white"
+tierNameTw : Bool -> List Tw.Tailwind
+tierNameTw highlighted =
+    Tw.type_h4
+        :: (if highlighted then
+                [ Tw.raw "text-white" ]
 
             else
-                "text-text-primary"
+                [ Tw.text_simple TC.textPrimary ]
            )
 
 
-priceClass : Bool -> String
-priceClass highlighted =
-    "type-display tracking-tight "
+priceTw : Bool -> List Tw.Tailwind
+priceTw highlighted =
+    [ Tw.type_display, Tw.tracking_tight ]
         ++ (if highlighted then
-                "text-white"
+                [ Tw.raw "text-white" ]
 
             else
-                "text-text-primary"
+                [ Tw.text_simple TC.textPrimary ]
            )
 
 
-periodClass : Bool -> String
-periodClass highlighted =
-    "type-body-small "
-        ++ (if highlighted then
-                "text-white/70"
+periodTw : Bool -> List Tw.Tailwind
+periodTw highlighted =
+    Tw.type_body_small
+        :: (if highlighted then
+                [ Tw.raw "text-white/70" ]
 
             else
-                "text-text-muted"
+                [ Tw.text_simple TC.textMuted ]
            )

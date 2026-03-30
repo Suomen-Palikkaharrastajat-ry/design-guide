@@ -17,6 +17,7 @@ node_modules/
 # Elm
 elm-stuff/
 .elm-pages/
+.elm-tailwind/
 
 # --- Haskell build artifacts ---
 dist-newstyle/
