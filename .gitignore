@@ -26,7 +26,7 @@ dist/
 
 # --- Generated / build artifacts (do NOT commit) ---
 # Outputs from the logo pipeline and site build
-src/Brand/
+src/Guide/Tokens.elm
 logo/
 favicon/
 design-guide.json

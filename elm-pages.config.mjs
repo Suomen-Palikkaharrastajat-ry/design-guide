@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
+import elmTailwind from "elm-tailwind-classes/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 export default {
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [elmTailwind(), tailwindcss()],
   },
   headTagsTemplate(context) {
     return `

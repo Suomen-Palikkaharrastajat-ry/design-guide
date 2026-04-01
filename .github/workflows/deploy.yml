@@ -124,6 +124,9 @@ jobs:
       - name: Install pnpm dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate elm-tailwind Elm modules
+        run: pnpm exec elm-tailwind-classes gen
+
       - name: Build elm-pages site
         run: pnpm exec elm-pages build
 
