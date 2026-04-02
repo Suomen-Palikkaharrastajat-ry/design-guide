@@ -1,5 +1,8 @@
 module Guide.Logos exposing (LogoVariant, horizontalVariants, squareFullVariants, squareVariants)
 
+{-| Logo variant data for the Suomen Palikkaharrastajat ry design guide — horizontal and square logo configurations.
+-}
+
 
 type alias LogoVariant =
     { id : String

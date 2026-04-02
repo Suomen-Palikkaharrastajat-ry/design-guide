@@ -1,5 +1,8 @@
 module Guide.Colors exposing (ColorEntry, RainbowColor, SkinToneEntry, brandColors, rainbowColors, skinTones)
 
+{-| Color data for the Suomen Palikkaharrastajat ry design guide — brand palette, rainbow, and skin-tone entries.
+-}
+
 
 type alias ColorEntry =
     { hex : String

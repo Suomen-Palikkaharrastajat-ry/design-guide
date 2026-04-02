@@ -11,6 +11,7 @@ module TailwindExtra exposing
     , text_white_60
     , text_white_70
     , text_white_80
+    , text_white_90
     , text_brand_50
     , text_brand_70
     , text_brand_80
@@ -19,9 +20,14 @@ module TailwindExtra exposing
     , bg_black_50
     , bg_brand_5
     , bg_brand_10
+    , bg_brand_15
     , bg_brand_20
+    , bg_brand_red_10
+    , bg_brand_red_15
+    , bg_brand_yellow_20
     , border_black_10
     , border_brand_30
+    , border_brand_40
     , border_t_brand
     , border_t_gray_900
     , border_transparent
@@ -29,10 +35,13 @@ module TailwindExtra exposing
     , group
     , peer
     , not_prose
+    , p_text_inherit
+    , p_my_0
     , inset_0
     , inset_y_0
     , left_0
     , left_0_5
+    , left_2
     , left_half
     , top_0
     , top_0_5
@@ -169,6 +178,12 @@ text_white_80 =
     Tailwind "text-white/80"
 
 
+{-| White text at 90 % opacity. -}
+text_white_90 : Tailwind
+text_white_90 =
+    Tailwind "text-white/90"
+
+
 {-| Brand text at 50 % opacity. -}
 text_brand_50 : Tailwind
 text_brand_50 =
@@ -217,10 +232,34 @@ bg_brand_10 =
     Tailwind "bg-brand/10"
 
 
+{-| Brand background at 15 % opacity. -}
+bg_brand_15 : Tailwind
+bg_brand_15 =
+    Tailwind "bg-brand/15"
+
+
 {-| Brand background at 20 % opacity. -}
 bg_brand_20 : Tailwind
 bg_brand_20 =
     Tailwind "bg-brand/20"
+
+
+{-| Brand-red background at 10 % opacity. -}
+bg_brand_red_10 : Tailwind
+bg_brand_red_10 =
+    Tailwind "bg-brand-red/10"
+
+
+{-| Brand-red background at 15 % opacity. -}
+bg_brand_red_15 : Tailwind
+bg_brand_red_15 =
+    Tailwind "bg-brand-red/15"
+
+
+{-| Brand-yellow background at 20 % opacity. -}
+bg_brand_yellow_20 : Tailwind
+bg_brand_yellow_20 =
+    Tailwind "bg-brand-yellow/20"
 
 
 {-| Black border at 10 % opacity — subtle outline for colour swatches. -}
@@ -233,6 +272,12 @@ border_black_10 =
 border_brand_30 : Tailwind
 border_brand_30 =
     Tailwind "border-brand/30"
+
+
+{-| Brand border at 40 % opacity. -}
+border_brand_40 : Tailwind
+border_brand_40 =
+    Tailwind "border-brand/40"
 
 
 {-| Top border in the brand colour. -}
@@ -277,6 +322,18 @@ not_prose =
     Tailwind "not-prose"
 
 
+{-| Applies `text-inherit` to all direct `<p>` descendants via arbitrary variant. -}
+p_text_inherit : Tailwind
+p_text_inherit =
+    Tailwind "[&_p]:text-inherit"
+
+
+{-| Removes vertical margin from all direct `<p>` descendants via arbitrary variant. -}
+p_my_0 : Tailwind
+p_my_0 =
+    Tailwind "[&_p]:my-0"
+
+
 {-| Sets all inset edges to 0 (position: absolute fill). -}
 inset_0 : Tailwind
 inset_0 =
@@ -299,6 +356,12 @@ left_0 =
 left_0_5 : Tailwind
 left_0_5 =
     Tailwind "left-0.5"
+
+
+{-| Positions element at `left: 0.5rem (8px)`. -}
+left_2 : Tailwind
+left_2 =
+    Tailwind "left-2"
 
 
 {-| Positions element at `left: 50%` — used with `-translate-x-1/2` to centre. -}
