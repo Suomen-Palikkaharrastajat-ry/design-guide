@@ -281,19 +281,19 @@ semanticPairingData =
 viewPairingRow : { textToken : String, bgToken : String, ratio : String, level : String, note : String } -> Html msg
 viewPairingRow row =
     let
-        levelClass =
+        levelClasses =
             if row.level == "AAA" then
-                "text-green-700 font-semibold"
+                [ Tw.text_color (Th.green Th.s700), Tw.font_semibold ]
             else if row.level == "AA" then
-                "text-blue-700 font-semibold"
+                [ Tw.text_color (Th.blue Th.s700), Tw.font_semibold ]
             else
-                "text-red-600 font-semibold"
+                [ Tw.text_color (Th.red Th.s600), Tw.font_semibold ]
     in
     Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ] ]
         [ Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_simple TC.brand ] ] [ Html.text row.textToken ]
         , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.bgToken ]
         , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs ] ] [ Html.text row.ratio ]
-        , Html.td [ Attr.class ("px-4 py-3 text-xs " ++ levelClass) ] [ Html.text row.level ]
+        , Html.td [ classes ([ Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_xs ] ++ levelClasses) ] [ Html.text row.level ]
         , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.note ]
         ]
 
@@ -344,13 +344,13 @@ darkSurfaceData =
 viewDarkPairingRow : { token : String, hex : String, ratio : String, level : String, usage : String } -> Html msg
 viewDarkPairingRow row =
     let
-        levelClass =
+        levelClasses =
             if row.level == "AAA" then
-                "text-green-700 font-semibold"
+                [ Tw.text_color (Th.green Th.s700), Tw.font_semibold ]
             else if row.level == "AA" then
-                "text-blue-700 font-semibold"
+                [ Tw.text_color (Th.blue Th.s700), Tw.font_semibold ]
             else
-                "text-red-600 font-semibold"
+                [ Tw.text_color (Th.red Th.s600), Tw.font_semibold ]
     in
     Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ] ]
         [ Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_simple TC.brand ] ]
@@ -365,7 +365,7 @@ viewDarkPairingRow row =
             ]
         , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.hex ]
         , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs ] ] [ Html.text row.ratio ]
-        , Html.td [ Attr.class ("px-4 py-3 text-xs " ++ levelClass) ] [ Html.text row.level ]
+        , Html.td [ classes ([ Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_xs ] ++ levelClasses) ] [ Html.text row.level ]
         , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.usage ]
         ]
 

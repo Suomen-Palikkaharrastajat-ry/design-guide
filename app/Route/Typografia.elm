@@ -149,7 +149,7 @@ viewTypeScaleSection =
 
 
 type alias TypeRow =
-    { cls : String
+    { cls : Tw.Tailwind
     , label : String
     , size : String
     , weight : String
@@ -162,7 +162,7 @@ type alias TypeRow =
 
 typeScaleRows : List TypeRow
 typeScaleRows =
-    [ { cls = "type-display"
+    [ { cls = TwEx.type_display
       , label = "type-display"
       , size = "3rem (48px)"
       , weight = "700"
@@ -171,7 +171,7 @@ typeScaleRows =
       , usage = "Hero-otsikot ja laskeutumissivujen pääotsikot. Käytä vain suurilla näytöillä (≥ md)."
       , example = "Suomen Palikkaharrastajat"
       }
-    , { cls = "type-h1"
+    , { cls = TwEx.type_h1
       , label = "type-h1"
       , size = "1.875rem (30px)"
       , weight = "700"
@@ -180,7 +180,7 @@ typeScaleRows =
       , usage = "Sivutason pääotsikko (yksi per sivu). Käytä type-display sijaan pienillä näytöillä."
       , example = "Tapahtumakalenteri"
       }
-    , { cls = "type-h2"
+    , { cls = TwEx.type_h2
       , label = "type-h2"
       , size = "1.5rem (24px)"
       , weight = "700"
@@ -189,7 +189,7 @@ typeScaleRows =
       , usage = "Osion pääotsikko. Hierarkia: Display > H1 > H2 > H3 > H4."
       , example = "Tulevat tapahtumat"
       }
-    , { cls = "type-h3"
+    , { cls = TwEx.type_h3
       , label = "type-h3"
       , size = "1.25rem (20px)"
       , weight = "600"
@@ -198,7 +198,7 @@ typeScaleRows =
       , usage = "Aliosion otsikko tai korttiotsikko."
       , example = "Kevät 2026"
       }
-    , { cls = "type-h4"
+    , { cls = TwEx.type_h4
       , label = "type-h4"
       , size = "1.125rem (18px)"
       , weight = "600"
@@ -207,7 +207,7 @@ typeScaleRows =
       , usage = "Kortti- ja widgetotsikot. Käytä H3:n alapuolella."
       , example = "Ilmoittautuminen"
       }
-    , { cls = "type-body"
+    , { cls = TwEx.type_body
       , label = "type-body"
       , size = "1rem (16px)"
       , weight = "400"
@@ -216,7 +216,7 @@ typeScaleRows =
       , usage = "Oletusteksti. Pienin sallittu koko saavutettavalle luettavuudelle."
       , example = "Suomen Palikkaharrastajat ry on LEGO®-rakentajien harrasteyhdistys. Järjestämme näyttelyjä ja tapahtumia ympäri vuoden."
       }
-    , { cls = "type-body-small"
+    , { cls = TwEx.type_body_small
       , label = "type-body-small"
       , size = "0.875rem (14px)"
       , weight = "500"
@@ -225,7 +225,7 @@ typeScaleRows =
       , usage = "Toissijaiset labelit, käyttöliittymäkontrollit ja lomakevihjeet."
       , example = "Tapahtuma julkaistu · Muokkaa tietoja"
       }
-    , { cls = "type-caption"
+    , { cls = TwEx.type_caption
       , label = "type-caption"
       , size = "0.875rem (14px)"
       , weight = "400"
@@ -234,7 +234,7 @@ typeScaleRows =
       , usage = "Kuvatekstit, alaviitteet ja metatiedot."
       , example = "Kuva: LEGO-mallinnos Helsingistä, 2025"
       }
-    , { cls = "type-mono"
+    , { cls = TwEx.type_mono
       , label = "type-mono"
       , size = "0.875rem (14px)"
       , weight = "400"
@@ -243,7 +243,7 @@ typeScaleRows =
       , usage = "Hex-arvot, tunnisteet ja koodinpätkät."
       , example = "#05131D · --color-brand · type-h2"
       }
-    , { cls = "type-overline"
+    , { cls = TwEx.type_overline
       , label = "type-overline"
       , size = "0.75rem (12px)"
       , weight = "600"
@@ -271,7 +271,7 @@ viewTypeRow row =
         ]
         [ -- Live example
           Html.div [ classes [ Tw.flex, Tw.flex_col, Tw.justify_center, Tw.min_h (Th.s16) ] ]
-            [ Html.p [ Attr.class row.cls ]
+            [ Html.p [ classes [ row.cls ] ]
                 [ Html.text row.example ]
             ]
         , -- Spec and usage

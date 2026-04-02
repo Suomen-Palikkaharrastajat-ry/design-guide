@@ -1157,11 +1157,13 @@ viewPlaceholder model =
             ]
         )
         """import Component.Placeholder as Placeholder
+import Tailwind as Tw
+import Tailwind.Theme as Th
 
 Placeholder.view
-    [ Placeholder.viewBlock { widthClass = "w-16", heightClass = "h-16" }
-    , Placeholder.viewLine { widthClass = "w-full" }
-    , Placeholder.viewLine { widthClass = "w-3/4" }
+    [ Placeholder.viewBlock { widthClass = [ Tw.w (Th.s16) ], heightClass = [ Tw.h (Th.s16) ] }
+    , Placeholder.viewLine { widthClass = [ Tw.w_full ] }
+    , Placeholder.viewLine { widthClass = [ Tw.w_3over4 ] }
     ]"""
         (jsonLdSnippet "placeholder"
             "Placeholder"

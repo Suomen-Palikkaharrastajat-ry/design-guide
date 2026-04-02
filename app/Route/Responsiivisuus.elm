@@ -534,13 +534,13 @@ viewTouchSection =
                 "Oikein — riittävä täyte"
                 True
                 "py-3 px-4"
-                "py-3 px-4 font-medium rounded bg-brand-yellow text-brand"
+                [ Tw.py (Th.s3), Tw.px (Th.s4), Tw.font_medium, Tw.rounded, Tw.bg_simple TC.brandYellow, Tw.text_simple TC.brand ]
                 "Painike"
             , viewTouchExample
                 "Vältä — liian pieni"
                 False
                 "py-1 px-2"
-                "py-1 px-2 font-medium rounded bg-gray-200 text-gray-600 text-xs"
+                [ Tw.py (Th.s1), Tw.px (Th.s2), Tw.font_medium, Tw.rounded, Tw.bg_color (Th.gray Th.s200), Tw.text_color (Th.gray Th.s600), Tw.text_xs ]
                 "Painike"
             ]
         , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
@@ -556,8 +556,8 @@ viewTouchSection =
         ]
 
 
-viewTouchExample : String -> Bool -> String -> String -> String -> Html msg
-viewTouchExample title isGood paddingLabel btnClass btnText =
+viewTouchExample : String -> Bool -> String -> List Tw.Tailwind -> String -> Html msg
+viewTouchExample title isGood paddingLabel btnClasses btnText =
     Html.div [ classes [ Tw.border, Tw.border_color (Th.gray Th.s200), Tw.rounded_xl, Tw.p (Th.s4), TwEx.space_y (Th.s3) ] ]
         [ Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s2) ] ]
             [ Html.span
@@ -581,7 +581,7 @@ viewTouchExample title isGood paddingLabel btnClass btnText =
                 ]
             ]
         , Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s3) ] ]
-            [ Html.button [ Attr.class btnClass ] [ Html.text btnText ]
+            [ Html.button [ classes btnClasses ] [ Html.text btnText ]
             , Html.span [ classes [ Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s400) ] ] [ Html.text paddingLabel ]
             ]
         ]
