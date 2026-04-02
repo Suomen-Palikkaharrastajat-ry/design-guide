@@ -1,7 +1,11 @@
 module Component.Badge exposing (Color(..), Size(..), view)
 
+{-| Small status badge component.
+-}
+
 import Html exposing (Html)
-import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Theme as Th
 
 
 type Color
@@ -23,51 +27,48 @@ type Size
 view : { label : String, color : Color, size : Size } -> Html msg
 view config =
     Html.span
-        [ Attr.class (badgeClasses config.color config.size) ]
+        [ classes
+            ([ Tw.inline_flex, Tw.items_center, Tw.rounded_full, Tw.font_medium ]
+                ++ sizeTw config.size
+                ++ colorTw config.color
+            )
+        ]
         [ Html.text config.label ]
 
 
-badgeClasses : Color -> Size -> String
-badgeClasses color size =
-    "inline-flex items-center rounded-full font-medium "
-        ++ sizeClasses size
-        ++ " "
-        ++ colorClasses color
-
-
-sizeClasses : Size -> String
-sizeClasses size =
+sizeTw : Size -> List Tw.Tailwind
+sizeTw size =
     case size of
         Small ->
-            "px-1.5 py-px text-xs"
+            [ Tw.px (Th.s1_dot_5), Tw.py_px, Tw.text_xs ]
 
         Medium ->
-            "px-2.5 py-0.5 text-xs"
+            [ Tw.px (Th.s2_dot_5), Tw.py (Th.s0_dot_5), Tw.text_xs ]
 
         Large ->
-            "px-3 py-1 text-sm"
+            [ Tw.px (Th.s3), Tw.py (Th.s1), Tw.text_sm ]
 
 
-colorClasses : Color -> String
-colorClasses color =
+colorTw : Color -> List Tw.Tailwind
+colorTw color =
     case color of
         Gray ->
-            "bg-gray-100 text-gray-700"
+            [ Tw.bg_color (Th.gray Th.s100), Tw.text_color (Th.gray Th.s700) ]
 
         Blue ->
-            "bg-blue-100 text-blue-700"
+            [ Tw.bg_color (Th.blue Th.s100), Tw.text_color (Th.blue Th.s700) ]
 
         Green ->
-            "bg-green-100 text-green-700"
+            [ Tw.bg_color (Th.green Th.s100), Tw.text_color (Th.green Th.s700) ]
 
         Yellow ->
-            "bg-yellow-100 text-yellow-800"
+            [ Tw.bg_color (Th.yellow Th.s100), Tw.text_color (Th.yellow Th.s800) ]
 
         Red ->
-            "bg-red-100 text-red-700"
+            [ Tw.bg_color (Th.red Th.s100), Tw.text_color (Th.red Th.s700) ]
 
         Purple ->
-            "bg-purple-100 text-purple-700"
+            [ Tw.bg_color (Th.purple Th.s100), Tw.text_color (Th.purple Th.s700) ]
 
         Indigo ->
-            "bg-indigo-100 text-indigo-700"
+            [ Tw.bg_color (Th.indigo Th.s100), Tw.text_color (Th.indigo Th.s700) ]

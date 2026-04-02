@@ -1,30 +1,60 @@
 module Component.Stats exposing (view, viewItem)
 
+{-| Statistics / KPI cards component.
+-}
+
 import Html exposing (Html)
-import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 
 
 view : List (Html msg) -> Html msg
 view items =
     Html.dl
-        [ Attr.class "not-prose grid grid-cols-1 gap-px bg-gray-200 rounded-lg overflow-hidden sm:grid-cols-2 lg:grid-cols-4" ]
+        [ classes
+            [ TwEx.not_prose
+            , Tw.grid
+            , Tw.grid_cols_1
+            , Tw.gap_px
+            , Tw.bg_color (Th.gray Th.s200)
+            , Tw.rounded_lg
+            , Tw.overflow_hidden
+            , Bp.sm [ Tw.grid_cols_2 ]
+            , Bp.lg [ Tw.grid_cols_4 ]
+            ]
+        ]
         items
 
 
 viewItem : { label : String, value : String, change : Maybe String } -> Html msg
 viewItem config =
     Html.div
-        [ Attr.class "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-6 py-5 sm:px-8" ]
+        [ classes
+            [ Tw.flex
+            , Tw.flex_wrap
+            , Tw.items_baseline
+            , Tw.justify_between
+            , Tw.gap_x (Th.s4)
+            , Tw.gap_y (Th.s2)
+            , Tw.bg_simple Th.white
+            , Tw.px (Th.s6)
+            , Tw.py (Th.s5)
+            , Bp.sm [ Tw.px (Th.s8) ]
+            ]
+        ]
         [ Html.dt
-            [ Attr.class "type-body-small leading-6 text-gray-500" ]
+            [ classes [ Tw.type_body_small, TwEx.leading_6, Tw.text_color (Th.gray Th.s500) ] ]
             [ Html.text config.label ]
         , case config.change of
             Just change ->
-                Html.dd [ Attr.class "text-xs font-medium text-brand" ] [ Html.text change ]
+                Html.dd [ classes [ Tw.text_xs, Tw.font_medium, Tw.text_simple TC.brand ] ] [ Html.text change ]
 
             Nothing ->
                 Html.text ""
         , Html.dd
-            [ Attr.class "w-full flex-none text-3xl font-medium leading-10 tracking-tight text-brand" ]
+            [ classes [ Tw.w_full, Tw.flex_none, Tw.text_n3xl, Tw.font_medium, TwEx.leading_10, Tw.tracking_tight, Tw.text_simple TC.brand ] ]
             [ Html.text config.value ]
         ]

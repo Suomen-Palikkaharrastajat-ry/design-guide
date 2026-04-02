@@ -1,39 +1,65 @@
 module Component.Timeline exposing (view, viewItem)
 
+{-| Vertical timeline component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 
 
 view : List (Html msg) -> Html msg
 view items =
     Html.ol
-        [ Attr.class "not-prose relative border-s-2 border-gray-200 space-y-0 ms-8" ]
+        [ classes
+            [ TwEx.not_prose
+            , Tw.relative
+            , Tw.border_s_2
+            , Tw.border_color (Th.gray Th.s200)
+            , TwEx.space_y (Th.s0)
+            , TwEx.ms_8
+            ]
+        ]
         items
 
 
 viewItem : { date : String, title : String, children : List (Html msg), icon : Maybe (Html msg), image : Maybe String } -> Html msg
 viewItem config =
     Html.li
-        [ Attr.class "mb-10 ms-12" ]
+        [ classes [ Tw.mb (Th.s10), TwEx.ms_12 ] ]
         [ Html.span
-            [ Attr.class "absolute -start-6 flex h-12 w-12 items-center justify-center rounded-full bg-brand-yellow" ]
+            [ classes
+                [ Tw.absolute
+                , TwEx.neg_start_6
+                , Tw.flex
+                , Tw.h (Th.s12)
+                , Tw.w (Th.s12)
+                , Tw.items_center
+                , Tw.justify_center
+                , Tw.rounded_full
+                , Tw.bg_simple TC.brandYellow
+                ]
+            ]
             [ case config.icon of
                 Nothing ->
-                    Html.span [ Attr.class "block h-4 w-4 rounded-full bg-brand" ] []
+                    Html.span [ classes [ Tw.block, Tw.h (Th.s4), Tw.w (Th.s4), Tw.rounded_full, Tw.bg_simple TC.brand ] ] []
 
                 Just icon ->
-                    Html.span [ Attr.class "text-brand" ] [ icon ]
+                    Html.span [ classes [ Tw.text_simple TC.brand ] ] [ icon ]
             ]
-        , Html.div [ Attr.class "flex items-start gap-4" ]
-            [ Html.div [ Attr.class "flex-1 min-w-0" ]
+        , Html.div [ classes [ Tw.flex, Tw.items_start, Tw.gap (Th.s4) ] ]
+            [ Html.div [ classes [ Tw.flex_1, Tw.min_w (Th.s0) ] ]
                 [ Html.time
-                    [ Attr.class "mb-1 block text-xs font-normal leading-none text-gray-400" ]
+                    [ classes [ Tw.mb (Th.s1), Tw.block, Tw.text_xs, Tw.font_normal, Tw.leading_none, Tw.text_color (Th.gray Th.s400) ] ]
                     [ Html.text config.date ]
                 , Html.h3
-                    [ Attr.class "type-body-small text-brand" ]
+                    [ classes [ Tw.type_body_small, Tw.text_simple TC.brand ] ]
                     [ Html.text config.title ]
                 , Html.div
-                    [ Attr.class "mt-1 text-sm leading-6 text-gray-600" ]
+                    [ classes [ Tw.mt (Th.s1), Tw.text_sm, TwEx.leading_6, Tw.text_color (Th.gray Th.s600) ] ]
                     config.children
                 ]
             , case config.image of
@@ -44,7 +70,7 @@ viewItem config =
                     Html.img
                         [ Attr.src src
                         , Attr.alt ""
-                        , Attr.class "w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                        , classes [ Tw.w (Th.s24), Tw.h (Th.s24), Tw.object_cover, Tw.rounded_lg, Tw.shrink_0 ]
                         ]
                         []
             ]

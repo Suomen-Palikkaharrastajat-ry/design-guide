@@ -1,5 +1,8 @@
 module View exposing (View, map, placeholder)
 
+{-| `View` type alias and helpers shared across all elm-pages route modules.
+-}
+
 import Html exposing (Html)
 
 

@@ -1,5 +1,8 @@
 module Shared exposing (Data, Model, Msg(..), SharedMsg(..), template)
 
+{-| elm-pages shared layout — top-level shell wrapping every page (navbar + footer).
+-}
+
 import BackendTask exposing (BackendTask)
 import Browser.Events
 import Component.MobileDrawer as MobileDrawer
@@ -15,6 +18,11 @@ import Pages.Flags
 import Pages.PageUrl exposing (PageUrl)
 import Route exposing (Route)
 import SharedTemplate exposing (SharedTemplate)
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 import UrlPath exposing (UrlPath)
 import View exposing (View)
 
@@ -116,9 +124,9 @@ view :
 view _ page model toMsg pageView =
     { title = pageView.title
     , body =
-        [ Html.div [ Attr.class "min-h-screen flex flex-col font-sans" ]
+        [ Html.div [ classes [ Tw.min_h_screen, Tw.flex, Tw.flex_col, Tw.font_sans ] ]
             [ viewNavbar model (toMsg << SharedMsg)
-            , Html.main_ [ Attr.class "flex-1" ] pageView.body
+            , Html.main_ [ classes [ Tw.flex_1 ] ] pageView.body
             , viewFooter
             , MobileDrawer.viewOverlay { isOpen = model.menuOpen, onClose = toMsg (SharedMsg CloseMenu), breakpoint = MobileDrawer.Sm }
             , viewMobileDrawer page.path model (toMsg << SharedMsg)
@@ -130,14 +138,22 @@ view _ page model toMsg pageView =
 viewNavbar : Model -> (SharedMsg -> msg) -> Html msg
 viewNavbar model toMsg =
     Html.nav
-        [ Attr.class "bg-brand sticky top-0 z-50 shadow-md" ]
+        [ classes
+            [ Tw.bg_simple TC.brand
+            , Tw.sticky
+            , TwEx.top_0
+            , Tw.z_50
+            , Tw.shadow_md
+            , Bp.sm [ Tw.static, Tw.top_auto, Tw.z_auto, Tw.shadow_none ]
+            ]
+        ]
         [ Html.div
-            [ Attr.class "max-w-5xl mx-auto px-4" ]
+            [ classes [ TwEx.max_w_5xl, Tw.mx_auto, Tw.px (Th.s4) ] ]
             [ Html.div
-                [ Attr.class "flex items-center py-2 sm:py-3" ]
+                [ classes [ Tw.flex, Tw.items_center, Tw.py (Th.s2), Bp.sm [ Tw.py (Th.s3) ] ] ]
                 [ Html.a
                     [ Attr.href "/"
-                    , Attr.class "flex-shrink-0 mr-auto focus:outline-none focus:ring-2 focus:ring-brand-yellow rounded"
+                    , classes [ Tw.shrink_0, Tw.mr_auto, Bp.focus [ Tw.outline_none, Tw.ring_2, TwEx.ring_brand_yellow ], Tw.rounded ]
                     , Html.Events.onClick (toMsg CloseMenu)
                     ]
                     [ Html.node "picture"
@@ -150,13 +166,21 @@ viewNavbar model toMsg =
                         , Html.img
                             [ Attr.src "/logo/horizontal/svg/horizontal.svg"
                             , Attr.alt "Suomen Palikkaharrastajat ry"
-                            , Attr.class "h-10 sm:h-14"
+                            , classes [ Tw.h (Th.s10), Bp.sm [ Tw.h (Th.s14) ] ]
                             ]
                             []
                         ]
                     ]
                 , Html.button
-                    [ Attr.class "sm:hidden text-white p-2 ml-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow cursor-pointer"
+                    [ classes
+                        [ Bp.sm [ Tw.hidden ]
+                        , Tw.text_simple Th.white
+                        , Tw.p (Th.s2)
+                        , Tw.ml (Th.s2)
+                        , Tw.rounded
+                        , Bp.focus [ Tw.outline_none, Tw.ring_2, TwEx.ring_brand_yellow ]
+                        , Tw.cursor_pointer
+                        ]
                     , Html.Events.onClick (toMsg ToggleMenu)
                     , Attr.attribute "aria-label"
                         (if model.menuOpen then
@@ -181,7 +205,7 @@ viewNavbar model toMsg =
                         FeatherIcons.menu |> FeatherIcons.withSize 24 |> FeatherIcons.toHtml []
                     ]
                 , Html.ul
-                    [ Attr.class "hidden sm:flex flex-wrap gap-0.5 list-none m-0 p-0" ]
+                    [ classes [ Tw.hidden, Bp.sm [ Tw.flex ], Tw.flex_wrap, Tw.gap (Th.s0_dot_5), Tw.list_none, Tw.m (Th.s0), Tw.p (Th.s0) ] ]
                     [ desktopNavLink "/typografia" "Typografia"
                     , desktopNavLink "/komponentit" "Komponentit"
                     , desktopNavLink "/responsiivisuus" "Responsiivisuus"
@@ -197,11 +221,22 @@ desktopNavLink href label =
     Html.li []
         [ Html.a
             [ Attr.href href
-            , Attr.class "text-white/80 hover:text-brand-yellow font-medium px-2 sm:px-3 py-1 rounded transition-colors text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-yellow"
+            , classes
+                [ TwEx.text_white_80
+                , Bp.hover [ Tw.text_simple TC.brandYellow ]
+                , Tw.font_medium
+                , Tw.px (Th.s2)
+                , Bp.sm [ Tw.px (Th.s3) ]
+                , Tw.py (Th.s1)
+                , Tw.rounded
+                , Tw.transition_colors
+                , Tw.text_sm
+                , Tw.cursor_pointer
+                , Bp.focus [ Tw.outline_none, Tw.ring_2, TwEx.ring_brand_yellow ]
+                ]
             ]
             [ Html.text label ]
         ]
-
 
 
 viewMobileDrawer : UrlPath -> Model -> (SharedMsg -> msg) -> Html msg
@@ -219,8 +254,8 @@ viewMobileDrawer currentPath model toMsg =
         , onClose = close
         , breakpoint = MobileDrawer.Sm
         , content =
-            [ Html.nav [ Attr.class "p-4" ]
-                [ Html.ul [ Attr.class "flex flex-col gap-1 list-none m-0 p-0" ]
+            [ Html.nav [ classes [ Tw.p (Th.s4) ] ]
+                [ Html.ul [ classes [ Tw.flex, Tw.flex_col, Tw.gap (Th.s1), Tw.list_none, Tw.m (Th.s0), Tw.p (Th.s0) ] ]
                     [ MobileDrawer.viewNavLink { href = "/", label = "Logot ja värit", isActive = isActive "/", onClose = close }
                     , MobileDrawer.viewNavLink { href = "/typografia", label = "Typografia", isActive = isActive "/typografia", onClose = close }
                     , MobileDrawer.viewNavLink { href = "/komponentit", label = "Komponentit", isActive = isActive "/komponentit", onClose = close }
@@ -235,42 +270,42 @@ viewMobileDrawer currentPath model toMsg =
 viewFooter : Html msg
 viewFooter =
     Html.footer
-        [ Attr.class "bg-brand text-white mt-16 py-12 px-4" ]
+        [ classes [ Tw.bg_simple TC.brand, Tw.text_simple Th.white, Tw.mt (Th.s16), Tw.py (Th.s12), Tw.px (Th.s4) ] ]
         [ Html.div
-            [ Attr.class "max-w-5xl mx-auto" ]
+            [ classes [ TwEx.max_w_5xl, Tw.mx_auto ] ]
             [ Html.div
-                [ Attr.class "grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-8 sm:items-end" ]
+                [ classes [ Tw.grid, Tw.grid_cols_1, Bp.sm [ TwEx.grid_cols_auto_1fr, Tw.items_end ], Tw.gap (Th.s8) ] ]
                 [ -- Col 1: service links + logo
-                  Html.div [ Attr.class "flex items-start gap-4" ]
+                  Html.div [ classes [ Tw.flex, Tw.items_start, Tw.gap (Th.s4) ] ]
                     [ Html.img
                         [ Attr.src "/logo/square/svg/square-smile-full-dark-bold.svg"
                         , Attr.alt ""
                         , Attr.attribute "aria-hidden" "true"
-                        , Attr.class "h-35 w-35 flex-shrink-0"
+                        , classes [ TwEx.h_35, TwEx.w_35, Tw.shrink_0 ]
                         ]
                         []
-                    , Html.div [ Attr.class "space-y-3" ]
-                        [ Html.p [ Attr.class "text-xs font-semibold text-white/50 uppercase tracking-wider" ]
+                    , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
+                        [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, TwEx.text_white_50, Tw.uppercase, Tw.tracking_wider ] ]
                             [ Html.text "Palikkaharrastajat" ]
-                        , Html.ul [ Attr.class "space-y-2 list-none m-0 p-0" ]
+                        , Html.ul [ classes [ TwEx.space_y (Th.s2), Tw.list_none, Tw.m (Th.s0), Tw.p (Th.s0) ] ]
                             [ Html.li []
                                 [ Html.a
                                     [ Attr.href "https://palikkaharrastajat.fi"
-                                    , Attr.class "text-sm text-white/80 hover:text-white underline transition-colors"
+                                    , classes [ Tw.text_sm, TwEx.text_white_80, Bp.hover [ Tw.text_simple Th.white ], Tw.underline, Tw.transition_colors ]
                                     ]
                                     [ Html.text "Kotisivut" ]
                                 ]
                             , Html.li []
                                 [ Html.a
                                     [ Attr.href "https://kalenteri.palikkaharrastajat.fi"
-                                    , Attr.class "text-sm text-white/80 hover:text-white underline transition-colors"
+                                    , classes [ Tw.text_sm, TwEx.text_white_80, Bp.hover [ Tw.text_simple Th.white ], Tw.underline, Tw.transition_colors ]
                                     ]
                                     [ Html.text "Palikkakalenteri" ]
                                 ]
                             , Html.li []
                                 [ Html.a
                                     [ Attr.href "https://linkit.palikkaharrastajat.fi"
-                                    , Attr.class "text-sm text-white/80 hover:text-white underline transition-colors"
+                                    , classes [ Tw.text_sm, TwEx.text_white_80, Bp.hover [ Tw.text_simple Th.white ], Tw.underline, Tw.transition_colors ]
                                     ]
                                     [ Html.text "Palikkalinkit" ]
                                 ]
@@ -278,8 +313,8 @@ viewFooter =
                         ]
                     ]
                 , -- Col 2: org name & legal
-                  Html.div [ Attr.class "space-y-1 sm:text-right" ]
-                    [ Html.div [ Attr.class "space-y-1 text-xs text-white/50" ]
+                  Html.div [ classes [ TwEx.space_y (Th.s1), Bp.sm [ Tw.text_right ] ] ]
+                    [ Html.div [ classes [ TwEx.space_y (Th.s1), Tw.text_xs, TwEx.text_white_50 ] ]
                         [ Html.p [] [ Html.text "© 2026 Suomen Palikkaharrastajat ry" ]
                         , Html.p [] [ Html.text "Fontit: Outfit (SIL Open Font License)" ]
                         , Html.p [] [ Html.text "LEGO® on LEGO Groupin rekisteröity tavaramerkki" ]
@@ -287,7 +322,7 @@ viewFooter =
                             [ Html.a
                                 [ Attr.href "/design-guide/index.jsonld"
                                 , Attr.title "Machine readable Design Guide in JSON-LD"
-                                , Attr.class "underline hover:text-white/80 transition-colors"
+                                , classes [ Tw.underline, Bp.hover [ TwEx.text_white_80 ], Tw.transition_colors ]
                                 ]
                                 [ Html.text "JSON-LD" ]
                             ]

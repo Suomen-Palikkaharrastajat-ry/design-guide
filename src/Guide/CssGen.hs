@@ -156,13 +156,13 @@ renderTypeUtility (name, w, sr, _, lh, ls, cssClass, _) =
     ++ [ "}", "" ]
   where
     extraProps "Overline" ls'
-        = [ "  text-transform: uppercase;" ]
-        ++ if ls' /= 0 then [ "  letter-spacing: " <> fmtD ls' <> "em;" ] else []
+        = "  text-transform: uppercase;"
+        : [ "  letter-spacing: " <> fmtD ls' <> "em;" | ls' /= 0 ]
     extraProps "Mono" ls'
-        = (if ls' /= 0 then [ "  letter-spacing: " <> fmtD ls' <> "em;" ] else [])
+        = [ "  letter-spacing: " <> fmtD ls' <> "em;" | ls' /= 0 ]
         ++ [ "  font-family: ui-monospace, monospace;" ]
     extraProps _ ls'
-        = if ls' /= 0 then [ "  letter-spacing: " <> fmtD ls' <> "em;" ] else []
+        = [ "  letter-spacing: " <> fmtD ls' <> "em;" | ls' /= 0 ]
 
 -- ---------------------------------------------------------------------------
 -- @layer base

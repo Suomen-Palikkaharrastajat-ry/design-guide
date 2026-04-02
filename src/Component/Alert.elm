@@ -1,9 +1,15 @@
 module Component.Alert exposing (AlertType(..), view)
 
+{-| Alert / notification banner component.
+-}
+
 import Component.CloseButton as CloseButton
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 
 
 type AlertType
@@ -17,27 +23,27 @@ view : { alertType : AlertType, title : Maybe String, body : List (Html msg), on
 view config =
     Html.div
         (List.filterMap identity
-            [ Just (Attr.class (containerClasses config.alertType ++ dismissClass config.onDismiss))
+            [ Just (classes (containerTw config.alertType ++ dismissTw config.onDismiss))
             , Maybe.map (\_ -> Attr.attribute "role" "alert") config.onDismiss
             ]
         )
         (List.filterMap identity
             [ Just
-                (Html.div [ Attr.class "flex" ]
-                    [ Html.div [ Attr.class "flex-shrink-0 leading-none" ]
+                (Html.div [ classes [ Tw.flex ] ]
+                    [ Html.div [ classes [ Tw.shrink_0, Tw.leading_none ] ]
                         [ icon config.alertType ]
-                    , Html.div [ Attr.class "ml-3" ]
+                    , Html.div [ classes [ Tw.ml (Th.s3) ] ]
                         (List.filterMap identity
                             [ Maybe.map
                                 (\t ->
                                     Html.p
-                                        [ Attr.class ("font-semibold " ++ titleClass config.alertType) ]
+                                        [ classes ([ Tw.font_semibold ] ++ titleTw config.alertType) ]
                                         [ Html.text t ]
                                 )
                                 config.title
                             , Just
                                 (Html.div
-                                    [ Attr.class ("text-sm " ++ bodyClass config.alertType) ]
+                                    [ classes ([ Tw.text_sm ] ++ bodyTw config.alertType) ]
                                     config.body
                                 )
                             ]
@@ -46,7 +52,7 @@ view config =
                 )
             , Maybe.map
                 (\msg ->
-                    Html.div [ Attr.class "absolute top-2 right-2" ]
+                    Html.div [ classes [ Tw.absolute, TwEx.top_2, TwEx.right_2 ] ]
                         [ CloseButton.view { onClick = msg, label = "Sulje ilmoitus" } ]
                 )
                 config.onDismiss
@@ -54,31 +60,31 @@ view config =
         )
 
 
-dismissClass : Maybe msg -> String
-dismissClass onDismiss =
+dismissTw : Maybe msg -> List Tw.Tailwind
+dismissTw onDismiss =
     case onDismiss of
         Just _ ->
-            " relative"
+            [ Tw.relative ]
 
         Nothing ->
-            ""
+            []
 
 
-containerClasses : AlertType -> String
-containerClasses alertType =
-    "rounded-lg p-4 "
+containerTw : AlertType -> List Tw.Tailwind
+containerTw alertType =
+    [ Tw.rounded_lg, Tw.p (Th.s4) ]
         ++ (case alertType of
                 Info ->
-                    "bg-blue-50"
+                    [ Tw.bg_color (Th.blue Th.s50) ]
 
                 Success ->
-                    "bg-green-50"
+                    [ Tw.bg_color (Th.green Th.s50) ]
 
                 Warning ->
-                    "bg-yellow-50"
+                    [ Tw.bg_color (Th.yellow Th.s50) ]
 
                 Error ->
-                    "bg-red-50"
+                    [ Tw.bg_color (Th.red Th.s50) ]
            )
 
 
@@ -101,33 +107,33 @@ icon alertType =
         |> FeatherIcons.toHtml []
 
 
-titleClass : AlertType -> String
-titleClass alertType =
+titleTw : AlertType -> List Tw.Tailwind
+titleTw alertType =
     case alertType of
         Info ->
-            "text-blue-800"
+            [ Tw.text_color (Th.blue Th.s800) ]
 
         Success ->
-            "text-green-800"
+            [ Tw.text_color (Th.green Th.s800) ]
 
         Warning ->
-            "text-yellow-800"
+            [ Tw.text_color (Th.yellow Th.s800) ]
 
         Error ->
-            "text-red-800"
+            [ Tw.text_color (Th.red Th.s800) ]
 
 
-bodyClass : AlertType -> String
-bodyClass alertType =
+bodyTw : AlertType -> List Tw.Tailwind
+bodyTw alertType =
     case alertType of
         Info ->
-            "text-blue-700"
+            [ Tw.text_color (Th.blue Th.s700) ]
 
         Success ->
-            "text-green-700"
+            [ Tw.text_color (Th.green Th.s700) ]
 
         Warning ->
-            "text-yellow-700"
+            [ Tw.text_color (Th.yellow Th.s700) ]
 
         Error ->
-            "text-red-700"
+            [ Tw.text_color (Th.red Th.s700) ]

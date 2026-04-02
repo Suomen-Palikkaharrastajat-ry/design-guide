@@ -1,5 +1,8 @@
 module SiteMeta exposing (description, organizationName, siteTitle)
 
+{-| Site-wide metadata constants: organisation name, canonical URL, and page-title suffix.
+-}
+
 
 organizationName : String
 organizationName =

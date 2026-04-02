@@ -1,9 +1,17 @@
 module Component.Tabs exposing (view)
 
+{-| Tabbed-panel component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
 import Json.Decode
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 
 
 view :
@@ -16,7 +24,7 @@ view :
 view config =
     Html.div []
         [ Html.div
-            [ Attr.class "flex border-b border-gray-200"
+            [ classes [ Tw.flex, Tw.border_b, Tw.border_color (Th.gray Th.s200) ]
             , Attr.attribute "role" "tablist"
             , Events.on "keydown"
                 (Json.Decode.field "key" Json.Decode.string
@@ -57,7 +65,7 @@ viewTab :
     -> Html msg
 viewTab config idx label =
     Html.button
-        [ Attr.class (tabClass (idx == config.activeIndex))
+        [ classes (tabTw (idx == config.activeIndex))
         , Events.onClick (config.onTabClick idx)
         , Attr.type_ "button"
         , Attr.attribute "role" "tab"
@@ -80,23 +88,32 @@ viewPanel activeIndex idx panel =
         [ Attr.attribute "role" "tabpanel"
         , Attr.id ("panel-" ++ String.fromInt idx)
         , Attr.attribute "aria-labelledby" ("tab-" ++ String.fromInt idx)
-        , Attr.class
+        , classes
             (if idx == activeIndex then
-                "block"
+                [ Tw.block ]
 
              else
-                "hidden"
+                [ Tw.hidden ]
             )
         ]
         [ panel ]
 
 
-tabClass : Bool -> String
-tabClass active =
-    "px-4 py-2 type-body-small border-b-2 transition-colors cursor-pointer "
+tabTw : Bool -> List Tw.Tailwind
+tabTw active =
+    [ Tw.px (Th.s4)
+    , Tw.py (Th.s2)
+    , Tw.type_body_small
+    , Tw.border_b_2
+    , Tw.transition_colors
+    , Tw.cursor_pointer
+    ]
         ++ (if active then
-                "border-brand text-brand"
+                [ Tw.border_simple TC.brand, Tw.text_simple TC.brand ]
 
             else
-                "border-transparent text-gray-500 hover:text-brand hover:border-gray-300"
+                [ TwEx.border_transparent
+                , Tw.text_color (Th.gray Th.s500)
+                , Bp.hover [ Tw.text_simple TC.brand, Tw.border_color (Th.gray Th.s300) ]
+                ]
            )

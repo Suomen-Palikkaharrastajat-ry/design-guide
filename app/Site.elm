@@ -1,5 +1,8 @@
 module Site exposing (canonicalUrl, config)
 
+{-| elm-pages site configuration — canonical URL, title, and meta defaults.
+-}
+
 import BackendTask exposing (BackendTask)
 import FatalError exposing (FatalError)
 import Head

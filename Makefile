@@ -1,11 +1,8 @@
 .PHONY: help all build blay-compose-all assets assets-from-blay site dev dev-watch deploy install test check format clean watch watch-elm repl develop shell render outline-text
 
-# elm-pages wrapper: add its own node_modules/.bin to PATH
-_ELM_PAGES_BIN  := $(shell which elm-pages 2>/dev/null)
-_ELM_PAGES_ROOT := $(shell readlink -f $(_ELM_PAGES_BIN) 2>/dev/null | xargs -I{} dirname {} | xargs -I{} dirname {} 2>/dev/null)
-ifneq ($(_ELM_PAGES_ROOT),)
-export PATH := $(_ELM_PAGES_ROOT)/lib/node_modules/.bin:$(PATH)
-endif
+# Use pnpm exec for elm-pages so the project-local writable node_modules are used.
+# This avoids the Nix store's read-only node_modules being added to PATH (which
+# causes the lamdera JS wrapper to attempt hard-linking into the Nix store → EPERM).
 
 # ── Pipeline constants ────────────────────────────────────────────────────────
 # Single source of truth — forwarded verbatim as CLI flags to the executables.
@@ -441,9 +438,9 @@ ALL_ANIMATIONS := \
 
 # ── brand-gen: design-guide.json + JSON-LD + Elm tokens + brand.css ──────────
 
-design-guide.json src/Brand/Tokens.elm public/brand.css &: $(HS_SOURCES) | build
+design-guide.json src/Guide/Tokens.elm public/brand.css &: $(HS_SOURCES) | build
 	$(CABAL) run --offline brand-gen -- \
-	  --elm-tokens-out src/Brand/Tokens.elm \
+	  --elm-tokens-out src/Guide/Tokens.elm \
 	  --css-out public/brand.css
 
 # ── Text outlining (post-process full composed SVGs) ─────────────────────────
@@ -460,8 +457,11 @@ render: $(ALL_SQ_OUTPUTS) $(ALL_HZ_OUTPUTS) $(ALL_ANIMATIONS) design-guide.json 
 
 # ── elm-pages site ────────────────────────────────────────────────────────────
 
-install: ## Install npm deps and resolve Elm packages (run once after checkout)
-	npm install
+ELM_TAILWIND_GEN := node_modules/.bin/elm-tailwind-classes gen
+
+install: ## Install pnpm deps and resolve Elm packages (run once after checkout)
+	pnpm install
+	$(ELM_TAILWIND_GEN)
 
 assets-from-blay: assets ## CI alias: render .blay files then copy assets to public/
 
@@ -470,9 +470,13 @@ assets: render ## Copy generated assets into public/ for elm-pages
 	cp -r logo favicon fonts design-guide.json design-guide public/
 
 dev: assets ## Dev server: pipeline -> copy assets -> elm-pages dev (hot reload)
+	$(ELM_TAILWIND_GEN)
+	chmod -R u+w .elm-pages/ elm-stuff/elm-pages/ 2>/dev/null || true
 	elm-pages dev
 
 site: assets ## Production build: pipeline -> copy assets -> elm-pages build -> dist/
+	$(ELM_TAILWIND_GEN)
+	chmod -R u+w .elm-pages/ elm-stuff/elm-pages/ 2>/dev/null || true
 	elm-pages build
 
 deploy: ## Push main branch to trigger GitHub Actions deploy
@@ -484,25 +488,30 @@ test: ## Run Haskell test suite and hlint
 	$(CABAL) test --offline
 	$(MAKE) check
 
-check: ## Run hlint static analysis
+check: ## Run hlint static analysis and elm-review
 	hlint src tests
+	elm-review
 
 cabal-check: ## Check the package for common errors
 	$(CABAL) check
 
 format: ## Auto-format Haskell and Elm source files
 	find src app -name '*.hs' | xargs fourmolu --mode inplace
-	elm-format --yes app/ src/Component/ src/Brand/Colors.elm
+	elm-format --yes app/ src/Component/ src/Guide/Colors.elm src/Guide/Logos.elm
 
 # ── Watching ──────────────────────────────────────────────────────────────────
 
 dev-watch: assets ## Build all static assets, then watch with elm-pages dev
+	$(ELM_TAILWIND_GEN)
+	chmod -R u+w .elm-pages/ elm-stuff/elm-pages/ 2>/dev/null || true
 	elm-pages dev
 
 watch: ## Re-run render on .hs/.cabal changes (requires entr)
 	find src app tests -name '*.hs' -o -name '*.cabal' | entr -r $(MAKE) render
 
 watch-elm: ## elm-pages dev server only (assumes assets already in public/)
+	$(ELM_TAILWIND_GEN)
+	chmod -R u+w .elm-pages/ elm-stuff/elm-pages/ 2>/dev/null || true
 	elm-pages dev
 
 # ── REPL ──────────────────────────────────────────────────────────────────────
@@ -515,8 +524,8 @@ repl: ## Open GHCi REPL
 clean: ## Remove all generated files, build artifacts, and dist/
 	$(CABAL) clean
 	rm -rf logo/ favicon/ design-guide.json design-guide/ __pycache__
-	rm -rf dist/ .elm-pages/
-	rm -f src/Brand/Generated.elm src/Brand/Tokens.elm
+	rm -rf dist/ .elm-pages/ .elm-tailwind/
+	rm -f src/Guide/Tokens.elm
 	rm -rf public/design-guide.json public/design-guide public/logo public/favicon public/fonts
 
 # ── Devenv ────────────────────────────────────────────────────────────────────

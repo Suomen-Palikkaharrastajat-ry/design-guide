@@ -1,14 +1,29 @@
 module Component.Breadcrumb exposing (view)
 
+{-| Breadcrumb navigation component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindTokens as TC
 
 
 view : List { label : String, href : Maybe String } -> Html msg
 view items =
     Html.nav [ Attr.attribute "aria-label" "breadcrumb" ]
         [ Html.ol
-            [ Attr.class "flex flex-wrap items-center gap-1.5 text-sm text-gray-500" ]
+            [ classes
+                [ Tw.flex
+                , Tw.flex_wrap
+                , Tw.items_center
+                , Tw.gap (Th.s1_dot_5)
+                , Tw.text_sm
+                , Tw.text_color (Th.gray Th.s500)
+                ]
+            ]
             (List.indexedMap (viewItem (List.length items)) items)
         ]
 
@@ -19,10 +34,10 @@ viewItem total idx item =
         isLast =
             idx == total - 1
     in
-    Html.li [ Attr.class "flex items-center gap-1.5" ]
+    Html.li [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s1_dot_5) ] ]
         ([ if isLast then
             Html.span
-                [ Attr.class "font-medium text-gray-900"
+                [ classes [ Tw.font_medium, Tw.text_color (Th.gray Th.s900) ]
                 , Attr.attribute "aria-current" "page"
                 ]
                 [ Html.text item.label ]
@@ -32,7 +47,7 @@ viewItem total idx item =
                 Just href ->
                     Html.a
                         [ Attr.href href
-                        , Attr.class "hover:text-brand transition-colors"
+                        , classes [ Bp.hover [ Tw.text_simple TC.brand ], Tw.transition_colors ]
                         ]
                         [ Html.text item.label ]
 
@@ -43,6 +58,6 @@ viewItem total idx item =
                     []
 
                 else
-                    [ Html.span [ Attr.class "text-gray-300 select-none" ] [ Html.text "/" ] ]
+                    [ Html.span [ classes [ Tw.text_color (Th.gray Th.s300), Tw.select_none ] ] [ Html.text "/" ] ]
                )
         )

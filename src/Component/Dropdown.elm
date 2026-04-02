@@ -1,9 +1,17 @@
 module Component.Dropdown exposing (view, viewDivider, viewItem)
 
+{-| Accessible ARIA menu dropdown component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
 import Json.Decode
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 
 
 {-| An accessible ARIA menu dropdown.
@@ -19,7 +27,7 @@ view :
     -> Html msg
 view config =
     Html.div
-        [ Attr.class "relative inline-block"
+        [ classes [ Tw.relative, Tw.inline_block ]
         , Events.on "keydown"
             (Json.Decode.field "key" Json.Decode.string
                 |> Json.Decode.andThen
@@ -34,7 +42,24 @@ view config =
         ]
         [ Html.button
             [ Attr.type_ "button"
-            , Attr.class "list-none cursor-pointer inline-flex items-center gap-1 px-4 py-2 type-body-small bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand select-none"
+            , classes
+                [ Tw.list_none
+                , Tw.cursor_pointer
+                , Tw.inline_flex
+                , Tw.items_center
+                , Tw.gap (Th.s1)
+                , Tw.px (Th.s4)
+                , Tw.py (Th.s2)
+                , Tw.type_body_small
+                , Tw.bg_simple Th.white
+                , Tw.border
+                , Tw.border_color (Th.gray Th.s300)
+                , Tw.rounded_md
+                , Tw.shadow_sm
+                , Bp.hover [ Tw.bg_color (Th.gray Th.s50) ]
+                , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, TwEx.ring_brand ]
+                , Tw.select_none
+                ]
             , Attr.attribute "aria-haspopup" "menu"
             , Attr.attribute "aria-expanded"
                 (if config.isOpen then
@@ -46,12 +71,25 @@ view config =
             , Events.onClick config.onToggle
             ]
             [ config.trigger
-            , Html.span [ Attr.class "text-gray-400" ] [ Html.text "▾" ]
+            , Html.span [ classes [ Tw.text_color (Th.gray Th.s400) ] ] [ Html.text "▾" ]
             ]
         , if config.isOpen then
             Html.div
                 [ Attr.attribute "role" "menu"
-                , Attr.class "absolute left-0 top-full mt-1 z-10 w-48 rounded-md border border-gray-200 bg-white shadow-lg py-1"
+                , classes
+                    [ Tw.absolute
+                    , TwEx.left_0
+                    , Tw.top_full
+                    , Tw.mt (Th.s1)
+                    , Tw.z_10
+                    , Tw.w (Th.s48)
+                    , Tw.rounded_md
+                    , Tw.border
+                    , Tw.border_color (Th.gray Th.s200)
+                    , Tw.bg_simple Th.white
+                    , Tw.shadow_lg
+                    , Tw.py (Th.s1)
+                    ]
                 ]
                 config.items
 
@@ -65,11 +103,20 @@ viewItem config =
     Html.a
         [ Attr.href config.href
         , Attr.attribute "role" "menuitem"
-        , Attr.class "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand"
+        , classes
+            [ Tw.block
+            , Tw.px (Th.s4)
+            , Tw.py (Th.s2)
+            , Tw.text_sm
+            , Tw.text_color (Th.gray Th.s700)
+            , Bp.hover [ Tw.bg_color (Th.gray Th.s100), Tw.text_simple TC.brand ]
+            ]
         ]
         [ Html.text config.label ]
 
 
 viewDivider : Html msg
 viewDivider =
-    Html.hr [ Attr.class "my-1 border-gray-200" ] []
+    Html.hr
+        [ classes [ Tw.my (Th.s1), Tw.border_color (Th.gray Th.s200) ] ]
+        []

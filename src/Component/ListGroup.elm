@@ -1,26 +1,42 @@
 module Component.ListGroup exposing (view, viewActionItem, viewItem)
 
+{-| Vertical list-group component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 
 
 view : List (Html msg) -> Html msg
 view items =
     Html.ul
-        [ Attr.class "divide-y divide-gray-200 rounded-lg border border-gray-200 overflow-hidden" ]
+        [ classes
+            [ Tw.divide_y
+            , TwEx.divide_color (Th.gray Th.s200)
+            , Tw.rounded_lg
+            , Tw.border
+            , Tw.border_color (Th.gray Th.s200)
+            , Tw.overflow_hidden
+            ]
+        ]
         items
 
 
 viewItem : { label : String, badge : Maybe String } -> Html msg
 viewItem config =
     Html.li
-        [ Attr.class "flex items-center justify-between bg-white px-4 py-3 text-sm text-gray-800" ]
+        [ classes [ Tw.flex, Tw.items_center, Tw.justify_between, Tw.bg_simple Th.white, Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_sm, Tw.text_color (Th.gray Th.s800) ] ]
         [ Html.span [] [ Html.text config.label ]
         , case config.badge of
             Just b ->
                 Html.span
-                    [ Attr.class "inline-flex items-center rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand" ]
+                    [ classes [ Tw.inline_flex, Tw.items_center, Tw.rounded_full, TwEx.bg_brand_10, Tw.px (Th.s2), Tw.py (Th.s0_dot_5), Tw.text_xs, Tw.font_medium, Tw.text_simple TC.brand ] ]
                     [ Html.text b ]
 
             Nothing ->
@@ -33,12 +49,14 @@ viewActionItem config =
     Html.li []
         [ Html.button
             [ Attr.type_ "button"
-            , Attr.class
-                (if config.active then
-                    "w-full text-left px-4 py-3 type-body-small bg-brand text-white cursor-pointer"
+            , classes
+                ([ Tw.w_full, Tw.text_left, Tw.px (Th.s4), Tw.py (Th.s3), Tw.cursor_pointer ]
+                    ++ (if config.active then
+                            [ Tw.type_body_small, Tw.bg_simple TC.brand, Tw.text_simple Th.white ]
 
-                 else
-                    "w-full text-left px-4 py-3 text-sm text-gray-800 bg-white hover:bg-gray-50 hover:text-brand transition-colors cursor-pointer"
+                        else
+                            [ Tw.text_sm, Tw.text_color (Th.gray Th.s800), Tw.bg_simple Th.white, Bp.hover [ Tw.bg_color (Th.gray Th.s50), Tw.text_simple TC.brand ], Tw.transition_colors ]
+                       )
                 )
             , Events.onClick config.onClick
             ]

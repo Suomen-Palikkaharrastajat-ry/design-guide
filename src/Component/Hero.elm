@@ -1,7 +1,14 @@
 module Component.Hero exposing (view)
 
+{-| Hero / banner section component.
+-}
+
 import Html exposing (Html)
-import Html.Attributes as Attr
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 
 
 view :
@@ -12,16 +19,16 @@ view :
     -> Html msg
 view config =
     Html.section
-        [ Attr.class "bg-white py-16 sm:py-24" ]
+        [ classes [ Tw.bg_simple Th.white, Tw.py (Th.s16), Bp.sm [ Tw.py (Th.s24) ] ] ]
         [ Html.div
-            [ Attr.class "mx-auto max-w-4xl px-6 lg:px-8 text-center" ]
+            [ classes [ Tw.mx_auto, TwEx.max_w_4xl, Tw.px (Th.s6), Bp.lg [ Tw.px (Th.s8) ], Tw.text_center ] ]
             [ Html.h1
-                [ Attr.class "type-display tracking-tight text-text-primary" ]
+                [ classes [ Tw.type_display, Tw.tracking_tight, Tw.text_simple TC.textPrimary ] ]
                 [ Html.text config.title ]
             , case config.subtitle of
                 Just sub ->
                     Html.p
-                        [ Attr.class "mt-6 type-body leading-8 text-text-muted max-w-2xl mx-auto" ]
+                        [ classes [ Tw.mt (Th.s6), Tw.type_body, Tw.leading_relaxed, Tw.text_simple TC.textMuted, TwEx.max_w_2xl, Tw.mx_auto ] ]
                         [ Html.text sub ]
 
                 Nothing ->
@@ -31,7 +38,7 @@ view config =
 
               else
                 Html.div
-                    [ Attr.class "mt-10 flex items-center justify-center gap-x-6 flex-wrap gap-y-4" ]
+                    [ classes [ Tw.mt (Th.s10), Tw.flex, Tw.items_center, Tw.justify_center, Tw.gap_x (Th.s6), Tw.flex_wrap, Tw.gap_y (Th.s4) ] ]
                     config.cta
             ]
         ]

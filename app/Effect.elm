@@ -1,5 +1,12 @@
 module Effect exposing (Effect, batch, fromCmd, map, none, perform)
 
+{-| The `Effect` type for elm-pages.
+
+Wraps side-effects (commands, HTTP requests, form submissions) so they can be
+handled uniformly by the elm-pages runtime. Use `Effect.none`, `Effect.fromCmd`,
+and `Effect.batch` in route modules; the runtime calls `perform` to execute them.
+-}
+
 import Browser.Navigation
 import Form
 import Http

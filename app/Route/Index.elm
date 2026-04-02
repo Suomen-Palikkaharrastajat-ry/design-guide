@@ -1,5 +1,12 @@
 module Route.Index exposing (ActionData, Data, Model, Msg, route)
 
+{-| The design-guide home page (`/`).
+
+Displays the organisation's logos, brand colours, and logo-usage guidelines in
+a single scrollable page. Content is fetched at build time via `BackendTask`
+from the generated `Guide.Logos` and `Guide.Colors` modules.
+-}
+
 import BackendTask exposing (BackendTask)
 import Guide.Colors as Colors
 import Guide.Logos as Logos
@@ -16,6 +23,11 @@ import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App, StaticPayload)
 import Shared
 import SiteMeta
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 import View exposing (View)
 
 
@@ -75,7 +87,17 @@ view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view _ _ =
     { title = SiteMeta.siteTitle
     , body =
-        [ Html.div [ Attr.class "max-w-5xl mx-auto px-4 py-8 sm:py-12 space-y-14 sm:space-y-20" ]
+        [ Html.div
+            [ classes
+                [ TwEx.max_w_5xl
+                , Tw.mx_auto
+                , Tw.px (Th.s4)
+                , Tw.py (Th.s8)
+                , Bp.sm [ Tw.py (Th.s12) ]
+                , TwEx.space_y (Th.s14)
+                , Bp.sm [ TwEx.space_y (Th.s20) ]
+                ]
+            ]
             [ viewPageHeader
             , viewLogotSection
             , viewLogoKayttokontekstit
@@ -91,20 +113,20 @@ view _ _ =
 
 viewPageHeader : Html msg
 viewPageHeader =
-    Html.div [ Attr.class "space-y-2" ]
-        [ Html.h1 [ Attr.class "text-2xl sm:text-3xl font-bold text-brand" ]
+    Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+        [ Html.h1 [ classes [ Tw.text_2xl, Bp.sm [ Tw.text_3xl ], Tw.font_bold, Tw.text_simple TC.brand ] ]
             [ Html.text "Suomen Palikkaharrastajat ry" ]
-        , Html.p [ Attr.class "text-sm sm:text-base text-gray-500" ]
+        , Html.p [ classes [ Tw.text_sm, Bp.sm [ Tw.text_base ], Tw.text_color (Th.gray Th.s500) ] ]
             [ Html.text "Logot ja värit — visuaalinen yleiskatsaus. Katso myös: "
             , Html.a
                 [ Attr.href "/typografia"
-                , Attr.class "underline hover:text-brand transition-colors"
+                , classes [ Tw.underline, Bp.hover [ Tw.text_simple TC.brand ], Tw.transition_colors ]
                 ]
                 [ Html.text "Typografia" ]
             , Html.text " · "
             , Html.a
                 [ Attr.href "/komponentit"
-                , Attr.class "underline hover:text-brand transition-colors"
+                , classes [ Tw.underline, Bp.hover [ Tw.text_simple TC.brand ], Tw.transition_colors ]
                 ]
                 [ Html.text "Komponentit" ]
             , Html.text "."
@@ -118,8 +140,11 @@ viewPageHeader =
 
 viewLogotSection : Html msg
 viewLogotSection =
-    Html.section [ Attr.id "logot", Attr.class "scroll-mt-28 space-y-8 sm:space-y-10" ]
-        [ Html.h2 [ Attr.class "text-xl sm:text-2xl font-bold text-brand" ] [ Html.text "Logot" ]
+    Html.section
+        [ Attr.id "logot"
+        , classes [ TwEx.scroll_mt (Th.s28), TwEx.space_y (Th.s8), Bp.sm [ TwEx.space_y (Th.s10) ] ]
+        ]
+        [ Html.h2 [ classes [ Tw.text_xl, Bp.sm [ Tw.text_2xl ], Tw.font_bold, Tw.text_simple TC.brand ] ] [ Html.text "Logot" ]
         , viewSquareLogos
         , viewSquareFullLogos
         , viewHorizontalLogos
@@ -128,36 +153,36 @@ viewLogotSection =
 
 viewSquareLogos : Html msg
 viewSquareLogos =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "Neliö"
             , description = Just "Hymyilevä minihahmon pää rakennuspalikoista koottuna. Sopii someen ja sovelluskuvakkeisiin."
             }
-        , Html.div [ Attr.class "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" ]
+        , Html.div [ classes [ Tw.grid, Tw.grid_cols_2, Bp.md [ Tw.grid_cols_3 ], Bp.lg [ Tw.grid_cols_4 ], Tw.gap (Th.s4) ] ]
             (List.map LogoCard.view Logos.squareVariants)
         ]
 
 
 viewSquareFullLogos : Html msg
 viewSquareFullLogos =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "Neliö tekstillä"
             , description = Just "Hymyilevä logo kahdella tekstirivillä alla. Käytä kun tarvitset täydellisen tunnuksen pystysuuntaisessa asettelussa."
             }
-        , Html.div [ Attr.class "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" ]
+        , Html.div [ classes [ Tw.grid, Tw.grid_cols_2, Bp.md [ Tw.grid_cols_3 ], Bp.lg [ Tw.grid_cols_4 ], Tw.gap (Th.s4) ] ]
             (List.map LogoCard.view Logos.squareFullVariants)
         ]
 
 
 viewHorizontalLogos : Html msg
 viewHorizontalLogos =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "Vaakasuuntainen"
             , description = Just "Neljä minihahmon päätä vierekkäin. Vaakaversio tekstillä sopii esitteisiin ja nettisivuille."
             }
-        , Html.div [ Attr.class "grid grid-cols-1 sm:grid-cols-2 gap-4" ]
+        , Html.div [ classes [ Tw.grid, Tw.grid_cols_1, Bp.sm [ Tw.grid_cols_2 ], Tw.gap (Th.s4) ] ]
             (List.map LogoCard.view Logos.horizontalVariants)
         ]
 
@@ -168,17 +193,20 @@ viewHorizontalLogos =
 
 viewVaritSection : Html msg
 viewVaritSection =
-    Html.section [ Attr.id "varit", Attr.class "scroll-mt-28 space-y-8 sm:space-y-10" ]
-        [ Html.h2 [ Attr.class "text-xl sm:text-2xl font-bold text-brand" ] [ Html.text "Värit" ]
+    Html.section
+        [ Attr.id "varit"
+        , classes [ TwEx.scroll_mt (Th.s28), TwEx.space_y (Th.s8), Bp.sm [ TwEx.space_y (Th.s10) ] ]
+        ]
+        [ Html.h2 [ classes [ Tw.text_xl, Bp.sm [ Tw.text_2xl ], Tw.font_bold, Tw.text_simple TC.brand ] ] [ Html.text "Värit" ]
         , viewBrandColors
         ]
 
 
 viewBrandColors : Html msg
 viewBrandColors =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub { title = "Merkkivärit", description = Just "Yhdistyksen viralliset päävärit." }
-        , Html.div [ Attr.class "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" ]
+        , Html.div [ classes [ Tw.grid, Tw.grid_cols_2, Bp.md [ Tw.grid_cols_3 ], Bp.lg [ Tw.grid_cols_4 ], Tw.gap (Th.s4) ] ]
             (List.map
                 (\c -> ColorSwatch.view { hex = c.hex, name = c.name, description = c.description, usageTags = c.usage })
                 Colors.brandColors
@@ -192,12 +220,15 @@ viewBrandColors =
 
 viewLogoKayttokontekstit : Html msg
 viewLogoKayttokontekstit =
-    Html.section [ Attr.id "logon-kaytto", Attr.class "scroll-mt-28 space-y-8 sm:space-y-10" ]
-        [ Html.div [ Attr.class "flex items-baseline justify-between flex-wrap gap-4" ]
-            [ Html.h2 [ Attr.class "text-xl sm:text-2xl font-bold text-brand" ] [ Html.text "Logon käyttö" ]
+    Html.section
+        [ Attr.id "logon-kaytto"
+        , classes [ TwEx.scroll_mt (Th.s28), TwEx.space_y (Th.s8), Bp.sm [ TwEx.space_y (Th.s10) ] ]
+        ]
+        [ Html.div [ classes [ Tw.flex, Tw.items_baseline, Tw.justify_between, Tw.flex_wrap, Tw.gap (Th.s4) ] ]
+            [ Html.h2 [ classes [ Tw.text_xl, Bp.sm [ Tw.text_2xl ], Tw.font_bold, Tw.text_simple TC.brand ] ] [ Html.text "Logon käyttö" ]
             , Html.a
                 [ Attr.href "/design-guide/logos.jsonld"
-                , Attr.class "text-xs font-mono text-gray-400 hover:text-brand transition-colors"
+                , classes [ Tw.text_xs, Tw.font_mono, Tw.text_color (Th.gray Th.s400), Bp.hover [ Tw.text_simple TC.brand ], Tw.transition_colors ]
                 ]
                 [ Html.text "logos.jsonld" ]
             ]
@@ -209,14 +240,25 @@ viewLogoKayttokontekstit =
 
 viewLogoUsageRules : Html msg
 viewLogoUsageRules =
-    Html.div [ Attr.class "bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800 space-y-2" ]
-        [ Html.p [ Attr.class "font-semibold" ] [ Html.text "Käyttöohjeet" ]
-        , Html.ul [ Attr.class "list-disc list-inside space-y-1 mt-1" ]
+    Html.div
+        [ classes
+            [ Tw.bg_color (Th.amber Th.s50)
+            , Tw.border
+            , Tw.border_color (Th.amber Th.s200)
+            , Tw.rounded_lg
+            , Tw.p (Th.s4)
+            , Tw.text_sm
+            , Tw.text_color (Th.amber Th.s800)
+            , TwEx.space_y (Th.s2)
+            ]
+        ]
+        [ Html.p [ classes [ Tw.font_semibold ] ] [ Html.text "Käyttöohjeet" ]
+        , Html.ul [ classes [ Tw.list_disc, Tw.list_inside, TwEx.space_y (Th.s1), Tw.mt (Th.s1) ] ]
             [ Html.li [] [ Html.text "Käytä SVG ensin; WebP PNG-varamenetelmällä" ]
             , Html.li [] [ Html.text "Älä venytä, litistä tai värjää logon osia" ]
             , Html.li [] [ Html.text "Älä käytä animoitua logoa tulostettavissa tai sähköpostissa" ]
             ]
-        , Html.div [ Attr.class "flex flex-wrap gap-4 pt-1 border-t border-amber-200 mt-2" ]
+        , Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s4), Tw.pt (Th.s1), Tw.border_t, Tw.border_color (Th.amber Th.s200), Tw.mt (Th.s2) ] ]
             [ Html.span [] [ Html.text "Minimikoko: ", Html.strong [] [ Html.text "80 px" ], Html.text " (neliö) · ", Html.strong [] [ Html.text "200 px" ], Html.text " (vaaka)" ]
             , Html.span [] [ Html.text "Tyhjä tila: vähintään 25 % logon leveydestä joka suuntaan" ]
             ]
@@ -225,18 +267,18 @@ viewLogoUsageRules =
 
 viewLogoContextMapping : Html msg
 viewLogoContextMapping =
-    Html.div [ Attr.class "space-y-3" ]
+    Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
         [ SectionHeader.viewSub
             { title = "Mikä logo mihinkin?"
             , description = Just "Valitse variantti käyttökontekstin mukaan."
             }
-        , Html.div [ Attr.class "overflow-x-auto" ]
-            [ Html.table [ Attr.class "w-full text-sm border-collapse" ]
+        , Html.div [ classes [ Tw.overflow_x_auto ] ]
+            [ Html.table [ classes [ Tw.w_full, Tw.text_sm, Tw.border_collapse ] ]
                 [ Html.thead []
-                    [ Html.tr [ Attr.class "border-b border-gray-200" ]
+                    [ Html.tr [ classes [ Tw.border_b, Tw.border_color (Th.gray Th.s200) ] ]
                         [ logoTh "Konteksti", logoTh "Suositeltu variantti", logoTh "Formaatti" ]
                     ]
-                , Html.tbody [ Attr.class "divide-y divide-gray-100" ]
+                , Html.tbody [ classes [ Tw.divide_y, TwEx.divide_color (Th.gray Th.s100) ] ]
                     (List.map viewContextRow logoContextRows)
                 ]
             ]
@@ -258,24 +300,24 @@ logoContextRows =
 
 viewContextRow : { context : String, variant : String, format : String } -> Html msg
 viewContextRow row =
-    Html.tr [ Attr.class "hover:bg-gray-50" ]
-        [ Html.td [ Attr.class "py-2 px-3 text-gray-700" ] [ Html.text row.context ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-xs text-brand" ] [ Html.text row.variant ]
-        , Html.td [ Attr.class "py-2 px-3 text-xs text-gray-500" ] [ Html.text row.format ]
+    Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ] ]
+        [ Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_color (Th.gray Th.s700) ] ] [ Html.text row.context ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_simple TC.brand ] ] [ Html.text row.variant ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.format ]
         ]
 
 
 viewFaviconSnippets : Html msg
 viewFaviconSnippets =
-    Html.div [ Attr.class "space-y-6" ]
+    Html.div [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.viewSub
             { title = "Koodiesimerkit"
             , description = Just "Liitä seuraavat koodipalat suoraan HTML-tiedostoosi."
             }
-        , Html.div [ Attr.class "space-y-4" ]
-            [ Html.div [ Attr.class "space-y-2" ]
-                [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Favicon — <head>" ]
-                , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
+            [ Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+                [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Favicon — <head>" ]
+                , Html.pre [ classes [ Tw.bg_color (Th.gray Th.s900), Tw.text_color (Th.gray Th.s100), Tw.rounded_lg, Tw.p (Th.s4), Tw.text_xs, Tw.leading_relaxed, Tw.overflow_x_auto ] ]
                     [ Html.code []
                         [ Html.text """<link rel="icon" href="/favicon/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon/favicon-32.png" type="image/png" sizes="32x32">
@@ -283,12 +325,12 @@ viewFaviconSnippets =
 <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">""" ]
                         ]
-                , Html.p [ Attr.class "text-xs text-gray-500" ]
+                , Html.p [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ]
                     [ Html.text "Lisää ICO ensin — vanhat selaimet eivät tue PNG-faviconeja. Apple touch icon on 180 × 180 px." ]
                 ]
-            , Html.div [ Attr.class "space-y-2" ]
-                [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Logo — <picture> WebP + PNG" ]
-                , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+            , Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+                [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Logo — <picture> WebP + PNG" ]
+                , Html.pre [ classes [ Tw.bg_color (Th.gray Th.s900), Tw.text_color (Th.gray Th.s100), Tw.rounded_lg, Tw.p (Th.s4), Tw.text_xs, Tw.leading_relaxed, Tw.overflow_x_auto ] ]
                     [ Html.code []
                         [ Html.text """<picture>
   <source
@@ -300,9 +342,9 @@ viewFaviconSnippets =
     width="400" height="120">
 </picture>""" ]
                     ]
-                , Html.p [ Attr.class "text-xs text-gray-500" ]
+                , Html.p [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ]
                     [ Html.text "Käytä aina "
-                    , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "<picture>" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "<picture>" ]
                     , Html.text " -elementtiä, jotta selain valitsee WebP:n kun se on tuettu, muuten käytetään PNG-varaversiota."
                     ]
                 ]
@@ -312,8 +354,5 @@ viewFaviconSnippets =
 
 logoTh : String -> Html msg
 logoTh label =
-    Html.th [ Attr.class "py-2 px-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider" ]
+    Html.th [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_left, Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ]
         [ Html.text label ]
-
-
-

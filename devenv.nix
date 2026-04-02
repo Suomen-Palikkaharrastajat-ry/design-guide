@@ -39,6 +39,7 @@ in {
       pkgs.treefmt
       # Elm tooling
       pkgs.nodejs
+      pkgs.pnpm
       pkgs.elmPackages.elm-format
       pkgs.elmPackages.elm-review
       pkgs.elmPackages.elm-test

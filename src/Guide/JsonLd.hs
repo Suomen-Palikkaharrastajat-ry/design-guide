@@ -67,7 +67,7 @@ generateJsonLd = do
 buildContext :: A.Value
 buildContext =
     A.object
-        [ "@id"         .= (dgUrl "context.jsonld")
+        [ "@id"         .= dgUrl "context.jsonld"
         , "@context"    .= A.object
             [ "@vocab"       .= ("https://logo.palikkaharrastajat.fi/design-guide/vocab#" :: Text)
             , "schema"       .= ("https://schema.org/" :: Text)
@@ -294,15 +294,13 @@ buildTypographyLd =
                     , "lineHeight"   .= lh
                     , "cssClass"     .= cssClass
                     ]
-                  lsPairs = if ls /= 0.0
-                    then [ "letterSpacing" .= A.object
+                  lsPairs = [ "letterSpacing" .= A.object
                             [ "value"        .= ls
                             , "unit"         .= ("em" :: Text)
                             , "cssValue"     .= (T.pack (show ls) <> "em")
                             , "tailwindClass" .= lsTailwind ls
                             ]
-                         ]
-                    else []
+                         | ls /= 0.0 ]
               in A.object (base ++ lsPairs)
             | (name, weight, sizeRem, sizePx, lh, ls, cssClass, desc) <- typeScale
             ]
