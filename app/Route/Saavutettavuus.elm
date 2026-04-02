@@ -1,5 +1,11 @@
 module Route.Saavutettavuus exposing (ActionData, Data, Model, Msg, route)
 
+{-| Accessibility guide page.
+
+Covers WCAG conformance levels, colour contrast, focus management,
+screen-reader usage, and form labelling requirements.
+-}
+
 import BackendTask exposing (BackendTask)
 import Component.Alert as Alert
 import FeatherIcons
@@ -14,6 +20,11 @@ import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App, StaticPayload)
 import Shared
 import SiteMeta
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 import View exposing (View)
 
 
@@ -73,15 +84,25 @@ view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view _ _ =
     { title = "Saavutettavuus — " ++ SiteMeta.organizationName
     , body =
-        [ Html.div [ Attr.class "max-w-5xl mx-auto px-4 py-8 sm:py-12 space-y-12 sm:space-y-16" ]
-            [ Html.div [ Attr.class "space-y-2" ]
-                [ Html.h1 [ Attr.class "text-2xl sm:text-3xl font-bold text-brand" ]
+        [ Html.div
+            [ classes
+                [ TwEx.max_w_5xl
+                , Tw.mx_auto
+                , Tw.px (Th.s4)
+                , Tw.py (Th.s8)
+                , Bp.sm [ Tw.py (Th.s12) ]
+                , TwEx.space_y (Th.s12)
+                , Bp.sm [ TwEx.space_y (Th.s16) ]
+                ]
+            ]
+            [ Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+                [ Html.h1 [ classes [ Tw.text_2xl, Bp.sm [ Tw.text_3xl ], Tw.font_bold, Tw.text_simple TC.brand ] ]
                     [ Html.text "Saavutettavuus" ]
-                , Html.p [ Attr.class "text-sm sm:text-base text-gray-500" ]
+                , Html.p [ classes [ Tw.text_sm, Bp.sm [ Tw.text_base ], Tw.text_color (Th.gray Th.s500) ] ]
                     [ Html.text "WCAG 2.1 AA -ohjeistus kontrasteista, värisokeustuesta, animaatioista ja saavutettavasta nimeämisestä. Koneluettava: "
                     , Html.a
                         [ Attr.href "/design-guide/index.jsonld"
-                        , Attr.class "underline hover:text-brand transition-colors font-mono text-sm"
+                        , classes [ Tw.underline, Bp.hover [ Tw.text_simple TC.brand ], Tw.transition_colors, Tw.font_mono, Tw.text_sm ]
                         ]
                         [ Html.text "design-guide/" ]
                     , Html.text "."
@@ -93,9 +114,9 @@ view _ _ =
                 , title = Just "WCAG 2.1 AA — tavoitetaso"
                 , body =
                     [ Html.text "Kaikki brändimateriaalit ja käyttöliittymäkomponentit noudattavat vähintään WCAG 2.1 AA -tasoa. Kontrastitiedot löytyvät myös koneluettavasta "
-                    , Html.a [ Attr.href "/brand.json", Attr.class "underline" ] [ Html.text "brand.json" ]
+                    , Html.a [ Attr.href "/brand.json", classes [ Tw.underline ] ] [ Html.text "brand.json" ]
                     , Html.text " -tiedostosta (kenttä "
-                    , Html.code [ Attr.class "font-mono text-xs" ] [ Html.text "colors.brand[*].wcag" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs ] ] [ Html.text "colors.brand[*].wcag" ]
                     , Html.text ")."
                     ]
                 , onDismiss = Nothing
@@ -121,17 +142,17 @@ view _ _ =
 
 viewSkipToContentSection : Html msg
 viewSkipToContentSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Ohita-navigaatio-linkki"
             , description = Just "Skip-to-content-linkki on pakollinen näppäimistökäyttäjille — ilman sitä koko navigaatio täytyy läpikäydä joka sivulatauksella."
             }
-        , Html.div [ Attr.class "space-y-4" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
             [ viewRuleCard "Lisää ensimmäiseksi elementiksi <body>:n sisälle"
                 "Linkki on piilotettu oletuksena (sr-only) mutta tulee näkyviin, kun se saa kohdistuksen. Näin se ei häiritse visuaalista layoutia mutta on saavutettava näppäimistöllä."
-            , Html.div [ Attr.class "space-y-2" ]
-                [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "HTML-esimerkki" ]
-                , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+            , Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+                [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "HTML-esimerkki" ]
+                , Html.pre [ classes [ Tw.bg_color (Th.gray Th.s900), Tw.text_color (Th.gray Th.s100), Tw.rounded_lg, Tw.p (Th.s4), Tw.text_xs, Tw.leading_relaxed, Tw.overflow_x_auto ] ]
                     [ Html.code []
                         [ Html.text """<a href=\"#main-content\"
    class=\"sr-only focus:not-sr-only focus:absolute
@@ -161,15 +182,15 @@ viewSkipToContentSection =
 
 viewContrastSection : Html msg
 viewContrastSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Kontrastisuhteet"
             , description = Just "WCAG 2.1 vaatii vähintään 4.5:1 normaalille tekstille (AA) ja 3:1 suurelle tekstille (AA). Tähdellä (*) merkityt ylittävät AAA-tason (7:1)."
             }
-        , Html.div [ Attr.class "overflow-x-auto" ]
-            [ Html.table [ Attr.class "w-full text-sm border-collapse" ]
+        , Html.div [ classes [ Tw.overflow_x_auto ] ]
+            [ Html.table [ classes [ Tw.w_full, Tw.text_sm, Tw.border_collapse ] ]
                 [ Html.thead []
-                    [ Html.tr [ Attr.class "bg-gray-50 border-b border-gray-200" ]
+                    [ Html.tr [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border_b, Tw.border_color (Th.gray Th.s200) ] ]
                         [ th "Väri"
                         , th "Hex"
                         , th "Valkoisella"
@@ -177,7 +198,7 @@ viewContrastSection =
                         , th "Käyttötarkoitus"
                         ]
                     ]
-                , Html.tbody [ Attr.class "divide-y divide-gray-100" ]
+                , Html.tbody [ classes [ Tw.divide_y, TwEx.divide_color (Th.gray Th.s100) ] ]
                     (List.map viewContrastRow contrastData)
                 ]
             ]
@@ -198,19 +219,19 @@ contrastData =
 
 viewContrastRow : { name : String, hex : String, onWhite : String, onBlack : String, usage : String } -> Html msg
 viewContrastRow row =
-    Html.tr [ Attr.class "hover:bg-gray-50" ]
-        [ Html.td [ Attr.class "px-4 py-3 font-medium text-brand flex items-center gap-2" ]
+    Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ] ]
+        [ Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_medium, Tw.text_simple TC.brand, Tw.flex, Tw.items_center, Tw.gap (Th.s2) ] ]
             [ Html.span
-                [ Attr.class "inline-block w-4 h-4 rounded border border-black/10 flex-shrink-0"
+                [ classes [ Tw.inline_block, Tw.w (Th.s4), Tw.h (Th.s4), Tw.rounded, Tw.border, TwEx.border_black_10, Tw.shrink_0 ]
                 , Attr.style "background-color" row.hex
                 ]
                 []
             , Html.text row.name
             ]
-        , Html.td [ Attr.class "px-4 py-3 font-mono text-gray-500" ] [ Html.text row.hex ]
-        , Html.td [ Attr.class "px-4 py-3" ] [ Html.text row.onWhite ]
-        , Html.td [ Attr.class "px-4 py-3" ] [ Html.text row.onBlack ]
-        , Html.td [ Attr.class "px-4 py-3 text-gray-500" ] [ Html.text row.usage ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.hex ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3) ] ] [ Html.text row.onWhite ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3) ] ] [ Html.text row.onBlack ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.usage ]
         ]
 
 
@@ -222,15 +243,15 @@ viewContrastRow row =
 
 viewSemanticPairingsSection : Html msg
 viewSemanticPairingsSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Semanttiset kontrastiparit"
             , description = Just "Lasketut kontrastisuhteet semanttisten väritokenien yhdistelmille. Käytä tätä taulukkoa, kun valitset teksti–tausta-pareja."
             }
-        , Html.div [ Attr.class "overflow-x-auto" ]
-            [ Html.table [ Attr.class "w-full text-sm border-collapse" ]
+        , Html.div [ classes [ Tw.overflow_x_auto ] ]
+            [ Html.table [ classes [ Tw.w_full, Tw.text_sm, Tw.border_collapse ] ]
                 [ Html.thead []
-                    [ Html.tr [ Attr.class "bg-gray-50 border-b border-gray-200" ]
+                    [ Html.tr [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border_b, Tw.border_color (Th.gray Th.s200) ] ]
                         [ th "Teksti-token"
                         , th "Tausta-token"
                         , th "Suhde"
@@ -238,7 +259,7 @@ viewSemanticPairingsSection =
                         , th "Soveltuvuus"
                         ]
                     ]
-                , Html.tbody [ Attr.class "divide-y divide-gray-100" ]
+                , Html.tbody [ classes [ Tw.divide_y, TwEx.divide_color (Th.gray Th.s100) ] ]
                     (List.map viewPairingRow semanticPairingData)
                 ]
             ]
@@ -268,12 +289,12 @@ viewPairingRow row =
             else
                 "text-red-600 font-semibold"
     in
-    Html.tr [ Attr.class "hover:bg-gray-50" ]
-        [ Html.td [ Attr.class "px-4 py-3 font-mono text-xs text-brand" ] [ Html.text row.textToken ]
-        , Html.td [ Attr.class "px-4 py-3 font-mono text-xs text-gray-500" ] [ Html.text row.bgToken ]
-        , Html.td [ Attr.class "px-4 py-3 font-mono text-xs" ] [ Html.text row.ratio ]
+    Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ] ]
+        [ Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_simple TC.brand ] ] [ Html.text row.textToken ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.bgToken ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs ] ] [ Html.text row.ratio ]
         , Html.td [ Attr.class ("px-4 py-3 text-xs " ++ levelClass) ] [ Html.text row.level ]
-        , Html.td [ Attr.class "px-4 py-3 text-xs text-gray-500" ] [ Html.text row.note ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.note ]
         ]
 
 
@@ -285,15 +306,15 @@ viewPairingRow row =
 
 viewDarkSurfaceSection : Html msg
 viewDarkSurfaceSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Tumman pinnan parit"
             , description = Just "background.dark (#05131D) -taustan kanssa sallitut värit. Käytä vain tässä hyväksyttyjä värejä tummilla osuuksilla."
             }
-        , Html.div [ Attr.class "overflow-x-auto" ]
-            [ Html.table [ Attr.class "w-full text-sm border-collapse" ]
+        , Html.div [ classes [ Tw.overflow_x_auto ] ]
+            [ Html.table [ classes [ Tw.w_full, Tw.text_sm, Tw.border_collapse ] ]
                 [ Html.thead []
-                    [ Html.tr [ Attr.class "bg-gray-50 border-b border-gray-200" ]
+                    [ Html.tr [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border_b, Tw.border_color (Th.gray Th.s200) ] ]
                         [ th "Väri / token"
                         , th "Hex"
                         , th "Kontrasti"
@@ -301,7 +322,7 @@ viewDarkSurfaceSection =
                         , th "Käyttö"
                         ]
                     ]
-                , Html.tbody [ Attr.class "divide-y divide-gray-100" ]
+                , Html.tbody [ classes [ Tw.divide_y, TwEx.divide_color (Th.gray Th.s100) ] ]
                     (List.map viewDarkPairingRow darkSurfaceData)
                 ]
             ]
@@ -331,21 +352,21 @@ viewDarkPairingRow row =
             else
                 "text-red-600 font-semibold"
     in
-    Html.tr [ Attr.class "hover:bg-gray-50" ]
-        [ Html.td [ Attr.class "px-4 py-3 font-mono text-xs text-brand" ]
-            [ Html.div [ Attr.class "flex items-center gap-2" ]
+    Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ] ]
+        [ Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_simple TC.brand ] ]
+            [ Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s2) ] ]
                 [ Html.span
-                    [ Attr.class "inline-block w-4 h-4 rounded border border-black/10 flex-shrink-0"
+                    [ classes [ Tw.inline_block, Tw.w (Th.s4), Tw.h (Th.s4), Tw.rounded, Tw.border, TwEx.border_black_10, Tw.shrink_0 ]
                     , Attr.style "background-color" row.hex
                     ]
                     []
                 , Html.text row.token
                 ]
             ]
-        , Html.td [ Attr.class "px-4 py-3 font-mono text-xs text-gray-500" ] [ Html.text row.hex ]
-        , Html.td [ Attr.class "px-4 py-3 font-mono text-xs" ] [ Html.text row.ratio ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.hex ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.font_mono, Tw.text_xs ] ] [ Html.text row.ratio ]
         , Html.td [ Attr.class ("px-4 py-3 text-xs " ++ levelClass) ] [ Html.text row.level ]
-        , Html.td [ Attr.class "px-4 py-3 text-xs text-gray-500" ] [ Html.text row.usage ]
+        , Html.td [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.usage ]
         ]
 
 
@@ -357,12 +378,12 @@ viewDarkPairingRow row =
 
 viewColorBlindSection : Html msg
 viewColorBlindSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Värisokeustuki"
             , description = Just "Brändivärit ja niiden käyttö värinäön erityisryhmissä."
             }
-        , Html.div [ Attr.class "space-y-4" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
             [ viewRuleCard "Älä käytä väriä ainoana erottavana tekijänä"
                 "Tieto on ilmaistava myös tekstillä, kuviolla tai ikonilla. Esimerkiksi Alert-komponentti käyttää sekä väriä että ikonia (ℹ / ✓ / ⚠ / ✕)."
             , viewRuleCard "Sateenkaaripaletti ja värisokeus"
@@ -381,12 +402,12 @@ viewColorBlindSection =
 
 viewMotionSection : Html msg
 viewMotionSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Liike ja animaatiot"
             , description = Nothing
             }
-        , Html.div [ Attr.class "space-y-4" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
             [ viewRuleCard "prefers-reduced-motion on pakollinen"
                 "Kaikki animaatiot, siirtymät ja automaattisesti toistuvat kuvat on pysäytettävä tai vaihdettava staattiseen versioon, kun käyttäjä on asettanut prefers-reduced-motion: reduce. CSS-esimerkki: @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }"
             , viewRuleCard "Animoitu logo"
@@ -405,20 +426,20 @@ viewMotionSection =
 
 viewLogoAltSection : Html msg
 viewLogoAltSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Logon vaihtoehtoteksti"
             , description = Just "Ohjeet alt-attribuutin käyttöön eri konteksteissa."
             }
-        , Html.div [ Attr.class "space-y-4" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
             [ viewRuleCard "Päälogo navigaatiossa"
                 "alt=\"Suomen Palikkaharrastajat ry\" — kerro yhdistyksen nimi."
             , viewRuleCard "Logo kuvitustarkoituksessa"
                 "alt=\"Suomen Palikkaharrastajat ry — logo\" tai varianttispesifinen kuvaus, esim. alt=\"Sateenkaarilogovariantti\"."
             , viewRuleCard "Koristelullinen logo"
                 "Jos logo on pelkästään visuaalinen koriste (esim. taustakuvio), käytä alt=\"\". Lisää myös aria-hidden=\"true\", jotta ruudunlukija ohittaa elementin kokonaan."
-            , Html.div [ Attr.class "space-y-2" ]
-                [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Esimerkki — koristelullinen logo" ]
+            , Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+                [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Esimerkki — koristelullinen logo" ]
                 , viewCodeBlock """<!-- Koristelullinen: sekä alt=\"\" että aria-hidden=\"true\" -->
 <img src=\"/logo/square/svg/square-smile.svg\"
      alt=\"\"
@@ -442,12 +463,12 @@ viewLogoAltSection =
 
 viewFocusSection : Html msg
 viewFocusSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Kohdistusindikaattorit"
             , description = Just "Näppäimistönavigointi edellyttää selkeää kohdistusindikaattoria."
             }
-        , Html.div [ Attr.class "space-y-4" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
             [ viewRuleCard "Älä poista outline-attribuuttia"
                 "focus:outline-none on sallittu vain, jos tarjoat vastaavan näkyvän vaihtoehdon (focus:ring-2). Button-komponentti käyttää valmiiksi focus:ring-2 focus:ring-offset-2 -luokkia."
             , viewRuleCard "Kohdistusrengas kirkkuusvaatimus"
@@ -464,22 +485,22 @@ viewFocusSection =
 
 viewAccessibleNamingSection : Html msg
 viewAccessibleNamingSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Saavutettava nimeäminen"
             , description = Just "Ohjeet aria-label-, aria-haspopup-, aria-expanded-, aria-controls- ja aria-labelledby-attribuuttien käyttöön komponenttikirjaston kanssa."
             }
-        , Html.div [ Attr.class "space-y-6" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s6) ] ]
             [ -- CloseButton / aria-label
-              Html.div [ Attr.class "space-y-3" ]
-                [ Html.p [ Attr.class "font-semibold text-sm text-brand" ] [ Html.text "aria-label — CloseButton ja Spinner" ]
-                , Html.p [ Attr.class "text-sm text-gray-600" ]
+              Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
+                [ Html.p [ classes [ Tw.font_semibold, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text "aria-label — CloseButton ja Spinner" ]
+                , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ]
                     [ Html.text "Komponentit, jotka eivät sisällä näkyvää tekstiä (kuten × tai pyörivä kehä), tarvitsevat aina "
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "aria-label" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "aria-label" ]
                     , Html.text "-attribuutin. Komponenttikirjastossa tämä välitetään "
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "label : String" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "label : String" ]
                     , Html.text " -kentällä — ei "
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "Html msg" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "Html msg" ]
                     , Html.text " -tyyppisenä, koska ruudunlukijat jättävät muotoillun HTML-sisällön huomiotta tai lukevat sen väärin."
                     ]
                 , viewCodeComparison
@@ -501,15 +522,15 @@ Spinner.view
                 ]
 
             -- Dropdown / aria-haspopup + aria-expanded
-            , Html.div [ Attr.class "space-y-3" ]
-                [ Html.p [ Attr.class "font-semibold text-sm text-brand" ] [ Html.text "aria-haspopup ja aria-expanded — Dropdown" ]
-                , Html.p [ Attr.class "text-sm text-gray-600" ]
+            , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
+                [ Html.p [ classes [ Tw.font_semibold, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text "aria-haspopup ja aria-expanded — Dropdown" ]
+                , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ]
                     [ Html.text "Ruudunlukija tarvitsee tiedon siitä, että painike avaa valikon ("
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "aria-haspopup=\"menu\"" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "aria-haspopup=\"menu\"" ]
                     , Html.text ") ja siitä, onko valikko auki ("
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "aria-expanded" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "aria-expanded" ]
                     , Html.text "). Dropdown-komponentti asettaa nämä automaattisesti "
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "isOpen" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "isOpen" ]
                     , Html.text "-tilan perusteella."
                     ]
                 , viewCodeBlock
@@ -528,15 +549,15 @@ Spinner.view
                 ]
 
             -- Tabs / aria-controls + aria-labelledby
-            , Html.div [ Attr.class "space-y-3" ]
-                [ Html.p [ Attr.class "font-semibold text-sm text-brand" ] [ Html.text "aria-controls ja aria-labelledby — Tabs" ]
-                , Html.p [ Attr.class "text-sm text-gray-600" ]
+            , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
+                [ Html.p [ classes [ Tw.font_semibold, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text "aria-controls ja aria-labelledby — Tabs" ]
+                , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ]
                     [ Html.text "Välilehtipanelit linkitetään välilehtipainikkeisiin "
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "aria-controls" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "aria-controls" ]
                     , Html.text " (painike → paneeli) ja "
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "aria-labelledby" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "aria-labelledby" ]
                     , Html.text " (paneeli → painike) -attribuuteilla. Tabs-komponentti generoi "
-                    , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 rounded" ] [ Html.text "id" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "id" ]
                     , Html.text "-arvot indeksin perusteella."
                     ]
                 , viewCodeBlock
@@ -568,18 +589,18 @@ Tabs.view
 
 viewCodeBlock : String -> Html msg
 viewCodeBlock src =
-    Html.div [ Attr.class "overflow-x-auto" ]
+    Html.div [ classes [ Tw.overflow_x_auto ] ]
         [ Html.pre
-            [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+            [ classes [ Tw.bg_color (Th.gray Th.s900), Tw.text_color (Th.gray Th.s100), Tw.rounded_lg, Tw.p (Th.s4), Tw.text_xs, Tw.leading_relaxed, Tw.overflow_x_auto ] ]
             [ Html.code [] [ Html.text src ] ]
         ]
 
 
 viewCodeComparison : String -> String -> String -> String -> Html msg
 viewCodeComparison badLabel badSrc goodLabel goodSrc =
-    Html.div [ Attr.class "grid grid-cols-1 sm:grid-cols-2 gap-3" ]
-        [ Html.div [ Attr.class "space-y-1" ]
-            [ Html.p [ Attr.class "text-xs font-semibold text-red-600 flex items-center gap-1" ]
+    Html.div [ classes [ Tw.grid, Tw.grid_cols_1, Bp.sm [ Tw.grid_cols_2 ], Tw.gap (Th.s3) ] ]
+        [ Html.div [ classes [ TwEx.space_y (Th.s1) ] ]
+            [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.red Th.s600), Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                 [ FeatherIcons.x
                     |> FeatherIcons.withSize 12
                     |> FeatherIcons.toHtml [ Attr.attribute "aria-hidden" "true" ]
@@ -587,8 +608,8 @@ viewCodeComparison badLabel badSrc goodLabel goodSrc =
                 ]
             , viewCodeBlock badSrc
             ]
-        , Html.div [ Attr.class "space-y-1" ]
-            [ Html.p [ Attr.class "text-xs font-semibold text-green-600 flex items-center gap-1" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s1) ] ]
+            [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.green Th.s600), Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                 [ FeatherIcons.check
                     |> FeatherIcons.withSize 12
                     |> FeatherIcons.toHtml [ Attr.attribute "aria-hidden" "true" ]
@@ -606,13 +627,13 @@ viewCodeComparison badLabel badSrc goodLabel goodSrc =
 
 th : String -> Html msg
 th label =
-    Html.th [ Attr.class "px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider" ]
+    Html.th [ classes [ Tw.px (Th.s4), Tw.py (Th.s3), Tw.text_left, Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ]
         [ Html.text label ]
 
 
 viewRuleCard : String -> String -> Html msg
 viewRuleCard title body =
-    Html.div [ Attr.class "border-l-4 border-brand-yellow pl-4 py-1 space-y-1" ]
-        [ Html.p [ Attr.class "font-semibold text-sm text-brand" ] [ Html.text title ]
-        , Html.p [ Attr.class "text-sm text-gray-600" ] [ Html.text body ]
+    Html.div [ classes [ Tw.border_l_4, Tw.border_simple TC.brandYellow, Tw.pl (Th.s4), Tw.py (Th.s1), TwEx.space_y (Th.s1) ] ]
+        [ Html.p [ classes [ Tw.font_semibold, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text title ]
+        , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text body ]
         ]

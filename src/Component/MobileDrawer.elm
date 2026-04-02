@@ -16,6 +16,7 @@ import Html.Events
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -54,7 +55,7 @@ viewOverlay : { isOpen : Bool, onClose : msg, breakpoint : Breakpoint } -> Html 
 viewOverlay config =
     if config.isOpen then
         Html.div
-            [ classes [ breakpointTw config.breakpoint, Tw.fixed, Tw.raw "inset-0", Tw.z_40, Tw.raw "bg-black/50" ]
+            [ classes [ breakpointTw config.breakpoint, Tw.fixed, TwEx.inset_0, Tw.z_40, TwEx.bg_black_50 ]
             , Html.Events.onClick config.onClose
             ]
             []
@@ -78,10 +79,10 @@ view config =
         [ classes
             [ breakpointTw config.breakpoint
             , Tw.fixed
-            , Tw.raw "inset-y-0"
-            , Tw.raw "left-0"
+            , TwEx.inset_y_0
+            , TwEx.left_0
             , Tw.w (Th.s64)
-            , Tw.raw "bg-white"
+            , Tw.bg_simple Th.white
             , Tw.shadow_lg
             , Tw.z_50
             , Tw.transform
@@ -91,7 +92,7 @@ view config =
             , Tw.ease_in_out
             , Bp.withVariant "motion-reduce" [ Tw.transition_none ]
             , if config.isOpen then
-                Tw.raw "translate-x-0"
+                TwEx.translate_x_0
 
               else
                 Tw.neg_translate_x_full
@@ -129,10 +130,10 @@ viewNavLink config =
                 , Tw.px (Th.s3)
                 , Tw.py (Th.s2)
                 , Tw.rounded
-                , Bp.hover [ Tw.raw "bg-gray-100" ]
+                , Bp.hover [ Tw.bg_color (Th.gray Th.s100) ]
                 , Tw.transition_colors
                 , Tw.text_sm
-                , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, Tw.raw "ring-brand-yellow" ]
+                , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, TwEx.ring_brand_yellow ]
                 ]
              , Html.Events.onClick config.onClose
              ]

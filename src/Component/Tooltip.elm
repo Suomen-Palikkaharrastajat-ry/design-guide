@@ -1,27 +1,31 @@
 module Component.Tooltip exposing (view)
 
+{-| Tooltip component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 
 
 view : { content : String, children : List (Html msg) } -> Html msg
 view config =
-    Html.div [ classes [ Tw.relative, Tw.inline_flex, Tw.raw "group" ] ]
+    Html.div [ classes [ Tw.relative, Tw.inline_flex, TwEx.group ] ]
         (Html.div
             [ classes
                 [ Tw.absolute
                 , Tw.bottom_full
-                , Tw.raw "left-1/2"
-                , Tw.raw "-translate-x-1/2"
+                , TwEx.left_half
+                , TwEx.neg_translate_x_half
                 , Tw.mb (Th.s2)
                 , Tw.px (Th.s2)
                 , Tw.py (Th.s1)
                 , Tw.rounded
-                , Tw.raw "bg-gray-900"
-                , Tw.raw "text-white"
+                , Tw.bg_color (Th.gray Th.s900)
+                , Tw.text_simple Th.white
                 , Tw.text_xs
                 , Tw.whitespace_nowrap
                 , Tw.opacity_0
@@ -38,11 +42,11 @@ view config =
                 [ classes
                     [ Tw.absolute
                     , Tw.top_full
-                    , Tw.raw "left-1/2"
-                    , Tw.raw "-translate-x-1/2"
+                    , TwEx.left_half
+                    , TwEx.neg_translate_x_half
                     , Tw.border_4
-                    , Tw.raw "border-transparent"
-                    , Tw.raw "border-t-gray-900"
+                    , TwEx.border_transparent
+                    , TwEx.border_t_gray_900
                     ]
                 ]
                 []

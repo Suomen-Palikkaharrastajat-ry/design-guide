@@ -1,10 +1,14 @@
 module Component.Navbar exposing (NavLink, view)
 
+{-| Top navigation bar component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -22,9 +26,9 @@ view :
     -> Html msg
 view config =
     Html.nav
-        [ classes [ Tw.raw "bg-white", Tw.border_b, Tw.border_simple TC.borderDefault ] ]
+        [ classes [ Tw.bg_simple Th.white, Tw.border_b, Tw.border_simple TC.borderDefault ] ]
         [ Html.div
-            [ classes [ Tw.mx_auto, Tw.raw "max-w-7xl", Tw.px (Th.s6), Bp.lg [ Tw.px (Th.s8) ] ] ]
+            [ classes [ Tw.mx_auto, TwEx.max_w_7xl, Tw.px (Th.s6), Bp.lg [ Tw.px (Th.s8) ] ] ]
             [ Html.div
                 [ classes [ Tw.flex, Tw.h (Th.s16), Tw.items_center, Tw.justify_between ] ]
                 [ Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap_x (Th.s8) ] ]

@@ -1,5 +1,8 @@
 module Component.Dialog exposing (view)
 
+{-| Modal dialog / overlay component.
+-}
+
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as Attr
@@ -8,6 +11,7 @@ import Json.Decode
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -22,9 +26,9 @@ view :
 view config =
     if config.isOpen then
         Html.div
-            [ classes [ Tw.fixed, Tw.raw "inset-0", Tw.z_50, Tw.flex, Tw.items_center, Tw.justify_center ] ]
+            [ classes [ Tw.fixed, TwEx.inset_0, Tw.z_50, Tw.flex, Tw.items_center, Tw.justify_center ] ]
             [ Html.div
-                [ classes [ Tw.absolute, Tw.raw "inset-0", Tw.raw "bg-black/50" ]
+                [ classes [ Tw.absolute, TwEx.inset_0, TwEx.bg_black_50 ]
                 , Events.onClick config.onClose
                 ]
                 []
@@ -36,7 +40,7 @@ view config =
                     , Tw.shadow_xl
                     , Tw.p (Th.s0)
                     , Tw.max_w (Th.s0)
-                    , Tw.raw "max-w-lg"
+                    , TwEx.max_w_lg
                     , Tw.w_full
                     , Tw.mx (Th.s4)
                     , Tw.flex
@@ -57,11 +61,11 @@ view config =
                             , Tw.w (Th.s11)
                             , Tw.h (Th.s11)
                             , Tw.rounded
-                            , Tw.raw "text-gray-400"
-                            , Bp.hover [ Tw.raw "text-gray-600", Tw.raw "bg-gray-100" ]
+                            , Tw.text_color (Th.gray Th.s400)
+                            , Bp.hover [ Tw.text_color (Th.gray Th.s600), Tw.bg_color (Th.gray Th.s100) ]
                             , Tw.transition_colors
                             , Tw.cursor_pointer
-                            , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, Tw.raw "ring-brand", Tw.ring_offset_2 ]
+                            , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, TwEx.ring_brand, Tw.ring_offset_2 ]
                             ]
                         , Attr.attribute "aria-label" "Sulje"
                         , Attr.attribute "autofocus" ""

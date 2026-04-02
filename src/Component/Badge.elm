@@ -1,5 +1,8 @@
 module Component.Badge exposing (Color(..), Size(..), view)
 
+{-| Small status badge component.
+-}
+
 import Html exposing (Html)
 import Tailwind as Tw exposing (classes)
 import Tailwind.Theme as Th
@@ -50,22 +53,22 @@ colorTw : Color -> List Tw.Tailwind
 colorTw color =
     case color of
         Gray ->
-            [ Tw.raw "bg-gray-100", Tw.raw "text-gray-700" ]
+            [ Tw.bg_color (Th.gray Th.s100), Tw.text_color (Th.gray Th.s700) ]
 
         Blue ->
-            [ Tw.raw "bg-blue-100", Tw.raw "text-blue-700" ]
+            [ Tw.bg_color (Th.blue Th.s100), Tw.text_color (Th.blue Th.s700) ]
 
         Green ->
-            [ Tw.raw "bg-green-100", Tw.raw "text-green-700" ]
+            [ Tw.bg_color (Th.green Th.s100), Tw.text_color (Th.green Th.s700) ]
 
         Yellow ->
-            [ Tw.raw "bg-yellow-100", Tw.raw "text-yellow-800" ]
+            [ Tw.bg_color (Th.yellow Th.s100), Tw.text_color (Th.yellow Th.s800) ]
 
         Red ->
-            [ Tw.raw "bg-red-100", Tw.raw "text-red-700" ]
+            [ Tw.bg_color (Th.red Th.s100), Tw.text_color (Th.red Th.s700) ]
 
         Purple ->
-            [ Tw.raw "bg-purple-100", Tw.raw "text-purple-700" ]
+            [ Tw.bg_color (Th.purple Th.s100), Tw.text_color (Th.purple Th.s700) ]
 
         Indigo ->
-            [ Tw.raw "bg-indigo-100", Tw.raw "text-indigo-700" ]
+            [ Tw.bg_color (Th.indigo Th.s100), Tw.text_color (Th.indigo Th.s700) ]

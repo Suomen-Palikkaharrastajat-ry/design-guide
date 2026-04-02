@@ -1,5 +1,8 @@
 module Component.Breadcrumb exposing (view)
 
+{-| Breadcrumb navigation component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Tailwind as Tw exposing (classes)
@@ -18,7 +21,7 @@ view items =
                 , Tw.items_center
                 , Tw.gap (Th.s1_dot_5)
                 , Tw.text_sm
-                , Tw.raw "text-gray-500"
+                , Tw.text_color (Th.gray Th.s500)
                 ]
             ]
             (List.indexedMap (viewItem (List.length items)) items)
@@ -34,7 +37,7 @@ viewItem total idx item =
     Html.li [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s1_dot_5) ] ]
         ([ if isLast then
             Html.span
-                [ classes [ Tw.font_medium, Tw.raw "text-gray-900" ]
+                [ classes [ Tw.font_medium, Tw.text_color (Th.gray Th.s900) ]
                 , Attr.attribute "aria-current" "page"
                 ]
                 [ Html.text item.label ]
@@ -55,6 +58,6 @@ viewItem total idx item =
                     []
 
                 else
-                    [ Html.span [ classes [ Tw.raw "text-gray-300", Tw.select_none ] ] [ Html.text "/" ] ]
+                    [ Html.span [ classes [ Tw.text_color (Th.gray Th.s300), Tw.select_none ] ] [ Html.text "/" ] ]
                )
         )

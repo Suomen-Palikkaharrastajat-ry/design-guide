@@ -1,5 +1,8 @@
 module Component.Dropdown exposing (view, viewDivider, viewItem)
 
+{-| Accessible ARIA menu dropdown component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
@@ -7,6 +10,7 @@ import Json.Decode
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -47,13 +51,13 @@ view config =
                 , Tw.px (Th.s4)
                 , Tw.py (Th.s2)
                 , Tw.type_body_small
-                , Tw.raw "bg-white"
+                , Tw.bg_simple Th.white
                 , Tw.border
-                , Tw.raw "border-gray-300"
+                , Tw.border_color (Th.gray Th.s300)
                 , Tw.rounded_md
                 , Tw.shadow_sm
-                , Bp.hover [ Tw.raw "bg-gray-50" ]
-                , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, Tw.raw "ring-brand" ]
+                , Bp.hover [ Tw.bg_color (Th.gray Th.s50) ]
+                , Bp.focus_visible [ Tw.outline_none, Tw.ring_2, TwEx.ring_brand ]
                 , Tw.select_none
                 ]
             , Attr.attribute "aria-haspopup" "menu"
@@ -67,22 +71,22 @@ view config =
             , Events.onClick config.onToggle
             ]
             [ config.trigger
-            , Html.span [ classes [ Tw.raw "text-gray-400" ] ] [ Html.text "▾" ]
+            , Html.span [ classes [ Tw.text_color (Th.gray Th.s400) ] ] [ Html.text "▾" ]
             ]
         , if config.isOpen then
             Html.div
                 [ Attr.attribute "role" "menu"
                 , classes
                     [ Tw.absolute
-                    , Tw.raw "left-0"
+                    , TwEx.left_0
                     , Tw.top_full
                     , Tw.mt (Th.s1)
                     , Tw.z_10
                     , Tw.w (Th.s48)
                     , Tw.rounded_md
                     , Tw.border
-                    , Tw.raw "border-gray-200"
-                    , Tw.raw "bg-white"
+                    , Tw.border_color (Th.gray Th.s200)
+                    , Tw.bg_simple Th.white
                     , Tw.shadow_lg
                     , Tw.py (Th.s1)
                     ]
@@ -104,8 +108,8 @@ viewItem config =
             , Tw.px (Th.s4)
             , Tw.py (Th.s2)
             , Tw.text_sm
-            , Tw.raw "text-gray-700"
-            , Bp.hover [ Tw.raw "bg-gray-100", Tw.text_simple TC.brand ]
+            , Tw.text_color (Th.gray Th.s700)
+            , Bp.hover [ Tw.bg_color (Th.gray Th.s100), Tw.text_simple TC.brand ]
             ]
         ]
         [ Html.text config.label ]
@@ -114,5 +118,5 @@ viewItem config =
 viewDivider : Html msg
 viewDivider =
     Html.hr
-        [ classes [ Tw.my (Th.s1), Tw.raw "border-gray-200" ] ]
+        [ classes [ Tw.my (Th.s1), Tw.border_color (Th.gray Th.s200) ] ]
         []

@@ -1,11 +1,15 @@
 module Component.Toggle exposing (view)
 
+{-| Toggle / switch input component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -20,7 +24,7 @@ view config =
             , Attr.id config.id
             , Attr.checked config.checked
             , Attr.disabled config.disabled
-            , classes [ Tw.sr_only, Tw.raw "peer" ]
+            , classes [ Tw.sr_only, TwEx.peer ]
             , Events.onCheck config.onToggle
             ]
             []
@@ -31,27 +35,27 @@ view config =
                 , Tw.h (Th.s6)
                 , Tw.rounded_full
                 , Tw.transition_colors
-                , Tw.raw "bg-gray-300"
+                , Tw.bg_color (Th.gray Th.s300)
                 , Bp.withVariant "peer-checked" [ Tw.bg_simple TC.brand ]
-                , Bp.withVariant "peer-focus-visible" [ Tw.ring_2, Tw.raw "ring-brand", Tw.ring_offset_2 ]
+                , Bp.withVariant "peer-focus-visible" [ Tw.ring_2, TwEx.ring_brand, Tw.ring_offset_2 ]
                 , Bp.withVariant "peer-disabled" [ Tw.opacity_50, Tw.cursor_not_allowed ]
                 ]
             ]
             [ Html.div
                 [ classes
                     [ Tw.absolute
-                    , Tw.raw "top-0.5"
-                    , Tw.raw "left-0.5"
+                    , TwEx.top_0_5
+                    , TwEx.left_0_5
                     , Tw.w (Th.s5)
                     , Tw.h (Th.s5)
                     , Tw.rounded_full
-                    , Tw.raw "bg-white"
+                    , Tw.bg_simple Th.white
                     , Tw.shadow
                     , Tw.transition_transform
-                    , Bp.withVariant "peer-checked" [ Tw.raw "translate-x-5" ]
+                    , Bp.withVariant "peer-checked" [ TwEx.translate_x_5 ]
                     ]
                 ]
                 []
             ]
-        , Html.span [ classes [ Tw.text_sm, Tw.raw "text-gray-700" ] ] [ Html.text config.label ]
+        , Html.span [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s700) ] ] [ Html.text config.label ]
         ]

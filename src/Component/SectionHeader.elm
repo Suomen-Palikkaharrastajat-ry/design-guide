@@ -1,5 +1,8 @@
 module Component.SectionHeader exposing (view, viewSub)
 
+{-| Section heading components — top-level `h2` with optional description, plus a sub-section `h3` variant.
+-}
+
 import Html exposing (Html)
 import Tailwind as Tw exposing (classes)
 import Tailwind.Theme as Th
@@ -14,7 +17,7 @@ view { title, description } =
         (Html.h2 [ classes [ Tw.type_h2, Tw.text_simple TC.brand ] ] [ Html.text title ]
             :: (case description of
                     Just desc ->
-                        [ Html.p [ classes [ Tw.mt (Th.s2), Tw.raw "text-gray-600" ] ] [ Html.text desc ] ]
+                        [ Html.p [ classes [ Tw.mt (Th.s2), Tw.text_color (Th.gray Th.s600) ] ] [ Html.text desc ] ]
 
                     Nothing ->
                         []
@@ -30,7 +33,7 @@ viewSub { title, description } =
         (Html.h3 [ classes [ Tw.type_h4, Tw.text_simple TC.brand ] ] [ Html.text title ]
             :: (case description of
                     Just desc ->
-                        [ Html.p [ classes [ Tw.mt (Th.s1), Tw.raw "text-gray-600", Tw.text_sm ] ] [ Html.text desc ] ]
+                        [ Html.p [ classes [ Tw.mt (Th.s1), Tw.text_color (Th.gray Th.s600), Tw.text_sm ] ] [ Html.text desc ] ]
 
                     Nothing ->
                         []

@@ -1,11 +1,15 @@
 module Component.Alert exposing (AlertType(..), view)
 
+{-| Alert / notification banner component.
+-}
+
 import Component.CloseButton as CloseButton
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Tailwind as Tw exposing (classes)
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 
 
 type AlertType
@@ -48,7 +52,7 @@ view config =
                 )
             , Maybe.map
                 (\msg ->
-                    Html.div [ classes [ Tw.absolute, Tw.raw "top-2", Tw.raw "right-2" ] ]
+                    Html.div [ classes [ Tw.absolute, TwEx.top_2, TwEx.right_2 ] ]
                         [ CloseButton.view { onClick = msg, label = "Sulje ilmoitus" } ]
                 )
                 config.onDismiss
@@ -71,16 +75,16 @@ containerTw alertType =
     [ Tw.rounded_lg, Tw.p (Th.s4) ]
         ++ (case alertType of
                 Info ->
-                    [ Tw.raw "bg-blue-50" ]
+                    [ Tw.bg_color (Th.blue Th.s50) ]
 
                 Success ->
-                    [ Tw.raw "bg-green-50" ]
+                    [ Tw.bg_color (Th.green Th.s50) ]
 
                 Warning ->
-                    [ Tw.raw "bg-yellow-50" ]
+                    [ Tw.bg_color (Th.yellow Th.s50) ]
 
                 Error ->
-                    [ Tw.raw "bg-red-50" ]
+                    [ Tw.bg_color (Th.red Th.s50) ]
            )
 
 
@@ -107,29 +111,29 @@ titleTw : AlertType -> List Tw.Tailwind
 titleTw alertType =
     case alertType of
         Info ->
-            [ Tw.raw "text-blue-800" ]
+            [ Tw.text_color (Th.blue Th.s800) ]
 
         Success ->
-            [ Tw.raw "text-green-800" ]
+            [ Tw.text_color (Th.green Th.s800) ]
 
         Warning ->
-            [ Tw.raw "text-yellow-800" ]
+            [ Tw.text_color (Th.yellow Th.s800) ]
 
         Error ->
-            [ Tw.raw "text-red-800" ]
+            [ Tw.text_color (Th.red Th.s800) ]
 
 
 bodyTw : AlertType -> List Tw.Tailwind
 bodyTw alertType =
     case alertType of
         Info ->
-            [ Tw.raw "text-blue-700" ]
+            [ Tw.text_color (Th.blue Th.s700) ]
 
         Success ->
-            [ Tw.raw "text-green-700" ]
+            [ Tw.text_color (Th.green Th.s700) ]
 
         Warning ->
-            [ Tw.raw "text-yellow-700" ]
+            [ Tw.text_color (Th.yellow Th.s700) ]
 
         Error ->
-            [ Tw.raw "text-red-700" ]
+            [ Tw.text_color (Th.red Th.s700) ]

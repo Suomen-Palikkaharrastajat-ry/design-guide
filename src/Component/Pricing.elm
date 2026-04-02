@@ -1,10 +1,14 @@
 module Component.Pricing exposing (Tier, view)
 
+{-| Pricing-table component.
+-}
+
 import FeatherIcons
 import Html exposing (Html)
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -50,7 +54,7 @@ viewTier tier =
                         Html.text ""
                 ]
             , Html.ul
-                [ classes [ Tw.mt (Th.s8), Tw.raw "space-y-3" ] ]
+                [ classes [ Tw.mt (Th.s8), TwEx.space_y (Th.s3) ] ]
                 (List.map (viewFeature tier.highlighted) tier.features)
             , Html.div [ classes [ Tw.mt (Th.s8) ] ] [ tier.cta ]
             ]
@@ -65,7 +69,7 @@ viewFeature highlighted feature =
             [ classes
                 (Tw.type_h4
                     :: (if highlighted then
-                            [ Tw.raw "text-white/70" ]
+                            [ TwEx.text_white_70 ]
 
                         else
                             [ Tw.text_simple TC.brandYellow ]
@@ -76,7 +80,7 @@ viewFeature highlighted feature =
         , Html.span
             [ classes
                 (if highlighted then
-                    [ Tw.raw "text-white" ]
+                    [ Tw.text_simple Th.white ]
 
                  else
                     [ Tw.text_simple TC.textPrimary ]
@@ -93,7 +97,7 @@ tierTw highlighted =
                 [ Tw.bg_simple TC.brand, Tw.border_simple TC.brand ]
 
             else
-                [ Tw.raw "bg-white", Tw.border_simple TC.borderDefault, Tw.shadow_sm ]
+                [ Tw.bg_simple Th.white, Tw.border_simple TC.borderDefault, Tw.shadow_sm ]
            )
 
 
@@ -101,7 +105,7 @@ tierNameTw : Bool -> List Tw.Tailwind
 tierNameTw highlighted =
     Tw.type_h4
         :: (if highlighted then
-                [ Tw.raw "text-white" ]
+                [ Tw.text_simple Th.white ]
 
             else
                 [ Tw.text_simple TC.textPrimary ]
@@ -112,7 +116,7 @@ priceTw : Bool -> List Tw.Tailwind
 priceTw highlighted =
     [ Tw.type_display, Tw.tracking_tight ]
         ++ (if highlighted then
-                [ Tw.raw "text-white" ]
+                [ Tw.text_simple Th.white ]
 
             else
                 [ Tw.text_simple TC.textPrimary ]
@@ -123,7 +127,7 @@ periodTw : Bool -> List Tw.Tailwind
 periodTw highlighted =
     Tw.type_body_small
         :: (if highlighted then
-                [ Tw.raw "text-white/70" ]
+                [ TwEx.text_white_70 ]
 
             else
                 [ Tw.text_simple TC.textMuted ]

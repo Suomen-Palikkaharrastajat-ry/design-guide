@@ -1,5 +1,8 @@
 module Component.DownloadButton exposing (view)
 
+{-| File-download button component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Tailwind as Tw exposing (classes)

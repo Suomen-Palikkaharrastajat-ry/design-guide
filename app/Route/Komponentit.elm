@@ -1,5 +1,13 @@
 module Route.Komponentit exposing (ActionData, Data, Model, Msg, route)
 
+{-| The component gallery page (`/komponentit`).
+
+Renders a live preview and source-code example for every UI component in the
+design system. Each component is shown in a tabbed card (`compCard`) with
+Preview, Elm-code, and JSON-LD tabs. State for open dropdowns, dialogs, and
+toggles is held in `Model` and updated via `Msg`.
+-}
+
 import BackendTask exposing (BackendTask)
 import Component.Accordion as Accordion
 import Component.Alert as Alert
@@ -39,8 +47,11 @@ import Head
 import Head.Seo as Seo
 import Html exposing (Html)
 import Html.Attributes as Attr
-import Tailwind as Tw
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 import Pages.Url
 import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App)
@@ -176,18 +187,54 @@ view : App Data ActionData RouteParams -> Shared.Model -> Model -> View (PagesMs
 view _ _ model =
     { title = "Komponentit — " ++ SiteMeta.organizationName
     , body =
-        [ Html.div [ Attr.class "max-w-5xl mx-auto px-4 py-8 sm:py-12 space-y-6" ]
-            [ Html.div [ Attr.class "space-y-2" ]
-                [ Html.h1 [ Attr.class "text-2xl sm:text-3xl font-bold text-brand" ]
+        [ Html.div
+            [ classes
+                [ TwEx.max_w_5xl
+                , Tw.mx_auto
+                , Tw.px (Th.s4)
+                , Tw.py (Th.s8)
+                , Bp.sm [ Tw.py (Th.s12) ]
+                , TwEx.space_y (Th.s6)
+                ]
+            ]
+            [ Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+                [ Html.h1
+                    [ classes
+                        [ Tw.text_2xl
+                        , Bp.sm [ Tw.text_3xl ]
+                        , Tw.font_bold
+                        , Tw.text_simple TC.brand
+                        ]
+                    ]
                     [ Html.text "Komponentit" ]
-                , Html.p [ Attr.class "text-sm sm:text-base text-gray-500" ]
+                , Html.p
+                    [ classes
+                        [ Tw.text_sm
+                        , Bp.sm [ Tw.text_base ]
+                        , Tw.text_color (Th.gray Th.s500)
+                        ]
+                    ]
                     [ Html.text "Kaikki komponentit hakemistossa "
-                    , Html.code [ Attr.class "font-mono text-sm bg-gray-100 px-1 rounded" ]
+                    , Html.code
+                        [ classes
+                            [ Tw.font_mono
+                            , Tw.text_sm
+                            , Tw.bg_color (Th.gray Th.s100)
+                            , Tw.px (Th.s1)
+                            , Tw.rounded
+                            ]
+                        ]
                         [ Html.text "src/Component/" ]
                     , Html.text ". Koneluettava: "
                     , Html.a
                         [ Attr.href "/design-guide/components.jsonld"
-                        , Attr.class "underline hover:text-brand transition-colors font-mono text-sm"
+                        , classes
+                            [ Tw.underline
+                            , Bp.hover [ Tw.text_simple TC.brand ]
+                            , Tw.transition_colors
+                            , Tw.font_mono
+                            , Tw.text_sm
+                            ]
                         ]
                         [ Html.text "components.jsonld" ]
                     , Html.text "."
@@ -195,7 +242,7 @@ view _ _ model =
                 ]
             , viewCompIndex
             , viewConventions
-            , Html.div [ Attr.class "space-y-16 pt-4" ]
+            , Html.div [ classes [ TwEx.space_y (Th.s16), Tw.pt (Th.s4) ] ]
                 [ viewAlert model
                 , viewAccordion model
                 , viewBadge model
@@ -230,24 +277,87 @@ view _ _ model =
 viewConventions : Html (PagesMsg Msg)
 viewConventions =
     Html.div
-        [ Attr.class "bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-900 space-y-2" ]
-        [ Html.p [ Attr.class "font-semibold" ] [ Html.text "UI-konventiot" ]
-        , Html.ul [ Attr.class "list-disc list-inside space-y-1 text-blue-800" ]
-            [ Html.li [] [ Html.text "Kaikilla painikemaisilla elementeillä tulee olla ", Html.code [ Attr.class "font-mono bg-blue-100 px-1 rounded" ] [ Html.text "cursor-pointer" ], Html.text " — myös ButtonGroup, CloseButton, Pagination ja ListGroup." ]
-            , Html.li [] [ Html.text "Poistettu/disabled-tila käyttää ", Html.code [ Attr.class "font-mono bg-blue-100 px-1 rounded" ] [ Html.text "cursor-not-allowed" ], Html.text "." ]
-            , Html.li [] [ Html.text "Kaikki interaktiiviset elementit tarjoavat ", Html.code [ Attr.class "font-mono bg-blue-100 px-1 rounded" ] [ Html.text "focus-visible:ring-2 focus-visible:ring-brand" ], Html.text " näppäimistökäyttöä varten (ei hiirellä, vain näppäimistöllä)." ]
+        [ classes
+            [ Tw.bg_color (Th.blue Th.s50)
+            , Tw.border
+            , Tw.border_color (Th.blue Th.s200)
+            , Tw.rounded_lg
+            , Tw.p (Th.s4)
+            , Tw.text_sm
+            , Tw.text_color (Th.blue Th.s900)
+            , TwEx.space_y (Th.s2)
+            ]
+        ]
+        [ Html.p [ classes [ Tw.font_semibold ] ] [ Html.text "UI-konventiot" ]
+        , Html.ul
+            [ classes
+                [ Tw.list_disc
+                , Tw.list_inside
+                , TwEx.space_y (Th.s1)
+                , Tw.text_color (Th.blue Th.s800)
+                ]
+            ]
+            [ Html.li []
+                [ Html.text "Kaikilla painikemaisilla elementeillä tulee olla "
+                , Html.code
+                    [ classes
+                        [ Tw.font_mono
+                        , Tw.bg_color (Th.blue Th.s100)
+                        , Tw.px (Th.s1)
+                        , Tw.rounded
+                        ]
+                    ]
+                    [ Html.text "cursor-pointer" ]
+                , Html.text " — myös ButtonGroup, CloseButton, Pagination ja ListGroup."
+                ]
+            , Html.li []
+                [ Html.text "Poistettu/disabled-tila käyttää "
+                , Html.code
+                    [ classes
+                        [ Tw.font_mono
+                        , Tw.bg_color (Th.blue Th.s100)
+                        , Tw.px (Th.s1)
+                        , Tw.rounded
+                        ]
+                    ]
+                    [ Html.text "cursor-not-allowed" ]
+                , Html.text "."
+                ]
+            , Html.li []
+                [ Html.text "Kaikki interaktiiviset elementit tarjoavat "
+                , Html.code
+                    [ classes
+                        [ Tw.font_mono
+                        , Tw.bg_color (Th.blue Th.s100)
+                        , Tw.px (Th.s1)
+                        , Tw.rounded
+                        ]
+                    ]
+                    [ Html.text "focus-visible:ring-2 focus-visible:ring-brand" ]
+                , Html.text " näppäimistökäyttöä varten (ei hiirellä, vain näppäimistöllä)."
+                ]
             ]
         ]
 
 
 viewCompIndex : Html (PagesMsg Msg)
 viewCompIndex =
-    Html.nav [ Attr.class "flex flex-wrap gap-2" ]
+    Html.nav [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s2) ] ]
         (List.map
             (\name ->
                 Html.a
                     [ Attr.href ("#" ++ String.toLower name)
-                    , Attr.class "px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-brand hover:text-white transition-colors"
+                    , classes
+                        [ Tw.px (Th.s3)
+                        , Tw.py (Th.s1)
+                        , Tw.text_xs
+                        , Tw.font_medium
+                        , Tw.rounded_full
+                        , Tw.bg_color (Th.gray Th.s100)
+                        , Tw.text_color (Th.gray Th.s600)
+                        , Bp.hover [ Tw.bg_simple TC.brand, Tw.text_simple Th.white ]
+                        , Tw.transition_colors
+                        ]
                     ]
                     [ Html.text name ]
             )
@@ -328,21 +438,40 @@ compCard :
 compCard model name description preview elmCode jsonLd =
     Html.section
         [ Attr.id (String.toLower name)
-        , Attr.class "scroll-mt-20 space-y-3"
+        , classes [ TwEx.scroll_mt (Th.s20), TwEx.space_y (Th.s3) ]
         ]
-        [ Html.div [ Attr.class "flex items-baseline justify-between flex-wrap gap-2" ]
-            [ Html.h2 [ Attr.class "text-xl font-bold text-brand" ] [ Html.text name ]
-            , Html.span [ Attr.class "text-sm text-gray-400 font-mono" ]
+        [ Html.div
+            [ classes
+                [ Tw.flex
+                , Tw.items_baseline
+                , Tw.justify_between
+                , Tw.flex_wrap
+                , Tw.gap (Th.s2)
+                ]
+            ]
+            [ Html.h2
+                [ classes [ Tw.text_xl, Tw.font_bold, Tw.text_simple TC.brand ] ]
+                [ Html.text name ]
+            , Html.span
+                [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s400), Tw.font_mono ] ]
                 [ Html.text ("Component." ++ name) ]
             ]
-        , Html.p [ Attr.class "text-sm text-gray-500" ] [ Html.text description ]
+        , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text description ]
         , Tabs.view
             { tabs = [ "Esikatselu", "Elm-koodi", "JSON-LD" ]
             , activeIndex = tabIndex (activeTab model name)
             , onTabClick =
                 \i -> PagesMsg.fromMsg (SelectTab name (tabFromIndex i))
             , panels =
-                [ Html.div [ Attr.class "p-6 bg-gray-50 rounded-lg border border-gray-200" ]
+                [ Html.div
+                    [ classes
+                        [ Tw.p (Th.s6)
+                        , Tw.bg_color (Th.gray Th.s50)
+                        , Tw.rounded_lg
+                        , Tw.border
+                        , Tw.border_color (Th.gray Th.s200)
+                        ]
+                    ]
                     [ preview ]
                 , codePanel elmCode
                 , jsonPanel jsonLd
@@ -353,18 +482,36 @@ compCard model name description preview elmCode jsonLd =
 
 codePanel : String -> Html msg
 codePanel src =
-    Html.div [ Attr.class "overflow-x-auto" ]
+    Html.div [ classes [ Tw.overflow_x_auto ] ]
         [ Html.pre
-            [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-5 text-xs leading-relaxed overflow-x-auto" ]
+            [ classes
+                [ Tw.bg_color (Th.gray Th.s900)
+                , Tw.text_color (Th.gray Th.s100)
+                , Tw.rounded_lg
+                , Tw.p (Th.s5)
+                , Tw.text_xs
+                , Tw.leading_relaxed
+                , Tw.overflow_x_auto
+                ]
+            ]
             [ Html.code [] [ Html.text src ] ]
         ]
 
 
 jsonPanel : String -> Html msg
 jsonPanel src =
-    Html.div [ Attr.class "overflow-x-auto" ]
+    Html.div [ classes [ Tw.overflow_x_auto ] ]
         [ Html.pre
-            [ Attr.class "bg-gray-900 text-emerald-300 rounded-lg p-5 text-xs leading-relaxed overflow-x-auto" ]
+            [ classes
+                [ Tw.bg_color (Th.gray Th.s900)
+                , Tw.text_color (Th.emerald Th.s300)
+                , Tw.rounded_lg
+                , Tw.p (Th.s5)
+                , Tw.text_xs
+                , Tw.leading_relaxed
+                , Tw.overflow_x_auto
+                ]
+            ]
             [ Html.code [] [ Html.text src ] ]
         ]
 
@@ -378,7 +525,7 @@ viewAlert model =
     compCard model
         "Alert"
         "Kontekstuaalinen palauteviesti neljässä tyypissä. Tukee myös suljettavaa varianttia (onDismiss)."
-        (Html.div [ Attr.class "space-y-3" ]
+        (Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
             [ Alert.view { alertType = Alert.Info, title = Just "Tietoa", body = [ Html.text "Neutraali ohjeistus tai informaatio." ], onDismiss = Nothing }
             , Alert.view { alertType = Alert.Success, title = Just "Onnistui", body = [ Html.text "Toiminto onnistui onnistuneesti." ], onDismiss = Nothing }
             , Alert.view { alertType = Alert.Warning, title = Just "Varoitus", body = [ Html.text "Tarkista tiedot ennen jatkamista." ], onDismiss = Nothing }
@@ -443,8 +590,8 @@ viewBadge model =
     compCard model
         "Badge"
         "Pieni tunniste tilalle, kategorialle tai metatiedolle. Kolme kokoa: Small, Medium, Large."
-        (Html.div [ Attr.class "space-y-3" ]
-            [ Html.div [ Attr.class "flex flex-wrap gap-3 items-center" ]
+        (Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
+            [ Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s3), Tw.items_center ] ]
                 [ Badge.view { label = "Gray", color = Badge.Gray, size = Badge.Medium }
                 , Badge.view { label = "Blue", color = Badge.Blue, size = Badge.Medium }
                 , Badge.view { label = "Green", color = Badge.Green, size = Badge.Medium }
@@ -453,7 +600,7 @@ viewBadge model =
                 , Badge.view { label = "Purple", color = Badge.Purple, size = Badge.Medium }
                 , Badge.view { label = "Indigo", color = Badge.Indigo, size = Badge.Medium }
                 ]
-            , Html.div [ Attr.class "flex flex-wrap gap-3 items-center" ]
+            , Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s3), Tw.items_center ] ]
                 [ Badge.view { label = "Small", color = Badge.Blue, size = Badge.Small }
                 , Badge.view { label = "Medium", color = Badge.Blue, size = Badge.Medium }
                 , Badge.view { label = "Large", color = Badge.Blue, size = Badge.Large }
@@ -511,19 +658,19 @@ viewButton model =
     compCard model
         "Button"
         "Toimintopainike tai linkki-painike neljässä variantissa ja kolmessa koossa. Tukee disabled- ja loading-tiloja."
-        (Html.div [ Attr.class "space-y-4" ]
-            [ Html.div [ Attr.class "flex flex-wrap gap-3 items-center" ]
+        (Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
+            [ Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s3), Tw.items_center ] ]
                 [ Button.viewLink { label = "Primary", variant = Button.Primary, size = Button.Medium, href = "#" }
                 , Button.viewLink { label = "Secondary", variant = Button.Secondary, size = Button.Medium, href = "#" }
                 , Button.viewLink { label = "Ghost", variant = Button.Ghost, size = Button.Medium, href = "#" }
                 , Button.viewLink { label = "Danger", variant = Button.Danger, size = Button.Medium, href = "#" }
                 ]
-            , Html.div [ Attr.class "flex flex-wrap gap-3 items-center" ]
+            , Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s3), Tw.items_center ] ]
                 [ Button.viewLink { label = "Small", variant = Button.Primary, size = Button.Small, href = "#" }
                 , Button.viewLink { label = "Medium", variant = Button.Primary, size = Button.Medium, href = "#" }
                 , Button.viewLink { label = "Large", variant = Button.Primary, size = Button.Large, href = "#" }
                 ]
-            , Html.div [ Attr.class "flex flex-wrap gap-3 items-center" ]
+            , Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s3), Tw.items_center ] ]
                 [ Button.view { label = "Normal", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = False, loading = False, ariaPressedState = Nothing }
                 , Button.view { label = "Disabled", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = True, loading = False, ariaPressedState = Nothing }
                 , Button.view { label = "Lataa", variant = Button.Primary, size = Button.Medium, onClick = PagesMsg.fromMsg (SelectTab "Button" PreviewTab), disabled = False, loading = True, ariaPressedState = Nothing }
@@ -554,20 +701,25 @@ Button.view
 
 viewButtonSpec : Html msg
 viewButtonSpec =
-    Html.section [ Attr.id "button-spec", Attr.class "scroll-mt-20 space-y-4" ]
-        [ Html.h3 [ Attr.class "text-base font-semibold text-brand" ] [ Html.text "Button — täydellinen tila-taulukko" ]
-        , Html.div [ Attr.class "overflow-x-auto" ]
-            [ Html.table [ Attr.class "w-full text-xs border-collapse" ]
+    Html.section
+        [ Attr.id "button-spec"
+        , classes [ TwEx.scroll_mt (Th.s20), TwEx.space_y (Th.s4) ]
+        ]
+        [ Html.h3
+            [ classes [ Tw.text_base, Tw.font_semibold, Tw.text_simple TC.brand ] ]
+            [ Html.text "Button — täydellinen tila-taulukko" ]
+        , Html.div [ classes [ Tw.overflow_x_auto ] ]
+            [ Html.table [ classes [ Tw.w_full, Tw.text_xs, Tw.border_collapse ] ]
                 [ Html.thead []
-                    [ Html.tr [ Attr.class "bg-gray-50 border-b border-gray-200" ]
-                        [ Html.th [ Attr.class "py-2 px-3 text-left font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Variantti" ]
-                        , Html.th [ Attr.class "py-2 px-3 text-left font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Normaali" ]
-                        , Html.th [ Attr.class "py-2 px-3 text-left font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Hover" ]
-                        , Html.th [ Attr.class "py-2 px-3 text-left font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Focus-visible" ]
-                        , Html.th [ Attr.class "py-2 px-3 text-left font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Disabled" ]
+                    [ Html.tr [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border_b, Tw.border_color (Th.gray Th.s200) ] ]
+                        [ Html.th [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_left, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Variantti" ]
+                        , Html.th [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_left, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Normaali" ]
+                        , Html.th [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_left, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Hover" ]
+                        , Html.th [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_left, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Focus-visible" ]
+                        , Html.th [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_left, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Disabled" ]
                         ]
                     ]
-                , Html.tbody [ Attr.class "divide-y divide-gray-100" ]
+                , Html.tbody [ classes [ Tw.divide_y, TwEx.divide_color (Th.gray Th.s100) ] ]
                     [ viewBtnSpecRow "Primary"
                         "bg-brand-yellow text-brand font-semibold"
                         "hover:opacity-90"
@@ -591,25 +743,52 @@ viewButtonSpec =
                     ]
                 ]
             ]
-        , Html.div [ Attr.class "space-y-3" ]
-            [ Html.div [ Attr.class "border-l-4 border-brand-yellow pl-4 py-1 space-y-1" ]
-                [ Html.p [ Attr.class "font-semibold text-sm text-brand" ] [ Html.text "focus-visible, ei focus" ]
-                , Html.p [ Attr.class "text-sm text-gray-600" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
+            [ Html.div
+                [ classes
+                    [ Tw.border_l_4
+                    , Tw.border_simple TC.brandYellow
+                    , Tw.pl (Th.s4)
+                    , Tw.py (Th.s1)
+                    , TwEx.space_y (Th.s1)
+                    ]
+                ]
+                [ Html.p [ classes [ Tw.font_semibold, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text "focus-visible, ei focus" ]
+                , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ]
                     [ Html.text "Käytä "
-                    , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "focus-visible:" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "focus-visible:" ]
                     , Html.text " eikä "
-                    , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "focus:" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "focus:" ]
                     , Html.text " — selain piilottaa kohdistusrenkaan hiirellä klikatuista elementeistä automaattisesti, näyttää sen näppäimistönavigoinnissa."
                     ]
                 ]
-            , Html.div [ Attr.class "border-l-4 border-brand-yellow pl-4 py-1 space-y-1" ]
-                [ Html.p [ Attr.class "font-semibold text-sm text-brand" ] [ Html.text "aria-pressed — vaihto/toggle-painike" ]
-                , Html.p [ Attr.class "text-sm text-gray-600" ]
+            , Html.div
+                [ classes
+                    [ Tw.border_l_4
+                    , Tw.border_simple TC.brandYellow
+                    , Tw.pl (Th.s4)
+                    , Tw.py (Th.s1)
+                    , TwEx.space_y (Th.s1)
+                    ]
+                ]
+                [ Html.p [ classes [ Tw.font_semibold, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text "aria-pressed — vaihto/toggle-painike" ]
+                , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ]
                     [ Html.text "Suodatin- ja toggle-painikkeisiin täytyy lisätä "
-                    , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "aria-pressed" ]
+                    , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "aria-pressed" ]
                     , Html.text " -attribuutti, jotta ruudunlukija kertoo tilan."
                     ]
-                , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-3 text-xs leading-relaxed overflow-x-auto mt-2" ]
+                , Html.pre
+                    [ classes
+                        [ Tw.bg_color (Th.gray Th.s900)
+                        , Tw.text_color (Th.gray Th.s100)
+                        , Tw.rounded_lg
+                        , Tw.p (Th.s3)
+                        , Tw.text_xs
+                        , Tw.leading_relaxed
+                        , Tw.overflow_x_auto
+                        , Tw.mt (Th.s2)
+                        ]
+                    ]
                     [ Html.code []
                         [ Html.text """Html.button
     [ Attr.attribute \"aria-pressed\"
@@ -625,12 +804,12 @@ viewButtonSpec =
 
 viewBtnSpecRow : String -> String -> String -> String -> String -> Html msg
 viewBtnSpecRow variant normal hover focus disabled =
-    Html.tr [ Attr.class "hover:bg-gray-50 align-top" ]
-        [ Html.td [ Attr.class "py-2 px-3 font-semibold text-brand" ] [ Html.text variant ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-gray-600" ] [ Html.text normal ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-gray-600" ] [ Html.text hover ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-gray-600" ] [ Html.text focus ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-gray-600" ] [ Html.text disabled ]
+    Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ], Tw.align_top ] ]
+        [ Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_semibold, Tw.text_simple TC.brand ] ] [ Html.text variant ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text normal ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text hover ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text focus ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text disabled ]
         ]
 
 
@@ -680,18 +859,25 @@ viewCard model =
     compCard model
         "Card"
         "Sisältösäiliö valinnaisella otsikolla, alatunnisteella ja varjolla."
-        (Html.div [ Attr.class "grid grid-cols-1 sm:grid-cols-3 gap-4" ]
-            [ Card.viewSimple [ Html.p [ Attr.class "text-sm text-gray-600" ] [ Html.text "viewSimple" ] ]
+        (Html.div
+            [ classes
+                [ Tw.grid
+                , Tw.grid_cols_1
+                , Bp.sm [ Tw.grid_cols_3 ]
+                , Tw.gap (Th.s4)
+                ]
+            ]
+            [ Card.viewSimple [ Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text "viewSimple" ] ]
             , Card.view
-                { header = Just (Html.span [ Attr.class "font-semibold text-brand" ] [ Html.text "Otsikko" ])
-                , body = [ Html.p [ Attr.class "text-sm text-gray-600" ] [ Html.text "Kortti otsikolla." ] ]
-                , footer = Just (Html.span [ Attr.class "text-xs text-gray-500" ] [ Html.text "Alatunniste" ])
+                { header = Just (Html.span [ classes [ Tw.font_semibold, Tw.text_simple TC.brand ] ] [ Html.text "Otsikko" ])
+                , body = [ Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text "Kortti otsikolla." ] ]
+                , footer = Just (Html.span [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text "Alatunniste" ])
                 , image = Nothing
                 , shadow = Card.Sm
                 }
             , Card.view
                 { header = Nothing
-                , body = [ Html.p [ Attr.class "text-sm text-gray-600" ] [ Html.text "shadow = Md" ] ]
+                , body = [ Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text "shadow = Md" ] ]
                 , footer = Nothing
                 , image = Nothing
                 , shadow = Card.Md
@@ -725,10 +911,10 @@ viewCloseButton model =
     compCard model
         "CloseButton"
         "Saavutettava sulku/hylkäyspainike hälytyksissä, modaaleissa tai korteissa. Koskutusalue 44×44 px (WCAG 2.5.5)."
-        (Html.div [ Attr.class "flex items-center gap-4" ]
+        (Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s4) ] ]
             [ CloseButton.view { onClick = SelectTab "CloseButton" PreviewTab, label = "Sulje" }
                 |> Html.map PagesMsg.fromMsg
-            , Html.span [ Attr.class "text-sm text-gray-400 inline-flex items-center gap-1" ]
+            , Html.span [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s400), Tw.inline_flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                 [ FeatherIcons.arrowLeft
                     |> FeatherIcons.withSize 14
                     |> FeatherIcons.toHtml [ Attr.attribute "aria-hidden" "true" ]
@@ -760,7 +946,7 @@ viewCollapse model =
     compCard model
         "Collapse"
         "Yksittäinen tiivistettävä osio – natiivi <details>-pohjainen."
-        (Html.div [ Attr.class "space-y-2" ]
+        (Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
             [ Collapse.view
                 { summary = Html.text "Näytä lisätiedot"
                 , body = [ Html.text "Tässä on piilotettua sisältöä, joka näytetään avattaessa." ]
@@ -798,7 +984,7 @@ viewDialog model =
     compCard model
         "Dialog"
         "Modaali-ikkuna natiivin <dialog>-elementin päällä. Sulkeutuu Escape-näppäimellä ja CloseButton-painikkeesta."
-        (Html.div [ Attr.class "flex flex-col gap-4" ]
+        (Html.div [ classes [ Tw.flex, Tw.flex_col, Tw.gap (Th.s4) ] ]
             [ Button.view
                 { label = "Avaa modaali"
                 , variant = Button.Primary
@@ -810,10 +996,10 @@ viewDialog model =
                 }
             , Dialog.view
                 { title = "Esimerkki-modaali"
-                , body = [ Html.p [ Attr.class "text-sm text-gray-600" ] [ Html.text "Tämä on modaalin sisältö. Sulje Escape-näppäimellä tai X-painikkeella." ] ]
+                , body = [ Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text "Tämä on modaalin sisältö. Sulje Escape-näppäimellä tai X-painikkeella." ] ]
                 , footer =
                     Just
-                        (Html.div [ Attr.class "flex justify-end gap-2" ]
+                        (Html.div [ classes [ Tw.flex, Tw.justify_end, Tw.gap (Th.s2) ] ]
                             [ Button.view { label = "Sulje", variant = Button.Secondary, size = Button.Medium, onClick = PagesMsg.fromMsg CloseDialog, disabled = False, loading = False, ariaPressedState = Nothing }
                             ]
                         )
@@ -849,7 +1035,7 @@ viewDropdown model =
     compCard model
         "Dropdown"
         "ARIA-pohjainen valikko — aria-haspopup, aria-expanded, role=menu/menuitem. Sulkeutuu Escape-näppäimellä."
-        (Html.div [ Attr.class "flex gap-4 flex-wrap items-start" ]
+        (Html.div [ classes [ Tw.flex, Tw.gap (Th.s4), Tw.flex_wrap, Tw.items_start ] ]
             [ Dropdown.view
                 { trigger = Html.text "Valikko"
                 , items =
@@ -995,7 +1181,7 @@ viewProgress model =
     compCard model
         "Progress"
         "Vaakasuuntainen edistymisindikaattori."
-        (Html.div [ Attr.class "space-y-4" ]
+        (Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
             [ Progress.view { value = 75, max = 100, label = Just "Lataus", color = Progress.Brand }
             , Progress.view { value = 45, max = 100, label = Just "Onnistui", color = Progress.Success }
             , Progress.view { value = 30, max = 100, label = Just "Varoitus", color = Progress.Warning }
@@ -1028,7 +1214,7 @@ viewSpinner model =
     compCard model
         "Spinner"
         "Latausspinnerit kolmessa koossa."
-        (Html.div [ Attr.class "flex flex-wrap gap-6 items-center" ]
+        (Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s6), Tw.items_center ] ]
             [ Spinner.view { size = Spinner.Small, label = "Ladataan" }
             , Spinner.view { size = Spinner.Medium, label = "Ladataan" }
             , Spinner.view { size = Spinner.Large, label = "Ladataan" }
@@ -1092,7 +1278,7 @@ viewTag model =
     compCard model
         "Tag"
         "Kompakti inline-tunniste, jonka voi poistaa. Ei sisäistä tilaa."
-        (Html.div [ Attr.class "flex flex-wrap gap-2 items-center" ]
+        (Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s2), Tw.items_center ] ]
             [ Tag.view { label = "Elm", onRemove = Nothing }
             , Tag.view { label = "Haskell", onRemove = Nothing }
             , Tag.view { label = "Poistettava", onRemove = Just (PagesMsg.fromMsg (SelectTab "Tag" PreviewTab)) }
@@ -1172,7 +1358,7 @@ viewToast model =
     compCard model
         "Toast"
         "Ilmoitusviesti neljässä variantissa."
-        (Html.div [ Attr.class "space-y-3" ]
+        (Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
             [ Toast.view { title = "Oletusviesti", body = "Neutraali ilmoitus.", variant = Toast.Default, onClose = Nothing }
             , Toast.view { title = "Onnistui", body = "Tallennus onnistui.", variant = Toast.Success, onClose = Nothing }
             , Toast.view { title = "Varoitus", body = "Tallennuksessa huomioita.", variant = Toast.Warning, onClose = Nothing }
@@ -1206,7 +1392,7 @@ viewToggle model =
     compCard model
         "Toggle"
         "Boolen kytkin <input type=checkbox> -pohjaisena. Kutsuja omistaa tilan."
-        (Html.div [ Attr.class "flex flex-col gap-4" ]
+        (Html.div [ classes [ Tw.flex, Tw.flex_col, Tw.gap (Th.s4) ] ]
             [ Toggle.view
                 { id = "toggle-demo-1"
                 , label = "Ilmoitukset käytössä"
@@ -1250,7 +1436,7 @@ viewTooltip model =
     compCard model
         "Tooltip"
         "CSS-pohjainen tooltip — näkyy hover- ja focus-within-tiloissa. Ei Elm-tilaa."
-        (Html.div [ Attr.class "flex flex-wrap gap-6 items-end" ]
+        (Html.div [ classes [ Tw.flex, Tw.flex_wrap, Tw.gap (Th.s6), Tw.items_end ] ]
             [ Tooltip.view
                 { content = "Ensisijainen toiminto"
                 , children =
@@ -1353,9 +1539,24 @@ jsonLdSnippet slug name_ elmModule description props deps =
 
 viewToolbar : Html (PagesMsg Msg)
 viewToolbar =
-    Html.section [ Attr.id "toolbar", Attr.class "scroll-mt-28 space-y-8 sm:space-y-10" ]
-        [ Html.h2 [ Attr.class "text-xl sm:text-2xl font-bold text-brand" ] [ Html.text "Toolbar-vaihtoehdot" ]
-        , Html.p [ Attr.class "text-sm text-gray-600" ]
+    Html.section
+        [ Attr.id "toolbar"
+        , classes
+            [ TwEx.scroll_mt (Th.s28)
+            , TwEx.space_y (Th.s8)
+            , Bp.sm [ TwEx.space_y (Th.s10) ]
+            ]
+        ]
+        [ Html.h2
+            [ classes
+                [ Tw.text_xl
+                , Bp.sm [ Tw.text_2xl ]
+                , Tw.font_bold
+                , Tw.text_simple TC.brand
+                ]
+            ]
+            [ Html.text "Toolbar-vaihtoehdot" ]
+        , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ]
             [ Html.text "Kaksi virallista toolbar-mallia. Tumma toolbar on suositeltava uusille projekteille." ]
         , viewDarkToolbar
         , viewLightToolbar
@@ -1364,38 +1565,57 @@ viewToolbar =
 
 viewDarkToolbar : Html (PagesMsg Msg)
 viewDarkToolbar =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "1. Tumma toolbar — neliölogo (suositus)"
             , description = Just "Referenssitoteutus: planet. Korkeus h-14, bg-brand, sticky. Käytä uusissa projekteissa."
             }
-        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200" ]
-            [ Html.div [ Attr.class "flex items-center justify-between px-4 h-14 bg-brand" ]
-                [ Html.div [ Attr.class "flex items-center gap-2" ]
+        , Html.div [ classes [ Tw.rounded_xl, Tw.overflow_hidden, Tw.border, Tw.border_color (Th.gray Th.s200) ] ]
+            [ Html.div
+                [ classes
+                    [ Tw.flex
+                    , Tw.items_center
+                    , Tw.justify_between
+                    , Tw.px (Th.s4)
+                    , Tw.h (Th.s14)
+                    , Tw.bg_simple TC.brand
+                    ]
+                ]
+                [ Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s2) ] ]
                     [ Html.img
                         [ Attr.src "/logo/square/square-smile.svg"
                         , Attr.alt ""
                         , Attr.attribute "aria-hidden" "true"
-                        , Attr.class "h-8 w-8"
+                        , classes [ Tw.h (Th.s8), Tw.w (Th.s8) ]
                         ]
                         []
-                    , Html.span [ Attr.class "text-lg font-bold text-white" ] [ Html.text "Sivuston nimi" ]
+                    , Html.span [ classes [ Tw.text_lg, Tw.font_bold, Tw.text_simple Th.white ] ] [ Html.text "Sivuston nimi" ]
                     ]
-                , Html.div [ Attr.class "flex items-center gap-4" ]
-                    [ Html.span [ Attr.class "text-white/80 hover:text-white font-medium text-sm cursor-pointer" ] [ Html.text "Etusivu" ]
-                    , Html.span [ Attr.class "text-white/80 hover:text-white font-medium text-sm cursor-pointer" ] [ Html.text "Tapahtumat" ]
+                , Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s4) ] ]
+                    [ Html.span [ classes [ TwEx.text_white_80, Bp.hover [ Tw.text_simple Th.white ], Tw.font_medium, Tw.text_sm, Tw.cursor_pointer ] ] [ Html.text "Etusivu" ]
+                    , Html.span [ classes [ TwEx.text_white_80, Bp.hover [ Tw.text_simple Th.white ], Tw.font_medium, Tw.text_sm, Tw.cursor_pointer ] ] [ Html.text "Tapahtumat" ]
                     ]
                 ]
-            , Html.div [ Attr.class "bg-white p-4 text-sm text-gray-500 flex items-center gap-1" ]
+            , Html.div [ classes [ Tw.bg_simple Th.white, Tw.p (Th.s4), Tw.text_sm, Tw.text_color (Th.gray Th.s500), Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                 [ FeatherIcons.arrowUp
                     |> FeatherIcons.withSize 14
                     |> FeatherIcons.toHtml [ Attr.attribute "aria-hidden" "true" ]
                 , Html.text "Esikatselu — h-14, bg-brand (#05131D), neliölogo 32×32 px, linkit text-white/80"
                 ]
             ]
-        , Html.div [ Attr.class "space-y-2" ]
-            [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "HTML" ]
-            , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+            [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "HTML" ]
+            , Html.pre
+                [ classes
+                    [ Tw.bg_color (Th.gray Th.s900)
+                    , Tw.text_color (Th.gray Th.s100)
+                    , Tw.rounded_lg
+                    , Tw.p (Th.s4)
+                    , Tw.text_xs
+                    , Tw.leading_relaxed
+                    , Tw.overflow_x_auto
+                    ]
+                ]
                 [ Html.code []
                     [ Html.text """<nav class="bg-brand border-b border-brand sticky top-0 z-50">
   <div class="flex items-center justify-between px-4 h-14">
@@ -1417,13 +1637,22 @@ viewDarkToolbar =
 
 viewLightToolbar : Html (PagesMsg Msg)
 viewLightToolbar =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "2. Vaakalogo toolbar (vaihtoehto)"
             , description = Just "Vaihtoehto, jos projekti tarvitsee vaakalogon. Myös bg-brand, h-14."
             }
-        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200" ]
-            [ Html.div [ Attr.class "flex items-center justify-between px-4 h-14 bg-brand" ]
+        , Html.div [ classes [ Tw.rounded_xl, Tw.overflow_hidden, Tw.border, Tw.border_color (Th.gray Th.s200) ] ]
+            [ Html.div
+                [ classes
+                    [ Tw.flex
+                    , Tw.items_center
+                    , Tw.justify_between
+                    , Tw.px (Th.s4)
+                    , Tw.h (Th.s14)
+                    , Tw.bg_simple TC.brand
+                    ]
+                ]
                 [ Html.node "picture"
                     []
                     [ Html.node "source"
@@ -1434,24 +1663,34 @@ viewLightToolbar =
                     , Html.img
                         [ Attr.src "/logo/horizontal/svg/horizontal.svg"
                         , Attr.alt "Suomen Palikkaharrastajat ry"
-                        , Attr.class "h-10"
+                        , classes [ Tw.h (Th.s10) ]
                         ]
                         []
                     ]
-                , Html.div [ Attr.class "flex items-center gap-4" ]
-                    [ Html.span [ Attr.class "text-white/80 font-medium text-sm cursor-pointer" ] [ Html.text "Etusivu" ]
+                , Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s4) ] ]
+                    [ Html.span [ classes [ TwEx.text_white_80, Tw.font_medium, Tw.text_sm, Tw.cursor_pointer ] ] [ Html.text "Etusivu" ]
                     ]
                 ]
-            , Html.div [ Attr.class "bg-white p-4 text-sm text-gray-500 flex items-center gap-1" ]
+            , Html.div [ classes [ Tw.bg_simple Th.white, Tw.p (Th.s4), Tw.text_sm, Tw.text_color (Th.gray Th.s500), Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                 [ FeatherIcons.arrowUp
                     |> FeatherIcons.withSize 14
                     |> FeatherIcons.toHtml [ Attr.attribute "aria-hidden" "true" ]
                 , Html.text "Esikatselu — h-14, bg-brand, vaakalogo h-10, picture-elementti (SVG + PNG)"
                 ]
             ]
-        , Html.div [ Attr.class "space-y-2" ]
-            [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "HTML" ]
-            , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+            [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "HTML" ]
+            , Html.pre
+                [ classes
+                    [ Tw.bg_color (Th.gray Th.s900)
+                    , Tw.text_color (Th.gray Th.s100)
+                    , Tw.rounded_lg
+                    , Tw.p (Th.s4)
+                    , Tw.text_xs
+                    , Tw.leading_relaxed
+                    , Tw.overflow_x_auto
+                    ]
+                ]
                 [ Html.code []
                     [ Html.text """<nav class="bg-brand border-b border-brand sticky top-0 z-50">
   <div class="flex items-center justify-between px-4 h-14">
@@ -1477,9 +1716,24 @@ viewLightToolbar =
 
 viewSivupohjat : Html (PagesMsg Msg)
 viewSivupohjat =
-    Html.section [ Attr.id "sivupohjat", Attr.class "scroll-mt-28 space-y-8 sm:space-y-10" ]
-        [ Html.h2 [ Attr.class "text-xl sm:text-2xl font-bold text-brand" ] [ Html.text "Sivupohjat" ]
-        , Html.p [ Attr.class "text-sm text-gray-500" ]
+    Html.section
+        [ Attr.id "sivupohjat"
+        , classes
+            [ TwEx.scroll_mt (Th.s28)
+            , TwEx.space_y (Th.s8)
+            , Bp.sm [ TwEx.space_y (Th.s10) ]
+            ]
+        ]
+        [ Html.h2
+            [ classes
+                [ Tw.text_xl
+                , Bp.sm [ Tw.text_2xl ]
+                , Tw.font_bold
+                , Tw.text_simple TC.brand
+                ]
+            ]
+            [ Html.text "Sivupohjat" ]
+        , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s500) ] ]
             [ Html.text "Valmiit sivupohjakomponentit: Hero, Navbar, FeatureGrid, Footer, Pricing. Sopivat suoraan uusille sivustoille." ]
         , viewHeroComp
         , viewNavbarComp
@@ -1491,12 +1745,12 @@ viewSivupohjat =
 
 viewHeroComp : Html (PagesMsg Msg)
 viewHeroComp =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "Hero"
             , description = Just "Sivun yläosan hero-osio. Otsikko, alaotsikko ja CTA-nappulat."
             }
-        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200" ]
+        , Html.div [ classes [ Tw.rounded_xl, Tw.overflow_hidden, Tw.border, Tw.border_color (Th.gray Th.s200) ] ]
             [ Hero.view
                 { title = "Tervetuloa!"
                 , subtitle = Just "Lyhyt kuvaus sivustosta tai palvelusta."
@@ -1506,7 +1760,17 @@ viewHeroComp =
                     ]
                 }
             ]
-        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.pre
+            [ classes
+                [ Tw.bg_color (Th.gray Th.s900)
+                , Tw.text_color (Th.gray Th.s100)
+                , Tw.rounded_lg
+                , Tw.p (Th.s4)
+                , Tw.text_xs
+                , Tw.leading_relaxed
+                , Tw.overflow_x_auto
+                ]
+            ]
             [ Html.code []
                 [ Html.text """import Component.Hero as Hero
 
@@ -1521,14 +1785,14 @@ Hero.view
 
 viewNavbarComp : Html (PagesMsg Msg)
 viewNavbarComp =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "Navbar"
             , description = Just "Yksinkertainen vaalea navigaatiopalkki. Logolle, linkeille ja toimintopainikkeelle."
             }
-        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200" ]
+        , Html.div [ classes [ Tw.rounded_xl, Tw.overflow_hidden, Tw.border, Tw.border_color (Th.gray Th.s200) ] ]
             [ Navbar.view
-                { logo = Html.span [ Attr.class "font-bold text-brand text-lg" ] [ Html.text "Logo" ]
+                { logo = Html.span [ classes [ Tw.font_bold, Tw.text_simple TC.brand, Tw.text_lg ] ] [ Html.text "Logo" ]
                 , links =
                     [ { label = "Etusivu", href = "#" }
                     , { label = "Tapahtumat", href = "#" }
@@ -1537,7 +1801,17 @@ viewNavbarComp =
                 , action = Just (Button.viewLink { label = "Kirjaudu", variant = Button.Primary, size = Button.Small, href = "#" })
                 }
             ]
-        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.pre
+            [ classes
+                [ Tw.bg_color (Th.gray Th.s900)
+                , Tw.text_color (Th.gray Th.s100)
+                , Tw.rounded_lg
+                , Tw.p (Th.s4)
+                , Tw.text_xs
+                , Tw.leading_relaxed
+                , Tw.overflow_x_auto
+                ]
+            ]
             [ Html.code []
                 [ Html.text """import Component.Navbar as Navbar
 
@@ -1552,12 +1826,12 @@ Navbar.view
 
 viewFeatureGridComp : Html (PagesMsg Msg)
 viewFeatureGridComp =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "FeatureGrid"
             , description = Just "Ominaisuuksien esittelyruudukko. 2–4 saraketta."
             }
-        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200 bg-white" ]
+        , Html.div [ classes [ Tw.rounded_xl, Tw.overflow_hidden, Tw.border, Tw.border_color (Th.gray Th.s200), Tw.bg_simple Th.white ] ]
             [ FeatureGrid.view
                 { columns = 3
                 , features =
@@ -1567,7 +1841,17 @@ viewFeatureGridComp =
                     ]
                 }
             ]
-        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.pre
+            [ classes
+                [ Tw.bg_color (Th.gray Th.s900)
+                , Tw.text_color (Th.gray Th.s100)
+                , Tw.rounded_lg
+                , Tw.p (Th.s4)
+                , Tw.text_xs
+                , Tw.leading_relaxed
+                , Tw.overflow_x_auto
+                ]
+            ]
             [ Html.code []
                 [ Html.text """import Component.FeatureGrid as FeatureGrid
 
@@ -1584,12 +1868,12 @@ FeatureGrid.view
 
 viewFooterComp : Html (PagesMsg Msg)
 viewFooterComp =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "Footer"
             , description = Just "Sivun alatunniste linkkiryhmillä ja copyright-tekstillä."
             }
-        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200" ]
+        , Html.div [ classes [ Tw.rounded_xl, Tw.overflow_hidden, Tw.border, Tw.border_color (Th.gray Th.s200) ] ]
             [ Footer.view
                 { groups =
                     [ { heading = "Palvelut"
@@ -1602,7 +1886,17 @@ viewFooterComp =
                 , copyright = "© 2026 Suomen Palikkaharrastajat ry"
                 }
             ]
-        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.pre
+            [ classes
+                [ Tw.bg_color (Th.gray Th.s900)
+                , Tw.text_color (Th.gray Th.s100)
+                , Tw.rounded_lg
+                , Tw.p (Th.s4)
+                , Tw.text_xs
+                , Tw.leading_relaxed
+                , Tw.overflow_x_auto
+                ]
+            ]
             [ Html.code []
                 [ Html.text """import Component.Footer as Footer
 
@@ -1620,12 +1914,12 @@ Footer.view
 
 viewPricingComp : Html (PagesMsg Msg)
 viewPricingComp =
-    Html.div [ Attr.class "space-y-4" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
         [ SectionHeader.viewSub
             { title = "Pricing"
             , description = Just "Hinnoitteluruudukko. Yksi taso voidaan nostaa esiin (highlighted)."
             }
-        , Html.div [ Attr.class "rounded-xl overflow-hidden border border-gray-200 bg-white" ]
+        , Html.div [ classes [ Tw.rounded_xl, Tw.overflow_hidden, Tw.border, Tw.border_color (Th.gray Th.s200), Tw.bg_simple Th.white ] ]
             [ Pricing.view
                 [ { name = "Ilmainen"
                   , price = "0 €"
@@ -1643,7 +1937,17 @@ viewPricingComp =
                   }
                 ]
             ]
-        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.pre
+            [ classes
+                [ Tw.bg_color (Th.gray Th.s900)
+                , Tw.text_color (Th.gray Th.s100)
+                , Tw.rounded_lg
+                , Tw.p (Th.s4)
+                , Tw.text_xs
+                , Tw.leading_relaxed
+                , Tw.overflow_x_auto
+                ]
+            ]
             [ Html.code []
                 [ Html.text """import Component.Pricing as Pricing
 

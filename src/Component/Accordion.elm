@@ -1,9 +1,13 @@
 module Component.Accordion exposing (view, viewItem)
 
+{-| Collapsible accordion component.
+-}
+
 import Html exposing (Html)
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -11,10 +15,10 @@ view : List (Html msg) -> Html msg
 view items =
     Html.div
         [ classes
-            [ Tw.raw "divide-y"
-            , Tw.raw "divide-gray-200"
+            [ Tw.divide_y
+            , TwEx.divide_color (Th.gray Th.s200)
             , Tw.border
-            , Tw.raw "border-gray-200"
+            , Tw.border_color (Th.gray Th.s200)
             , Tw.rounded_lg
             , Tw.overflow_hidden
             ]
@@ -25,7 +29,7 @@ view items =
 viewItem : { title : String, body : List (Html msg) } -> Html msg
 viewItem config =
     Html.details
-        [ classes [ Tw.raw "group", Tw.raw "bg-white" ] ]
+        [ classes [ TwEx.group, Tw.bg_simple Th.white ] ]
         [ Html.summary
             [ classes
                 [ Tw.flex
@@ -37,7 +41,7 @@ viewItem config =
                 , Tw.font_medium
                 , Tw.text_simple TC.brand
                 , Tw.select_none
-                , Bp.hover [ Tw.raw "bg-gray-50" ]
+                , Bp.hover [ Tw.bg_color (Th.gray Th.s50) ]
                 ]
             ]
             [ Html.span [] [ Html.text config.title ]
@@ -45,7 +49,7 @@ viewItem config =
                 [ classes
                     [ Tw.ml (Th.s4)
                     , Tw.shrink_0
-                    , Tw.raw "text-gray-400"
+                    , Tw.text_color (Th.gray Th.s400)
                     , Tw.transition_transform
                     , Bp.withVariant "group-open" [ Tw.rotate_180 ]
                     ]
@@ -57,9 +61,9 @@ viewItem config =
                 [ Tw.px (Th.s6)
                 , Tw.py (Th.s4)
                 , Tw.text_sm
-                , Tw.raw "text-gray-600"
+                , Tw.text_color (Th.gray Th.s600)
                 , Tw.border_t
-                , Tw.raw "border-gray-100"
+                , Tw.border_color (Th.gray Th.s100)
                 ]
             ]
             config.body

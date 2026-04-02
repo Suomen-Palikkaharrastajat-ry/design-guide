@@ -1,5 +1,11 @@
 module Api exposing (routes)
 
+{-| elm-pages API route definitions.
+
+Defines server-rendered API endpoints. Currently empty — add `ApiRoute` values
+here when the site needs JSON feeds, sitemaps, or other generated files.
+-}
+
 import ApiRoute exposing (ApiRoute)
 import BackendTask exposing (BackendTask)
 import FatalError exposing (FatalError)

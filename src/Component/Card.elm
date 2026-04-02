@@ -1,5 +1,8 @@
 module Component.Card exposing (Shadow(..), view, viewSimple)
 
+{-| Content card component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Tailwind as Tw exposing (classes)
@@ -24,10 +27,10 @@ view :
 view config =
     Html.div
         [ classes
-            ([ Tw.raw "bg-white"
+            ([ Tw.bg_simple Th.white
              , Tw.rounded_xl
              , Tw.border
-             , Tw.raw "border-gray-200"
+             , Tw.border_color (Th.gray Th.s200)
              , Tw.overflow_hidden
              ]
                 ++ shadowTw config.shadow
@@ -45,7 +48,7 @@ view config =
 viewSimple : List (Html msg) -> Html msg
 viewSimple body =
     Html.div
-        [ classes [ Tw.raw "bg-white", Tw.rounded_xl, Tw.border, Tw.raw "border-gray-200", Tw.p (Th.s6) ] ]
+        [ classes [ Tw.bg_simple Th.white, Tw.rounded_xl, Tw.border, Tw.border_color (Th.gray Th.s200), Tw.p (Th.s6) ] ]
         body
 
 
@@ -76,7 +79,7 @@ viewBody content =
 viewFooter : Html msg -> Html msg
 viewFooter content =
     Html.div
-        [ classes [ Tw.px (Th.s6), Tw.py (Th.s4), Tw.border_t, Tw.raw "border-gray-100" ] ]
+        [ classes [ Tw.px (Th.s6), Tw.py (Th.s4), Tw.border_t, Tw.border_color (Th.gray Th.s100) ] ]
         [ content ]
 
 

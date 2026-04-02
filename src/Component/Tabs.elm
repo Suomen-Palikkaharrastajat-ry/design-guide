@@ -1,5 +1,8 @@
 module Component.Tabs exposing (view)
 
+{-| Tabbed-panel component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
@@ -7,6 +10,7 @@ import Json.Decode
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -20,7 +24,7 @@ view :
 view config =
     Html.div []
         [ Html.div
-            [ classes [ Tw.flex, Tw.border_b, Tw.raw "border-gray-200" ]
+            [ classes [ Tw.flex, Tw.border_b, Tw.border_color (Th.gray Th.s200) ]
             , Attr.attribute "role" "tablist"
             , Events.on "keydown"
                 (Json.Decode.field "key" Json.Decode.string
@@ -105,11 +109,11 @@ tabTw active =
     , Tw.cursor_pointer
     ]
         ++ (if active then
-                [ Tw.raw "border-brand", Tw.text_simple TC.brand ]
+                [ Tw.border_simple TC.brand, Tw.text_simple TC.brand ]
 
             else
-                [ Tw.raw "border-transparent"
-                , Tw.raw "text-gray-500"
-                , Bp.hover [ Tw.text_simple TC.brand, Tw.raw "border-gray-300" ]
+                [ TwEx.border_transparent
+                , Tw.text_color (Th.gray Th.s500)
+                , Bp.hover [ Tw.text_simple TC.brand, Tw.border_color (Th.gray Th.s300) ]
                 ]
            )

@@ -25,7 +25,7 @@ import Review.Rule as Rule exposing (Rule)
 -- Directories containing auto-generated Elm code that should not be linted.
 generatedDirectories : List String
 generatedDirectories =
-    [ ".elm-pages/", ".elm-tailwind/", "gen/" ]
+    [ ".elm-pages/", ".elm-tailwind/", "gen/", "src/Guide/" ]
 
 
 config : List Rule

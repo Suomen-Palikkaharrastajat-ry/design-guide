@@ -1,9 +1,13 @@
 module Component.Spinner exposing (Size(..), view)
 
+{-| Loading spinner component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Tailwind as Tw exposing (classes)
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 
 
 view : { size : Size, label : String } -> Html msg
@@ -17,8 +21,8 @@ view config =
                 ([ Tw.animate_spin
                  , Tw.rounded_full
                  , Tw.border_2
-                 , Tw.raw "border-gray-200"
-                 , Tw.raw "border-t-brand"
+                 , Tw.border_color (Th.gray Th.s200)
+                 , TwEx.border_t_brand
                  ]
                     ++ sizeTw config.size
                 )

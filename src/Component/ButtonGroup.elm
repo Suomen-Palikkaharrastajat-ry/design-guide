@@ -1,11 +1,15 @@
 module Component.ButtonGroup exposing (Position(..), view, viewButton, viewEllipsis)
 
+{-| Horizontally grouped button component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -44,10 +48,10 @@ viewEllipsis =
             , Tw.py (Th.s2)
             , Tw.type_body_small
             , Tw.border
-            , Tw.raw "border-gray-300"
+            , Tw.border_color (Th.gray Th.s300)
             , Tw.border_r_0
-            , Tw.raw "bg-white"
-            , Tw.raw "text-gray-400"
+            , Tw.bg_simple Th.white
+            , Tw.text_color (Th.gray Th.s400)
             , Tw.select_none
             ]
         ]
@@ -70,7 +74,7 @@ buttonTw active position =
     , Tw.transition_colors
     , Tw.cursor_pointer
     , Tw.z_10
-    , Bp.focus_visible [ Tw.z_10, Tw.outline_none, Tw.ring_2, Tw.raw "ring-brand" ]
+    , Bp.focus_visible [ Tw.z_10, Tw.outline_none, Tw.ring_2, TwEx.ring_brand ]
     ]
         ++ cornersTw position
         ++ colorsTw active
@@ -95,7 +99,7 @@ cornersTw position =
 colorsTw : Bool -> List Tw.Tailwind
 colorsTw active =
     if active then
-        [ Tw.bg_simple TC.brand, Tw.raw "text-white", Tw.border_simple TC.brand ]
+        [ Tw.bg_simple TC.brand, Tw.text_simple Th.white, Tw.border_simple TC.brand ]
 
     else
-        [ Tw.raw "bg-white", Tw.raw "text-gray-700", Tw.raw "border-gray-300", Bp.hover [ Tw.raw "bg-gray-50" ] ]
+        [ Tw.bg_simple Th.white, Tw.text_color (Th.gray Th.s700), Tw.border_color (Th.gray Th.s300), Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ]

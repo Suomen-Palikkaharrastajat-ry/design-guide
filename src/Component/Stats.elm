@@ -1,9 +1,13 @@
 module Component.Stats exposing (view, viewItem)
 
+{-| Statistics / KPI cards component.
+-}
+
 import Html exposing (Html)
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -11,11 +15,11 @@ view : List (Html msg) -> Html msg
 view items =
     Html.dl
         [ classes
-            [ Tw.raw "not-prose"
+            [ TwEx.not_prose
             , Tw.grid
             , Tw.grid_cols_1
-            , Tw.raw "gap-px"
-            , Tw.raw "bg-gray-200"
+            , Tw.gap_px
+            , Tw.bg_color (Th.gray Th.s200)
             , Tw.rounded_lg
             , Tw.overflow_hidden
             , Bp.sm [ Tw.grid_cols_2 ]
@@ -35,14 +39,14 @@ viewItem config =
             , Tw.justify_between
             , Tw.gap_x (Th.s4)
             , Tw.gap_y (Th.s2)
-            , Tw.raw "bg-white"
+            , Tw.bg_simple Th.white
             , Tw.px (Th.s6)
             , Tw.py (Th.s5)
             , Bp.sm [ Tw.px (Th.s8) ]
             ]
         ]
         [ Html.dt
-            [ classes [ Tw.type_body_small, Tw.raw "leading-6", Tw.raw "text-gray-500" ] ]
+            [ classes [ Tw.type_body_small, TwEx.leading_6, Tw.text_color (Th.gray Th.s500) ] ]
             [ Html.text config.label ]
         , case config.change of
             Just change ->
@@ -51,6 +55,6 @@ viewItem config =
             Nothing ->
                 Html.text ""
         , Html.dd
-            [ classes [ Tw.w_full, Tw.flex_none, Tw.text_n3xl, Tw.font_medium, Tw.raw "leading-10", Tw.tracking_tight, Tw.text_simple TC.brand ] ]
+            [ classes [ Tw.w_full, Tw.flex_none, Tw.text_n3xl, Tw.font_medium, TwEx.leading_10, Tw.tracking_tight, Tw.text_simple TC.brand ] ]
             [ Html.text config.value ]
         ]

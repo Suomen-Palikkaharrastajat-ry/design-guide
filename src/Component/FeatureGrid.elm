@@ -1,9 +1,13 @@
 module Component.FeatureGrid exposing (Feature, view)
 
+{-| Feature-highlight grid component.
+-}
+
 import Html exposing (Html)
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -49,10 +53,10 @@ viewFeature feature =
             Nothing ->
                 Html.text ""
         , Html.h3
-            [ classes [ Tw.type_h4, Tw.raw "leading-7", Tw.text_simple TC.textPrimary ] ]
+            [ classes [ Tw.type_h4, TwEx.leading_7, Tw.text_simple TC.textPrimary ] ]
             [ Html.text feature.title ]
         , Html.div
-            [ classes [ Tw.mt (Th.s2), Tw.type_caption, Tw.raw "leading-7", Tw.text_simple TC.textMuted ] ]
+            [ classes [ Tw.mt (Th.s2), Tw.type_caption, TwEx.leading_7, Tw.text_simple TC.textMuted ] ]
             feature.description
         ]
 

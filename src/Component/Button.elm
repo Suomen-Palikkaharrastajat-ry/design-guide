@@ -1,11 +1,15 @@
 module Component.Button exposing (Size(..), Variant(..), view, viewLink)
 
+{-| Button component with multiple variants and sizes.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -77,17 +81,17 @@ view config =
             if config.loading then
                 Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                     [ Html.span
-                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, Tw.raw "bg-current", Tw.animate_bounce ]
+                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, TwEx.bg_current, Tw.animate_bounce ]
                         , Attr.style "animation-delay" "0ms"
                         ]
                         []
                     , Html.span
-                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, Tw.raw "bg-current", Tw.animate_bounce ]
+                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, TwEx.bg_current, Tw.animate_bounce ]
                         , Attr.style "animation-delay" "150ms"
                         ]
                         []
                     , Html.span
-                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, Tw.raw "bg-current", Tw.animate_bounce ]
+                        [ classes [ Tw.w (Th.s1_dot_5), Tw.h (Th.s1_dot_5), Tw.rounded_full, TwEx.bg_current, Tw.animate_bounce ]
                         , Attr.style "animation-delay" "300ms"
                         ]
                         []
@@ -132,30 +136,30 @@ variantTw variant =
             [ Tw.bg_simple TC.brandYellow
             , Tw.text_simple TC.brand
             , Bp.hover [ Tw.opacity_90 ]
-            , Bp.focus_visible [ Tw.raw "ring-brand-yellow" ]
+            , Bp.focus_visible [ TwEx.ring_brand_yellow ]
             ]
 
         Secondary ->
-            [ Tw.raw "bg-white"
+            [ Tw.bg_simple Th.white
             , Tw.text_simple TC.brand
             , Tw.border
             , Tw.border_simple TC.brand
-            , Bp.hover [ Tw.raw "bg-gray-50" ]
-            , Bp.focus_visible [ Tw.raw "ring-brand" ]
+            , Bp.hover [ Tw.bg_color (Th.gray Th.s50) ]
+            , Bp.focus_visible [ TwEx.ring_brand ]
             ]
 
         Ghost ->
-            [ Tw.raw "bg-transparent"
+            [ TwEx.bg_transparent
             , Tw.text_simple TC.brand
-            , Bp.hover [ Tw.raw "bg-brand/5" ]
-            , Bp.focus_visible [ Tw.raw "ring-brand" ]
+            , Bp.hover [ TwEx.bg_brand_5 ]
+            , Bp.focus_visible [ TwEx.ring_brand ]
             ]
 
         Danger ->
-            [ Tw.raw "bg-red-600"
-            , Tw.raw "text-white"
-            , Bp.hover [ Tw.raw "bg-red-700" ]
-            , Bp.focus_visible [ Tw.raw "ring-red-500" ]
+            [ Tw.bg_color (Th.red Th.s600)
+            , Tw.text_simple Th.white
+            , Bp.hover [ Tw.bg_color (Th.red Th.s700) ]
+            , Bp.focus_visible [ Tw.ring_color (Th.red Th.s500) ]
             ]
 
 

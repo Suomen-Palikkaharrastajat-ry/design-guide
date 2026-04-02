@@ -1,5 +1,8 @@
 module Component.Pagination exposing (view)
 
+{-| Pagination controls component.
+-}
+
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Events
@@ -87,10 +90,10 @@ pageBtnTw active =
     , Tw.cursor_pointer
     ]
         ++ (if active then
-                [ Tw.bg_simple TC.brand, Tw.raw "text-white" ]
+                [ Tw.bg_simple TC.brand, Tw.text_simple Th.white ]
 
             else
-                [ Tw.raw "text-gray-700", Bp.hover [ Tw.raw "bg-gray-100" ] ]
+                [ Tw.text_color (Th.gray Th.s700), Bp.hover [ Tw.bg_color (Th.gray Th.s100) ] ]
            )
 
 
@@ -106,8 +109,8 @@ navBtnTw isDisabled =
     , Tw.transition_colors
     ]
         ++ (if isDisabled then
-                [ Tw.raw "text-gray-300", Tw.cursor_not_allowed ]
+                [ Tw.text_color (Th.gray Th.s300), Tw.cursor_not_allowed ]
 
             else
-                [ Tw.raw "text-gray-700", Bp.hover [ Tw.raw "bg-gray-100" ], Tw.cursor_pointer ]
+                [ Tw.text_color (Th.gray Th.s700), Bp.hover [ Tw.bg_color (Th.gray Th.s100) ], Tw.cursor_pointer ]
            )

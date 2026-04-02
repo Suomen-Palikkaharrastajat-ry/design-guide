@@ -1,5 +1,11 @@
 module Route.Typografia exposing (ActionData, Data, Model, Msg, route)
 
+{-| Typography guide page.
+
+Documents the type scale, font families, line-height, and usage
+rules for headings, body text, and brand-specific type styles.
+-}
+
 import BackendTask exposing (BackendTask)
 import FeatherIcons
 import FatalError exposing (FatalError)
@@ -12,6 +18,11 @@ import PagesMsg exposing (PagesMsg)
 import RouteBuilder exposing (App, StaticPayload)
 import Shared
 import SiteMeta
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 import View exposing (View)
 
 
@@ -71,7 +82,17 @@ view : App Data ActionData RouteParams -> Shared.Model -> View (PagesMsg Msg)
 view _ _ =
     { title = "Typografia · " ++ SiteMeta.organizationName
     , body =
-        [ Html.div [ Attr.class "max-w-5xl mx-auto px-4 py-8 sm:py-12 space-y-14 sm:space-y-20" ]
+        [ Html.div
+            [ classes
+                [ TwEx.max_w_5xl
+                , Tw.mx_auto
+                , Tw.px (Th.s4)
+                , Tw.py (Th.s8)
+                , Bp.sm [ Tw.py (Th.s12) ]
+                , TwEx.space_y (Th.s14)
+                , Bp.sm [ TwEx.space_y (Th.s20) ]
+                ]
+            ]
             [ viewPageHeader
             , viewTypeScaleSection
             , viewDosDontsSection
@@ -88,16 +109,16 @@ view _ _ =
 
 viewPageHeader : Html msg
 viewPageHeader =
-    Html.div [ Attr.class "space-y-2" ]
-        [ Html.h1 [ Attr.class "text-2xl sm:text-3xl font-bold text-brand" ]
+    Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+        [ Html.h1 [ classes [ Tw.text_2xl, Bp.sm [ Tw.text_3xl ], Tw.font_bold, Tw.text_simple TC.brand ] ]
             [ Html.text "Typografia" ]
-        , Html.p [ Attr.class "text-sm sm:text-base text-gray-500" ]
+        , Html.p [ classes [ Tw.text_sm, Bp.sm [ Tw.text_base ], Tw.text_color (Th.gray Th.s500) ] ]
             [ Html.text "Outfit-fonttiperhe, typografiaskaala ja "
-            , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "type-*" ]
+            , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "type-*" ]
             , Html.text " CSS-apuohjelmat. Nämä apuohjelmat on määritelty "
-            , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "brand.css" ]
+            , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "brand.css" ]
             , Html.text ":ssä ja "
-            , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "style.css" ]
+            , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "style.css" ]
             , Html.text ":ssä."
             ]
         ]
@@ -110,9 +131,19 @@ viewPageHeader =
 viewTypeScaleSection : Html msg
 viewTypeScaleSection =
     Html.section [ Attr.id "skaala" ]
-        [ Html.h2 [ Attr.class "text-xl font-bold text-brand mb-6 pb-2 border-b border-gray-200" ]
+        [ Html.h2
+            [ classes
+                [ Tw.text_xl
+                , Tw.font_bold
+                , Tw.text_simple TC.brand
+                , Tw.mb (Th.s6)
+                , Tw.pb (Th.s2)
+                , Tw.border_b
+                , Tw.border_color (Th.gray Th.s200)
+                ]
+            ]
             [ Html.text "Typografiaskaala" ]
-        , Html.div [ Attr.class "space-y-10" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s10) ] ]
             (List.map viewTypeRow typeScaleRows)
         ]
 
@@ -226,19 +257,41 @@ typeScaleRows =
 
 viewTypeRow : TypeRow -> Html msg
 viewTypeRow row =
-    Html.div [ Attr.class "grid grid-cols-1 md:grid-cols-2 gap-4 py-6 border-b border-gray-100 last:border-b-0" ]
+    Html.div
+        [ classes
+            [ Tw.grid
+            , Tw.grid_cols_1
+            , Bp.md [ Tw.grid_cols_2 ]
+            , Tw.gap (Th.s4)
+            , Tw.py (Th.s6)
+            , Tw.border_b
+            , Tw.border_color (Th.gray Th.s100)
+            , Bp.last [ Tw.border_b_0 ]
+            ]
+        ]
         [ -- Live example
-          Html.div [ Attr.class "flex flex-col justify-center min-h-16" ]
+          Html.div [ classes [ Tw.flex, Tw.flex_col, Tw.justify_center, Tw.min_h (Th.s16) ] ]
             [ Html.p [ Attr.class row.cls ]
                 [ Html.text row.example ]
             ]
         , -- Spec and usage
-          Html.div [ Attr.class "space-y-2" ]
-            [ Html.div [ Attr.class "flex items-center gap-2" ]
-                [ Html.code [ Attr.class "font-mono text-sm bg-brand/10 text-brand px-2 py-0.5 rounded font-semibold" ]
+          Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+            [ Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s2) ] ]
+                [ Html.code
+                    [ classes
+                        [ Tw.font_mono
+                        , Tw.text_sm
+                        , TwEx.bg_brand_10
+                        , Tw.text_simple TC.brand
+                        , Tw.px (Th.s2)
+                        , Tw.py (Th.s0_dot_5)
+                        , Tw.rounded
+                        , Tw.font_semibold
+                        ]
+                    ]
                     [ Html.text row.label ]
                 ]
-            , Html.table [ Attr.class "w-full text-xs text-gray-600 border-collapse" ]
+            , Html.table [ classes [ Tw.w_full, Tw.text_xs, Tw.text_color (Th.gray Th.s600), Tw.border_collapse ] ]
                 [ Html.tbody []
                     [ specRow "Koko" row.size
                     , specRow "Paino" row.weight
@@ -246,7 +299,7 @@ viewTypeRow row =
                     , specRow "Kirjainväli" row.letterSpacing
                     ]
                 ]
-            , Html.p [ Attr.class "text-xs text-gray-500 italic" ]
+            , Html.p [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s500), Tw.italic ] ]
                 [ Html.text row.usage ]
             ]
         ]
@@ -255,8 +308,8 @@ viewTypeRow row =
 specRow : String -> String -> Html msg
 specRow label value =
     Html.tr []
-        [ Html.td [ Attr.class "pr-3 py-0.5 text-gray-400 font-medium w-24" ] [ Html.text label ]
-        , Html.td [ Attr.class "py-0.5 font-mono" ] [ Html.text value ]
+        [ Html.td [ classes [ Tw.pr (Th.s3), Tw.py (Th.s0_dot_5), Tw.text_color (Th.gray Th.s400), Tw.font_medium, Tw.w (Th.s24) ] ] [ Html.text label ]
+        , Html.td [ classes [ Tw.py (Th.s0_dot_5), Tw.font_mono ] ] [ Html.text value ]
         ]
 
 
@@ -267,9 +320,19 @@ specRow label value =
 viewDosDontsSection : Html msg
 viewDosDontsSection =
     Html.section [ Attr.id "ohjeet" ]
-        [ Html.h2 [ Attr.class "text-xl font-bold text-brand mb-6 pb-2 border-b border-gray-200" ]
+        [ Html.h2
+            [ classes
+                [ Tw.text_xl
+                , Tw.font_bold
+                , Tw.text_simple TC.brand
+                , Tw.mb (Th.s6)
+                , Tw.pb (Th.s2)
+                , Tw.border_b
+                , Tw.border_color (Th.gray Th.s200)
+                ]
+            ]
             [ Html.text "Käyttöohjeet" ]
-        , Html.div [ Attr.class "grid grid-cols-1 sm:grid-cols-2 gap-6" ]
+        , Html.div [ classes [ Tw.grid, Tw.grid_cols_1, Bp.sm [ Tw.grid_cols_2 ], Tw.gap (Th.s6) ] ]
             [ viewDoCard
             , viewDontCard
             ]
@@ -278,14 +341,14 @@ viewDosDontsSection =
 
 viewDoCard : Html msg
 viewDoCard =
-    Html.div [ Attr.class "rounded-xl border border-green-200 bg-green-50 p-6 space-y-4" ]
-        [ Html.h3 [ Attr.class "type-h4 text-green-800 flex items-center gap-2" ]
+    Html.div [ classes [ Tw.rounded_xl, Tw.border, Tw.border_color (Th.green Th.s200), Tw.bg_color (Th.green Th.s50), Tw.p (Th.s6), TwEx.space_y (Th.s4) ] ]
+        [ Html.h3 [ classes [ Tw.type_h4, Tw.text_color (Th.green Th.s800), Tw.flex, Tw.items_center, Tw.gap (Th.s2) ] ]
             [ FeatherIcons.check
                 |> FeatherIcons.withSize 18
                 |> FeatherIcons.toHtml [ Attr.attribute "aria-hidden" "true" ]
             , Html.text "Tee näin"
             ]
-        , Html.ul [ Attr.class "space-y-2 text-sm text-green-900 list-disc list-inside" ]
+        , Html.ul [ classes [ TwEx.space_y (Th.s2), Tw.text_sm, Tw.text_color (Th.green Th.s900), Tw.list_disc, Tw.list_inside ] ]
             [ Html.li [] [ Html.text "Käytä ", codeInline "type-h2", Html.text " osion otsikoihin" ]
             , Html.li [] [ Html.text "Käytä ", codeInline "type-body", Html.text " oletustekstiin" ]
             , Html.li [] [ Html.text "Käytä ", codeInline "type-overline", Html.text " kategorialabeleissa — aina versaalein" ]
@@ -298,14 +361,14 @@ viewDoCard =
 
 viewDontCard : Html msg
 viewDontCard =
-    Html.div [ Attr.class "rounded-xl border border-red-200 bg-red-50 p-6 space-y-4" ]
-        [ Html.h3 [ Attr.class "type-h4 text-red-800 flex items-center gap-2" ]
+    Html.div [ classes [ Tw.rounded_xl, Tw.border, Tw.border_color (Th.red Th.s200), Tw.bg_color (Th.red Th.s50), Tw.p (Th.s6), TwEx.space_y (Th.s4) ] ]
+        [ Html.h3 [ classes [ Tw.type_h4, Tw.text_color (Th.red Th.s800), Tw.flex, Tw.items_center, Tw.gap (Th.s2) ] ]
             [ FeatherIcons.x
                 |> FeatherIcons.withSize 18
                 |> FeatherIcons.toHtml [ Attr.attribute "aria-hidden" "true" ]
             , Html.text "Älä tee näin"
             ]
-        , Html.ul [ Attr.class "space-y-2 text-sm text-red-900 list-disc list-inside" ]
+        , Html.ul [ classes [ TwEx.space_y (Th.s2), Tw.text_sm, Tw.text_color (Th.red Th.s900), Tw.list_disc, Tw.list_inside ] ]
             [ Html.li [] [ Html.text "Älä käytä raa'oitaTailwind-luokkia kuten ", codeInlineDont "text-2xl font-bold" ]
             , Html.li [] [ Html.text "Älä ohita hierarkiatasoja (esim. H1 → H3)" ]
             , Html.li [] [ Html.text "Älä aseta ", codeInlineDont "html { font-size: ... }", Html.text " — rikkoo rem-skaalan" ]
@@ -317,12 +380,12 @@ viewDontCard =
 
 codeInline : String -> Html msg
 codeInline s =
-    Html.code [ Attr.class "font-mono text-xs bg-green-100 text-green-800 px-1 rounded" ] [ Html.text s ]
+    Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.green Th.s100), Tw.text_color (Th.green Th.s800), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text s ]
 
 
 codeInlineDont : String -> Html msg
 codeInlineDont s =
-    Html.code [ Attr.class "font-mono text-xs bg-red-100 text-red-800 px-1 rounded" ] [ Html.text s ]
+    Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.red Th.s100), Tw.text_color (Th.red Th.s800), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text s ]
 
 
 
@@ -332,16 +395,26 @@ codeInlineDont s =
 viewUsageSection : Html msg
 viewUsageSection =
     Html.section [ Attr.id "kaytto" ]
-        [ Html.h2 [ Attr.class "text-xl font-bold text-brand mb-6 pb-2 border-b border-gray-200" ]
+        [ Html.h2
+            [ classes
+                [ Tw.text_xl
+                , Tw.font_bold
+                , Tw.text_simple TC.brand
+                , Tw.mb (Th.s6)
+                , Tw.pb (Th.s2)
+                , Tw.border_b
+                , Tw.border_color (Th.gray Th.s200)
+                ]
+            ]
             [ Html.text "CSS-esimerkki" ]
-        , Html.div [ Attr.class "space-y-6" ]
-            [ Html.p [ Attr.class "type-body text-gray-600" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s6) ] ]
+            [ Html.p [ classes [ Tw.type_body, Tw.text_color (Th.gray Th.s600) ] ]
                 [ Html.text "Apuohjelmat on määritelty "
-                , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded text-sm" ] [ Html.text "@utility" ]
+                , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded, Tw.text_sm ] ] [ Html.text "@utility" ]
                 , Html.text "-lohkoilla Tailwind v4:ssä. Käytä luokkanimeä suoraan HTML:ssä:"
                 ]
             , Html.pre
-                [ Attr.class "bg-gray-900 text-green-300 rounded-xl p-4 overflow-x-auto text-sm font-mono leading-relaxed" ]
+                [ classes [ Tw.bg_color (Th.gray Th.s900), Tw.text_color (Th.green Th.s300), Tw.rounded_xl, Tw.p (Th.s4), Tw.overflow_x_auto, Tw.text_sm, Tw.font_mono, Tw.leading_relaxed ] ]
                 [ Html.text """<!-- Otsikko -->
 <h1 class=\"type-h1 text-brand\">Tapahtumakalenteri</h1>
 
@@ -356,21 +429,21 @@ viewUsageSection =
 
 <!-- Kuvateksti -->
 <figcaption class=\"type-caption text-text-muted\">Kuva: SPH 2025</figcaption>""" ]
-            , Html.p [ Attr.class "type-body-small text-gray-500" ]
+            , Html.p [ classes [ Tw.type_body_small, Tw.text_color (Th.gray Th.s500) ] ]
                 [ Html.text "Huom: Tailwind v4 generoi automaattisesti "
-                , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded text-xs" ] [ Html.text "text-*" ]
+                , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded, Tw.text_xs ] ] [ Html.text "text-*" ]
                 , Html.text "-, "
-                , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded text-xs" ] [ Html.text "bg-*" ]
+                , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded, Tw.text_xs ] ] [ Html.text "bg-*" ]
                 , Html.text "- ja "
-                , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded text-xs" ] [ Html.text "border-*" ]
+                , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded, Tw.text_xs ] ] [ Html.text "border-*" ]
                 , Html.text "-apuohjelmat "
-                , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded text-xs" ] [ Html.text "@theme" ]
+                , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded, Tw.text_xs ] ] [ Html.text "@theme" ]
                 , Html.text ":n "
-                , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded text-xs" ] [ Html.text "--color-*" ]
+                , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded, Tw.text_xs ] ] [ Html.text "--color-*" ]
                 , Html.text "-muuttujista. Esim. "
-                , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded text-xs" ] [ Html.text "--color-text-muted" ]
+                , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded, Tw.text_xs ] ] [ Html.text "--color-text-muted" ]
                 , Html.text " → "
-                , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded text-xs" ] [ Html.text "text-text-muted" ]
+                , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded, Tw.text_xs ] ] [ Html.text "text-text-muted" ]
                 , Html.text "."
                 ]
             ]
@@ -383,14 +456,27 @@ viewUsageSection =
 
 viewIconsSection : Html msg
 viewIconsSection =
-    Html.section [ Attr.id "ikonit", Attr.class "scroll-mt-28 space-y-6" ]
-        [ Html.h2 [ Attr.class "text-xl font-bold text-brand mb-6 pb-2 border-b border-gray-200" ]
+    Html.section
+        [ Attr.id "ikonit"
+        , classes [ TwEx.scroll_mt (Th.s28), TwEx.space_y (Th.s6) ]
+        ]
+        [ Html.h2
+            [ classes
+                [ Tw.text_xl
+                , Tw.font_bold
+                , Tw.text_simple TC.brand
+                , Tw.mb (Th.s6)
+                , Tw.pb (Th.s2)
+                , Tw.border_b
+                , Tw.border_color (Th.gray Th.s200)
+                ]
+            ]
             [ Html.text "Ikonit" ]
-        , Html.p [ Attr.class "text-sm sm:text-base text-gray-500" ]
+        , Html.p [ classes [ Tw.text_sm, Bp.sm [ Tw.text_base ], Tw.text_color (Th.gray Th.s500) ] ]
             [ Html.text "Käytämme "
             , Html.a
                 [ Attr.href "https://package.elm-lang.org/packages/feathericons/elm-feather/latest/"
-                , Attr.class "underline hover:text-brand transition-colors"
+                , classes [ Tw.underline, Bp.hover [ Tw.text_simple TC.brand ], Tw.transition_colors ]
                 , Attr.target "_blank"
                 , Attr.rel "noopener noreferrer"
                 ]
@@ -408,10 +494,10 @@ viewIconsSection =
 
 viewIconUsage : Html msg
 viewIconUsage =
-    Html.div [ Attr.class "space-y-4" ]
-        [ Html.p [ Attr.class "text-sm text-gray-600" ]
+    Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
+        [ Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ]
             [ Html.text "Tuo kirjasto Elm-moduuliisi ja käytä ikonia putkioperaattorilla:" ]
-        , Html.pre [ Attr.class "bg-gray-900 text-gray-100 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto" ]
+        , Html.pre [ classes [ Tw.bg_color (Th.gray Th.s900), Tw.text_color (Th.gray Th.s100), Tw.rounded_lg, Tw.p (Th.s4), Tw.text_xs, Tw.leading_relaxed, Tw.overflow_x_auto ] ]
             [ Html.code []
                 [ Html.text """import FeatherIcons
 
@@ -424,13 +510,13 @@ FeatherIcons.alertTriangle |> FeatherIcons.withSize 18 |> FeatherIcons.toHtml []
 -- Lisäattribuutit SVG-elementille
 FeatherIcons.check |> FeatherIcons.withSize 16 |> FeatherIcons.toHtml [ Attr.class "text-green-500" ]""" ]
             ]
-        , Html.p [ Attr.class "text-xs text-gray-500" ]
+        , Html.p [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ]
             [ Html.text "Ikonit perivät nykyisen tekstivärin ("
-            , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "currentColor" ]
+            , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "currentColor" ]
             , Html.text "), joten voit värittää ne Tailwind-väriluokilla kuten "
-            , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "text-brand" ]
+            , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "text-brand" ]
             , Html.text " tai "
-            , Html.code [ Attr.class "font-mono bg-gray-100 px-1 rounded" ] [ Html.text "text-red-500" ]
+            , Html.code [ classes [ Tw.font_mono, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.rounded ] ] [ Html.text "text-red-500" ]
             , Html.text "."
             ]
         ]
@@ -524,9 +610,18 @@ actionIcons =
 
 viewIconGrid : String -> List IconEntry -> Html msg
 viewIconGrid title icons =
-    Html.section [ Attr.class "scroll-mt-28 space-y-4" ]
-        [ Html.h3 [ Attr.class "text-base font-semibold text-brand" ] [ Html.text title ]
-        , Html.div [ Attr.class "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3" ]
+    Html.section [ classes [ TwEx.scroll_mt (Th.s28), TwEx.space_y (Th.s4) ] ]
+        [ Html.h3 [ classes [ Tw.text_base, Tw.font_semibold, Tw.text_simple TC.brand ] ] [ Html.text title ]
+        , Html.div
+            [ classes
+                [ Tw.grid
+                , Tw.grid_cols_3
+                , Bp.sm [ Tw.grid_cols_4 ]
+                , Bp.md [ Tw.grid_cols_6 ]
+                , Bp.lg [ Tw.grid_cols_8 ]
+                , Tw.gap (Th.s3)
+                ]
+            ]
             (List.map viewIconCard icons)
         ]
 
@@ -534,9 +629,34 @@ viewIconGrid title icons =
 viewIconCard : IconEntry -> Html msg
 viewIconCard entry =
     Html.div
-        [ Attr.class "flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-100 bg-white hover:border-brand/30 hover:bg-brand/5 transition-colors group" ]
-        [ Html.div [ Attr.class "text-brand" ]
+        [ classes
+            [ Tw.flex
+            , Tw.flex_col
+            , Tw.items_center
+            , Tw.gap (Th.s2)
+            , Tw.p (Th.s3)
+            , Tw.rounded_lg
+            , Tw.border
+            , Tw.border_color (Th.gray Th.s100)
+            , Tw.bg_simple Th.white
+            , Bp.hover [ TwEx.border_brand_30, TwEx.bg_brand_5 ]
+            , Tw.transition_colors
+            , TwEx.group
+            ]
+        ]
+        [ Html.div [ classes [ Tw.text_simple TC.brand ] ]
             [ entry.icon |> FeatherIcons.withSize 24 |> FeatherIcons.toHtml [] ]
-        , Html.span [ Attr.class "text-xs text-gray-500 font-mono text-center leading-tight break-all group-hover:text-brand transition-colors" ]
+        , Html.span
+            [ classes
+                [ Tw.text_xs
+                , Tw.text_color (Th.gray Th.s500)
+                , Tw.font_mono
+                , Tw.text_center
+                , Tw.leading_tight
+                , Tw.break_all
+                , Bp.group_hover [ Tw.text_simple TC.brand ]
+                , Tw.transition_colors
+                ]
+            ]
             [ Html.text entry.name ]
         ]

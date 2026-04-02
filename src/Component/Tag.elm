@@ -1,5 +1,8 @@
 module Component.Tag exposing (view)
 
+{-| Dismissible tag / chip component.
+-}
+
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as Attr
@@ -7,6 +10,7 @@ import Html.Events as Events
 import Tailwind as Tw exposing (classes)
 import Tailwind.Breakpoints as Bp
 import Tailwind.Theme as Th
+import TailwindExtra as TwEx
 import TailwindTokens as TC
 
 
@@ -22,7 +26,7 @@ view config =
             , Tw.py (Th.s0_dot_5)
             , Tw.text_xs
             , Tw.font_medium
-            , Tw.raw "bg-brand/10"
+            , TwEx.bg_brand_10
             , Tw.text_simple TC.brand
             ]
         ]
@@ -43,7 +47,7 @@ view config =
                                 , Tw.w (Th.s3_dot_5)
                                 , Tw.h (Th.s3_dot_5)
                                 , Tw.rounded_full
-                                , Bp.hover [ Tw.raw "bg-brand/20" ]
+                                , Bp.hover [ TwEx.bg_brand_20 ]
                                 , Tw.transition_colors
                                 , Tw.cursor_pointer
                                 ]

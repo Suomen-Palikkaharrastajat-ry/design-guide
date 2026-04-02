@@ -1,5 +1,8 @@
 module Component.Toast exposing (Variant(..), view)
 
+{-| Toast notification component.
+-}
+
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as Attr
@@ -35,7 +38,7 @@ view config =
              , Tw.border
              , Tw.p (Th.s4)
              , Tw.shadow_lg
-             , Tw.raw "bg-white"
+             , Tw.bg_simple Th.white
              ]
                 ++ borderTw config.variant
             )
@@ -44,14 +47,14 @@ view config =
             [ classes ([ Tw.mt (Th.s0_dot_5), Tw.shrink_0, Tw.leading_none ] ++ iconColorTw config.variant) ]
             [ icon config.variant ]
         , Html.div [ classes [ Tw.flex_1, Tw.min_w (Th.s0) ] ]
-            [ Html.p [ classes [ Tw.type_body_small, Tw.raw "text-gray-900" ] ] [ Html.text config.title ]
-            , Html.p [ classes [ Tw.mt (Th.s0_dot_5), Tw.text_sm, Tw.raw "text-gray-500" ] ] [ Html.text config.body ]
+            [ Html.p [ classes [ Tw.type_body_small, Tw.text_color (Th.gray Th.s900) ] ] [ Html.text config.title ]
+            , Html.p [ classes [ Tw.mt (Th.s0_dot_5), Tw.text_sm, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text config.body ]
             ]
         , case config.onClose of
             Just onClose ->
                 Html.button
                     [ Attr.type_ "button"
-                    , classes [ Tw.shrink_0, Tw.raw "text-gray-400", Bp.hover [ Tw.raw "text-gray-600" ], Tw.transition_colors ]
+                    , classes [ Tw.shrink_0, Tw.text_color (Th.gray Th.s400), Bp.hover [ Tw.text_color (Th.gray Th.s600) ], Tw.transition_colors ]
                     , Attr.attribute "aria-label" "Sulje"
                     , Events.onClick onClose
                     ]
@@ -66,16 +69,16 @@ borderTw : Variant -> List Tw.Tailwind
 borderTw variant =
     case variant of
         Default ->
-            [ Tw.raw "border-gray-200" ]
+            [ Tw.border_color (Th.gray Th.s200) ]
 
         Success ->
-            [ Tw.raw "border-green-200" ]
+            [ Tw.border_color (Th.green Th.s200) ]
 
         Warning ->
-            [ Tw.raw "border-yellow-200" ]
+            [ Tw.border_color (Th.yellow Th.s200) ]
 
         Danger ->
-            [ Tw.raw "border-red-200" ]
+            [ Tw.border_color (Th.red Th.s200) ]
 
 
 iconColorTw : Variant -> List Tw.Tailwind
@@ -85,13 +88,13 @@ iconColorTw variant =
             [ Tw.text_simple TC.brand ]
 
         Success ->
-            [ Tw.raw "text-green-500" ]
+            [ Tw.text_color (Th.green Th.s500) ]
 
         Warning ->
-            [ Tw.raw "text-yellow-500" ]
+            [ Tw.text_color (Th.yellow Th.s500) ]
 
         Danger ->
-            [ Tw.raw "text-red-500" ]
+            [ Tw.text_color (Th.red Th.s500) ]
 
 
 icon : Variant -> Html msg

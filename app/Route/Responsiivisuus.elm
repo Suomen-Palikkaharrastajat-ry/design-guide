@@ -1,5 +1,11 @@
 module Route.Responsiivisuus exposing (ActionData, Data, Model, Msg, route)
 
+{-| Responsive-design guide page.
+
+Covers mobile-first principles, breakpoints, container layout, grid
+patterns, touch targets, and reduced-motion animation.
+-}
+
 import BackendTask exposing (BackendTask)
 import FeatherIcons
 import Guide.Tokens as Tokens
@@ -18,6 +24,11 @@ import RouteBuilder exposing (App)
 import Set exposing (Set)
 import Shared
 import SiteMeta
+import Tailwind as Tw exposing (classes)
+import Tailwind.Breakpoints as Bp
+import Tailwind.Theme as Th
+import TailwindExtra as TwEx
+import TailwindTokens as TC
 import UrlPath exposing (UrlPath)
 import View exposing (View)
 
@@ -104,7 +115,17 @@ view : App Data ActionData RouteParams -> Shared.Model -> Model -> View (PagesMs
 view _ _ model =
     { title = "Responsiivisuus — " ++ SiteMeta.organizationName
     , body =
-        [ Html.div [ Attr.class "max-w-5xl mx-auto px-4 py-8 sm:py-12 space-y-12 sm:space-y-16" ]
+        [ Html.div
+            [ classes
+                [ TwEx.max_w_5xl
+                , Tw.mx_auto
+                , Tw.px (Th.s4)
+                , Tw.py (Th.s8)
+                , Bp.sm [ Tw.py (Th.s12) ]
+                , TwEx.space_y (Th.s12)
+                , Bp.sm [ TwEx.space_y (Th.s16) ]
+                ]
+            ]
             [ viewPageHeader
             , viewMobileFirstSection
             , viewBreakpointsSection
@@ -125,13 +146,13 @@ view _ _ model =
 
 viewPageHeader : Html msg
 viewPageHeader =
-    Html.div [ Attr.class "space-y-2" ]
-        [ Html.h1 [ Attr.class "text-2xl sm:text-3xl font-bold text-brand" ] [ Html.text "Responsiivisuus" ]
-        , Html.p [ Attr.class "text-sm sm:text-base text-gray-500" ]
+    Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+        [ Html.h1 [ classes [ Tw.text_2xl, Bp.sm [ Tw.text_3xl ], Tw.font_bold, Tw.text_simple TC.brand ] ] [ Html.text "Responsiivisuus" ]
+        , Html.p [ classes [ Tw.text_sm, Bp.sm [ Tw.text_base ], Tw.text_color (Th.gray Th.s500) ] ]
             [ Html.text "Mobiililähtöinen suunnittelujärjestelmä. Koneluettava versio: "
             , Html.a
                 [ Attr.href "/design-guide/responsiveness.jsonld"
-                , Attr.class "underline hover:text-brand transition-colors font-mono text-sm"
+                , classes [ Tw.underline, Bp.hover [ Tw.text_simple TC.brand ], Tw.transition_colors, Tw.font_mono, Tw.text_sm ]
                 ]
                 [ Html.text "responsiveness.jsonld" ]
             , Html.text "."
@@ -145,7 +166,7 @@ viewPageHeader =
 
 viewMobileFirstSection : Html msg
 viewMobileFirstSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Mobiililähtöinen suunnittelu"
             , description = Just "Kirjoita tyylit ensin mobiilinäkymälle ja lisää suurempien näyttöjen muokkaukset etuliitteillä sm:, md:, lg:."
@@ -158,7 +179,7 @@ viewMobileFirstSection =
                 ]
             , onDismiss = Nothing
             }
-        , Html.div [ Attr.class "space-y-3" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
             (List.map viewRuleCard
                 [ ( "Älä käytä kiinteitä leveysmittoja"
                   , "Vältä px- tai rem-arvoja suoraan komponenttien leveyksissä. Käytä max-w-*, w-full tai Tailwindin flex/grid-luokkia."
@@ -183,31 +204,31 @@ viewMobileFirstSection =
 
 viewBreakpointsSection : Html msg
 viewBreakpointsSection =
-    Html.section [ Attr.class "space-y-6" ]
-        [ Html.div [ Attr.class "flex items-baseline justify-between flex-wrap gap-4" ]
-            [ Html.h2 [ Attr.class "text-xl sm:text-2xl font-bold text-brand" ] [ Html.text "Murtopisteet" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
+        [ Html.div [ classes [ Tw.flex, Tw.items_baseline, Tw.justify_between, Tw.flex_wrap, Tw.gap (Th.s4) ] ]
+            [ Html.h2 [ classes [ Tw.text_xl, Bp.sm [ Tw.text_2xl ], Tw.font_bold, Tw.text_simple TC.brand ] ] [ Html.text "Murtopisteet" ]
             , Html.a
                 [ Attr.href "/design-guide/responsiveness.jsonld"
-                , Attr.class "text-xs font-mono text-gray-400 hover:text-brand transition-colors"
+                , classes [ Tw.text_xs, Tw.font_mono, Tw.text_color (Th.gray Th.s400), Bp.hover [ Tw.text_simple TC.brand ], Tw.transition_colors ]
                 ]
                 [ Html.text "responsiveness.jsonld" ]
             ]
-        , Html.p [ Attr.class "text-sm text-gray-600" ]
+        , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ]
             [ Html.text "Tailwind CSS:n oletusarvoiset murtopisteet. Kaikki murtopisteet ovat "
-            , Html.code [ Attr.class "font-mono text-xs bg-gray-100 px-1 py-0.5 rounded" ] [ Html.text "min-width" ]
+            , Html.code [ classes [ Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s1), Tw.py (Th.s0_dot_5), Tw.rounded ] ] [ Html.text "min-width" ]
             , Html.text " -ehtoisia — suunnittele ensin mobiilille."
             ]
-        , Html.div [ Attr.class "overflow-x-auto" ]
-            [ Html.table [ Attr.class "w-full text-sm border-collapse" ]
+        , Html.div [ classes [ Tw.overflow_x_auto ] ]
+            [ Html.table [ classes [ Tw.w_full, Tw.text_sm, Tw.border_collapse ] ]
                 [ Html.thead []
-                    [ Html.tr [ Attr.class "bg-gray-50 border-b border-gray-200" ]
+                    [ Html.tr [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border_b, Tw.border_color (Th.gray Th.s200) ] ]
                         [ th "Etuliite"
                         , th "Min-leveys"
                         , th "Näyttötyyppi"
                         , th "Tailwind-esimerkki"
                         ]
                     ]
-                , Html.tbody [ Attr.class "divide-y divide-gray-100" ]
+                , Html.tbody [ classes [ Tw.divide_y, TwEx.divide_color (Th.gray Th.s100) ] ]
                     (List.map viewBreakpointRow breakpointData)
                 ]
             ]
@@ -226,11 +247,11 @@ breakpointData =
 
 viewBreakpointRow : { prefix : String, minWidth : String, device : String, example : String } -> Html msg
 viewBreakpointRow row =
-    Html.tr [ Attr.class "hover:bg-gray-50" ]
-        [ Html.td [ Attr.class "py-2 px-3 font-mono text-xs font-semibold text-brand" ] [ Html.text row.prefix ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-xs text-gray-500" ] [ Html.text row.minWidth ]
-        , Html.td [ Attr.class "py-2 px-3 text-gray-700 text-xs" ] [ Html.text row.device ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-xs text-gray-500" ] [ Html.text row.example ]
+    Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ] ]
+        [ Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_xs, Tw.font_semibold, Tw.text_simple TC.brand ] ] [ Html.text row.prefix ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.minWidth ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_color (Th.gray Th.s700), Tw.text_xs ] ] [ Html.text row.device ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.example ]
         ]
 
 
@@ -240,24 +261,24 @@ viewBreakpointRow row =
 
 viewContainerSection : Html msg
 viewContainerSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Säilö ja täytteet"
             , description = Just "Kaikki sivun sisältö on sijoitettava sivusäilöön, joka rajoittaa maksimileveyden ja lisää reunatäytteet."
             }
-        , Html.div [ Attr.class "space-y-4" ]
-            [ Html.div [ Attr.class "bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 space-y-3" ]
-                [ Html.p [ Attr.class "font-semibold text-brand text-sm" ] [ Html.text "Sivusäilö (page wrapper)" ]
-                , Html.code [ Attr.class "block font-mono text-xs bg-white border border-gray-200 rounded px-3 py-2 text-gray-700" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
+            [ Html.div [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border, Tw.border_color (Th.gray Th.s200), Tw.rounded_xl, Tw.p (Th.s4), Bp.sm [ Tw.p (Th.s6) ], TwEx.space_y (Th.s3) ] ]
+                [ Html.p [ classes [ Tw.font_semibold, Tw.text_simple TC.brand, Tw.text_sm ] ] [ Html.text "Sivusäilö (page wrapper)" ]
+                , Html.code [ classes [ Tw.block, Tw.font_mono, Tw.text_xs, Tw.bg_simple Th.white, Tw.border, Tw.border_color (Th.gray Th.s200), Tw.rounded, Tw.px (Th.s3), Tw.py (Th.s2), Tw.text_color (Th.gray Th.s700) ] ]
                     [ Html.text "max-w-5xl mx-auto px-4" ]
-                , Html.ul [ Attr.class "text-xs text-gray-500 space-y-1 list-disc list-inside" ]
+                , Html.ul [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s500), TwEx.space_y (Th.s1), Tw.list_disc, Tw.list_inside ] ]
                     [ Html.li [] [ Html.text "max-w-5xl = 1024px maksimileveys" ]
                     , Html.li [] [ Html.text "mx-auto = vaakasuuntainen keskitys" ]
                     , Html.li [] [ Html.text "px-4 = 16px reunatäyte kaikilla näyttökoilla" ]
                     ]
                 ]
-            , Html.div [ Attr.class "bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 space-y-3" ]
-                [ Html.p [ Attr.class "font-semibold text-brand text-sm" ] [ Html.text "Navigaatiovisuaalinen esimerkki" ]
+            , Html.div [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border, Tw.border_color (Th.gray Th.s200), Tw.rounded_xl, Tw.p (Th.s4), Bp.sm [ Tw.p (Th.s6) ], TwEx.space_y (Th.s3) ] ]
+                [ Html.p [ classes [ Tw.font_semibold, Tw.text_simple TC.brand, Tw.text_sm ] ] [ Html.text "Navigaatiovisuaalinen esimerkki" ]
                 , viewContainerDemo
                 ]
             ]
@@ -266,15 +287,15 @@ viewContainerSection =
 
 viewContainerDemo : Html msg
 viewContainerDemo =
-    Html.div [ Attr.class "space-y-2" ]
-        [ Html.div [ Attr.class "bg-brand rounded-lg p-1 text-center" ]
-            [ Html.span [ Attr.class "text-xs text-white/60" ] [ Html.text "Koko näyttö (viewport)" ]
+    Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+        [ Html.div [ classes [ Tw.bg_simple TC.brand, Tw.rounded_lg, Tw.p (Th.s1), Tw.text_center ] ]
+            [ Html.span [ classes [ Tw.text_xs, TwEx.text_white_60 ] ] [ Html.text "Koko näyttö (viewport)" ]
             ]
-        , Html.div [ Attr.class "bg-brand/20 rounded-lg p-1 mx-2 text-center" ]
-            [ Html.span [ Attr.class "text-xs text-brand/70" ] [ Html.text "max-w-5xl mx-auto" ]
+        , Html.div [ classes [ TwEx.bg_brand_20, Tw.rounded_lg, Tw.p (Th.s1), Tw.mx (Th.s2), Tw.text_center ] ]
+            [ Html.span [ classes [ Tw.text_xs, TwEx.text_brand_70 ] ] [ Html.text "max-w-5xl mx-auto" ]
             ]
-        , Html.div [ Attr.class "bg-brand/10 rounded-lg p-1 mx-6 text-center" ]
-            [ Html.span [ Attr.class "text-xs text-brand/50" ] [ Html.text "px-4 (sisältö)" ]
+        , Html.div [ classes [ TwEx.bg_brand_10, Tw.rounded_lg, Tw.p (Th.s1), Tw.mx (Th.s6), Tw.text_center ] ]
+            [ Html.span [ classes [ Tw.text_xs, TwEx.text_brand_50 ] ] [ Html.text "px-4 (sisältö)" ]
             ]
         ]
 
@@ -285,12 +306,12 @@ viewContainerDemo =
 
 viewGridSection : Html msg
 viewGridSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Ruudukkomallit"
             , description = Just "Vakioruudukot komponenttityypeittäin. Käytä aina näitä malleja — älä keksi uusia sarakkemääriä."
             }
-        , Html.div [ Attr.class "space-y-4" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
             (List.map viewGridPattern gridPatterns)
         ]
 
@@ -344,25 +365,25 @@ viewGridPattern :
     }
     -> Html msg
 viewGridPattern p =
-    Html.div [ Attr.class "border border-gray-200 rounded-xl overflow-hidden" ]
-        [ Html.div [ Attr.class "bg-gray-50 px-4 py-3 border-b border-gray-200" ]
-            [ Html.p [ Attr.class "font-semibold text-sm text-brand" ] [ Html.text p.name ]
-            , Html.p [ Attr.class "text-xs text-gray-500 mt-0.5" ] [ Html.text p.desc ]
+    Html.div [ classes [ Tw.border, Tw.border_color (Th.gray Th.s200), Tw.rounded_xl, Tw.overflow_hidden ] ]
+        [ Html.div [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.px (Th.s4), Tw.py (Th.s3), Tw.border_b, Tw.border_color (Th.gray Th.s200) ] ]
+            [ Html.p [ classes [ Tw.font_semibold, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text p.name ]
+            , Html.p [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s500), Tw.mt (Th.s0_dot_5) ] ] [ Html.text p.desc ]
             ]
-        , Html.div [ Attr.class "p-4 space-y-3" ]
-            [ Html.div [ Attr.class "grid grid-cols-4 sm:grid-cols-5 gap-2 text-xs" ]
-                [ Html.div [ Attr.class "font-semibold text-gray-500 uppercase tracking-wider col-span-1" ] [ Html.text "Näyttö" ]
-                , Html.div [ Attr.class "font-semibold text-gray-500 uppercase tracking-wider hidden sm:block" ] [ Html.text "sm (640px)" ]
-                , Html.div [ Attr.class "font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "md (768px)" ]
-                , Html.div [ Attr.class "font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "lg (1024px)" ]
-                , Html.div [ Attr.class "font-semibold text-gray-500 uppercase tracking-wider col-span-1" ] []
-                , Html.div [ Attr.class "text-gray-700 col-span-1" ] [ Html.text p.mobile ]
-                , Html.div [ Attr.class "text-gray-700 hidden sm:block" ] [ Html.text p.sm ]
-                , Html.div [ Attr.class "text-gray-700" ] [ Html.text p.md ]
-                , Html.div [ Attr.class "text-gray-700" ] [ Html.text p.lg ]
+        , Html.div [ classes [ Tw.p (Th.s4), TwEx.space_y (Th.s3) ] ]
+            [ Html.div [ classes [ Tw.grid, Tw.grid_cols_4, Bp.sm [ Tw.grid_cols_5 ], Tw.gap (Th.s2), Tw.text_xs ] ]
+                [ Html.div [ classes [ Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider, Tw.col_span_1 ] ] [ Html.text "Näyttö" ]
+                , Html.div [ classes [ Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider, Tw.hidden, Bp.sm [ Tw.block ] ] ] [ Html.text "sm (640px)" ]
+                , Html.div [ classes [ Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "md (768px)" ]
+                , Html.div [ classes [ Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "lg (1024px)" ]
+                , Html.div [ classes [ Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider, Tw.col_span_1 ] ] []
+                , Html.div [ classes [ Tw.text_color (Th.gray Th.s700), Tw.col_span_1 ] ] [ Html.text p.mobile ]
+                , Html.div [ classes [ Tw.text_color (Th.gray Th.s700), Tw.hidden, Bp.sm [ Tw.block ] ] ] [ Html.text p.sm ]
+                , Html.div [ classes [ Tw.text_color (Th.gray Th.s700) ] ] [ Html.text p.md ]
+                , Html.div [ classes [ Tw.text_color (Th.gray Th.s700) ] ] [ Html.text p.lg ]
                 , Html.div [] []
                 ]
-            , Html.code [ Attr.class "block font-mono text-xs bg-gray-100 px-3 py-2 rounded text-gray-600 break-all" ]
+            , Html.code [ classes [ Tw.block, Tw.font_mono, Tw.text_xs, Tw.bg_color (Th.gray Th.s100), Tw.px (Th.s3), Tw.py (Th.s2), Tw.rounded, Tw.text_color (Th.gray Th.s600), Tw.break_all ] ]
                 [ Html.text p.tailwind ]
             ]
         ]
@@ -374,26 +395,26 @@ viewGridPattern p =
 
 viewGeneralLayoutSection : Html msg
 viewGeneralLayoutSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Yleiset asettelumallit"
             , description = Just "Murtopiste-oletukset eri asettelutyypeille. Käytä näitä malleja yleissisältösivuilla."
             }
-        , Html.div [ Attr.class "overflow-x-auto" ]
-            [ Html.table [ Attr.class "w-full text-sm border-collapse" ]
+        , Html.div [ classes [ Tw.overflow_x_auto ] ]
+            [ Html.table [ classes [ Tw.w_full, Tw.text_sm, Tw.border_collapse ] ]
                 [ Html.thead []
-                    [ Html.tr [ Attr.class "bg-gray-50 border-b border-gray-200" ]
+                    [ Html.tr [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border_b, Tw.border_color (Th.gray Th.s200) ] ]
                         [ th "Asettelu"
                         , th "Mobiili"
                         , th "Vaihto"
                         , th "Tailwind-luokat"
                         ]
                     ]
-                , Html.tbody [ Attr.class "divide-y divide-gray-100" ]
+                , Html.tbody [ classes [ Tw.divide_y, TwEx.divide_color (Th.gray Th.s100) ] ]
                     (List.map viewLayoutRow layoutBreakpointData)
                 ]
             ]
-        , Html.div [ Attr.class "space-y-3" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
             (List.map viewRuleCard
                 [ ( "Tekstisisältö + kuva — vaihda md:ssä"
                   , "Kaksipalstainen teksti–kuva-asettelu vaihtuu md (768px) -pisteessä. Alle sen sisältö pinoutuu pystysuoraan, kuva tulee tekstin alle tai päälle."
@@ -449,11 +470,11 @@ layoutBreakpointData =
 
 viewLayoutRow : { layout : String, mobile : String, switchAt : String, tailwind : String } -> Html msg
 viewLayoutRow row =
-    Html.tr [ Attr.class "hover:bg-gray-50" ]
-        [ Html.td [ Attr.class "py-2 px-3 font-medium text-sm text-brand" ] [ Html.text row.layout ]
-        , Html.td [ Attr.class "py-2 px-3 text-xs text-gray-600" ] [ Html.text row.mobile ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-xs text-gray-500" ] [ Html.text row.switchAt ]
-        , Html.td [ Attr.class "py-2 px-3 font-mono text-xs text-gray-400 break-all" ] [ Html.text row.tailwind ]
+    Html.tr [ classes [ Bp.hover [ Tw.bg_color (Th.gray Th.s50) ] ] ]
+        [ Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_medium, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text row.layout ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_xs, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text row.mobile ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text row.switchAt ]
+        , Html.td [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s400), Tw.break_all ] ] [ Html.text row.tailwind ]
         ]
 
 
@@ -463,12 +484,12 @@ viewLayoutRow row =
 
 viewTypographySection : Html msg
 viewTypographySection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Responsiivinen typografia"
             , description = Just "Fonttikoko pysyy vakiona murtopisteissä. Display-tyyli on tarkoitettu vain suuremmille näytöille."
             }
-        , Html.div [ Attr.class "space-y-3" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
             (List.map viewRuleCard
                 [ ( "Display vain ≥ md-näytöille"
                   , "Display-tyyli (48px / 3rem) on tarkoitettu vain näytöille, jotka ovat vähintään 768px leveät. Käytä Heading1 (30px / 1.875rem) mobiilinäkymässä."
@@ -481,16 +502,16 @@ viewTypographySection =
                   )
                 ]
             )
-        , Html.div [ Attr.class "bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 space-y-3" ]
-            [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Esimerkki — otsikkotasot mobiilissa vs. pöytäkoneessa" ]
-            , Html.div [ Attr.class "space-y-2" ]
-                [ Html.div [ Attr.class "flex items-baseline gap-3 flex-wrap" ]
-                    [ Html.span [ Attr.class "text-xs text-gray-400 w-28 flex-shrink-0" ] [ Html.text "Mobiili: H1" ]
-                    , Html.span [ Attr.class "text-2xl font-bold text-brand" ] [ Html.text "Suomen Palikkaharrastajat" ]
+        , Html.div [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border, Tw.border_color (Th.gray Th.s200), Tw.rounded_xl, Tw.p (Th.s4), Bp.sm [ Tw.p (Th.s6) ], TwEx.space_y (Th.s3) ] ]
+            [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Esimerkki — otsikkotasot mobiilissa vs. pöytäkoneessa" ]
+            , Html.div [ classes [ TwEx.space_y (Th.s2) ] ]
+                [ Html.div [ classes [ Tw.flex, Tw.items_baseline, Tw.gap (Th.s3), Tw.flex_wrap ] ]
+                    [ Html.span [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s400), Tw.w (Th.s28), Tw.shrink_0 ] ] [ Html.text "Mobiili: H1" ]
+                    , Html.span [ classes [ Tw.text_2xl, Tw.font_bold, Tw.text_simple TC.brand ] ] [ Html.text "Suomen Palikkaharrastajat" ]
                     ]
-                , Html.div [ Attr.class "flex items-baseline gap-3 flex-wrap" ]
-                    [ Html.span [ Attr.class "text-xs text-gray-400 w-28 flex-shrink-0" ] [ Html.text "Desktop: Display" ]
-                    , Html.span [ Attr.class "text-5xl font-bold text-brand" ] [ Html.text "Suomen Palikkaharrastajat" ]
+                , Html.div [ classes [ Tw.flex, Tw.items_baseline, Tw.gap (Th.s3), Tw.flex_wrap ] ]
+                    [ Html.span [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s400), Tw.w (Th.s28), Tw.shrink_0 ] ] [ Html.text "Desktop: Display" ]
+                    , Html.span [ classes [ Tw.text_5xl, Tw.font_bold, Tw.text_simple TC.brand ] ] [ Html.text "Suomen Palikkaharrastajat" ]
                     ]
                 ]
             ]
@@ -503,12 +524,12 @@ viewTypographySection =
 
 viewTouchSection : Html msg
 viewTouchSection =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Kosketuskohteet"
             , description = Just "WCAG 2.5.5 (AAA) edellyttää vähintään 44 × 44 px kosketuskohteen kaikille interaktiivisille elementeille."
             }
-        , Html.div [ Attr.class "grid grid-cols-1 sm:grid-cols-2 gap-4" ]
+        , Html.div [ classes [ Tw.grid, Tw.grid_cols_1, Bp.sm [ Tw.grid_cols_2 ], Tw.gap (Th.s4) ] ]
             [ viewTouchExample
                 "Oikein — riittävä täyte"
                 True
@@ -522,7 +543,7 @@ viewTouchSection =
                 "py-1 px-2 font-medium rounded bg-gray-200 text-gray-600 text-xs"
                 "Painike"
             ]
-        , Html.div [ Attr.class "space-y-3" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
             (List.map viewRuleCard
                 [ ( "Linkit navigoinnissa"
                   , "Navigointilinkkien täytteen on oltava riittävä: px-3 py-2 on minimi. Lisää display: block tai padding navigointilinkkeihin."
@@ -537,15 +558,15 @@ viewTouchSection =
 
 viewTouchExample : String -> Bool -> String -> String -> String -> Html msg
 viewTouchExample title isGood paddingLabel btnClass btnText =
-    Html.div [ Attr.class "border border-gray-200 rounded-xl p-4 space-y-3" ]
-        [ Html.div [ Attr.class "flex items-center gap-2" ]
+    Html.div [ classes [ Tw.border, Tw.border_color (Th.gray Th.s200), Tw.rounded_xl, Tw.p (Th.s4), TwEx.space_y (Th.s3) ] ]
+        [ Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s2) ] ]
             [ Html.span
-                [ Attr.class
+                [ classes
                     (if isGood then
-                        "text-green-600 font-semibold text-sm flex items-center gap-1"
+                        [ Tw.text_color (Th.green Th.s600), Tw.font_semibold, Tw.text_sm, Tw.flex, Tw.items_center, Tw.gap (Th.s1) ]
 
                      else
-                        "text-orange-500 font-semibold text-sm flex items-center gap-1"
+                        [ Tw.text_color (Th.orange Th.s500), Tw.font_semibold, Tw.text_sm, Tw.flex, Tw.items_center, Tw.gap (Th.s1) ]
                     )
                 ]
                 [ (if isGood then
@@ -559,9 +580,9 @@ viewTouchExample title isGood paddingLabel btnClass btnText =
                 , Html.text title
                 ]
             ]
-        , Html.div [ Attr.class "flex items-center gap-3" ]
+        , Html.div [ classes [ Tw.flex, Tw.items_center, Tw.gap (Th.s3) ] ]
             [ Html.button [ Attr.class btnClass ] [ Html.text btnText ]
-            , Html.span [ Attr.class "font-mono text-xs text-gray-400" ] [ Html.text paddingLabel ]
+            , Html.span [ classes [ Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s400) ] ] [ Html.text paddingLabel ]
             ]
         ]
 
@@ -572,14 +593,14 @@ viewTouchExample title isGood paddingLabel btnClass btnText =
 
 viewMotionSection : Model -> Html (PagesMsg Msg)
 viewMotionSection model =
-    Html.section [ Attr.class "space-y-6" ]
+    Html.section [ classes [ TwEx.space_y (Th.s6) ] ]
         [ SectionHeader.view
             { title = "Liike ja prefers-reduced-motion"
             , description = Just "Kaikki animaatiot on pysäytettävä tai korvattava, kun käyttäjä on asettanut prefers-reduced-motion: reduce."
             }
-        , Html.div [ Attr.class "bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 space-y-3" ]
-            [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "CSS-esimerkki" ]
-            , Html.pre [ Attr.class "font-mono text-xs text-gray-700 overflow-x-auto" ]
+        , Html.div [ classes [ Tw.bg_color (Th.gray Th.s50), Tw.border, Tw.border_color (Th.gray Th.s200), Tw.rounded_xl, Tw.p (Th.s4), Bp.sm [ Tw.p (Th.s6) ], TwEx.space_y (Th.s3) ] ]
+            [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "CSS-esimerkki" ]
+            , Html.pre [ classes [ Tw.font_mono, Tw.text_xs, Tw.text_color (Th.gray Th.s700), Tw.overflow_x_auto ] ]
                 [ Html.text """@media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -587,7 +608,7 @@ viewMotionSection model =
   }
 }""" ]
             ]
-        , Html.div [ Attr.class "space-y-3" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s3) ] ]
             (List.map viewRuleCard
                 [ ( "Animoitu logo"
                   , "Käytä <img src=\"square-animated.gif\"> vain silloin, kun prefers-reduced-motion EI ole aktiivinen. Staattinen vaihtoehto: square.png tai square.webp."
@@ -597,8 +618,8 @@ viewMotionSection model =
                   )
                 ]
             )
-        , Html.div [ Attr.class "space-y-4" ]
-            [ Html.p [ Attr.class "text-xs font-semibold text-gray-500 uppercase tracking-wider" ] [ Html.text "Easing-tokenit — klikkaa toistaaksesi" ]
+        , Html.div [ classes [ TwEx.space_y (Th.s4) ] ]
+            [ Html.p [ classes [ Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ] [ Html.text "Easing-tokenit — klikkaa toistaaksesi" ]
             , viewEasingDemo model { name = "standard", label = "Standard", easingValue = Tokens.motionEasingStandard, description = "Yleiskäyttöinen siirtymä — elementit, jotka liikkuvat ruudun sisällä." }
             , viewEasingDemo model { name = "decelerate", label = "Decelerate", easingValue = Tokens.motionEasingDecelerate, description = "Elementit, jotka tulevat näkymään — hidastuvat lopussa." }
             , viewEasingDemo model { name = "accelerate", label = "Accelerate", easingValue = Tokens.motionEasingAccelerate, description = "Elementit, jotka poistuvat näkymästä — kiihtyvät loppua kohti." }
@@ -616,7 +637,20 @@ viewEasingDemo model { name, label, easingValue, description } =
             Set.member name model.playingEasings
     in
     Html.button
-        [ Attr.class "block w-full text-left border border-gray-200 rounded-xl p-4 space-y-3 cursor-pointer hover:border-gray-300 transition-colors bg-transparent"
+        [ classes
+            [ Tw.block
+            , Tw.w_full
+            , Tw.text_left
+            , Tw.border
+            , Tw.border_color (Th.gray Th.s200)
+            , Tw.rounded_xl
+            , Tw.p (Th.s4)
+            , TwEx.space_y (Th.s3)
+            , Tw.cursor_pointer
+            , Bp.hover [ Tw.border_color (Th.gray Th.s300) ]
+            , Tw.transition_colors
+            , TwEx.bg_transparent
+            ]
         , Attr.type_ "button"
         , Attr.attribute "aria-pressed"
             (if isPlaying then
@@ -627,9 +661,9 @@ viewEasingDemo model { name, label, easingValue, description } =
             )
         , Events.onClick (PagesMsg.fromMsg (ToggleEasing name))
         ]
-        [ Html.div [ Attr.class "flex items-center justify-between" ]
-            [ Html.p [ Attr.class "text-sm font-semibold text-brand" ] [ Html.text label ]
-            , Html.span [ Attr.class "text-xs text-gray-400 flex items-center gap-1" ]
+        [ Html.div [ classes [ Tw.flex, Tw.items_center, Tw.justify_between ] ]
+            [ Html.p [ classes [ Tw.text_sm, Tw.font_semibold, Tw.text_simple TC.brand ] ] [ Html.text label ]
+            , Html.span [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s400), Tw.flex, Tw.items_center, Tw.gap (Th.s1) ] ]
                 [ (if isPlaying then
                     FeatherIcons.refreshCw
 
@@ -648,7 +682,7 @@ viewEasingDemo model { name, label, easingValue, description } =
                 ]
             ]
         , Html.div
-            [ Attr.class "relative w-full h-6 bg-gray-100 rounded overflow-hidden" ]
+            [ classes [ Tw.relative, Tw.w_full, Tw.h (Th.s6), Tw.bg_color (Th.gray Th.s100), Tw.rounded, Tw.overflow_hidden ] ]
             [ Html.div
                 [ Attr.style "position" "absolute"
                 , Attr.style "top" "4px"
@@ -673,8 +707,8 @@ viewEasingDemo model { name, label, easingValue, description } =
                 ]
                 []
             ]
-        , Html.code [ Attr.class "block text-xs font-mono text-gray-500" ] [ Html.text easingValue ]
-        , Html.p [ Attr.class "text-xs text-gray-400" ] [ Html.text description ]
+        , Html.code [ classes [ Tw.block, Tw.text_xs, Tw.font_mono, Tw.text_color (Th.gray Th.s500) ] ] [ Html.text easingValue ]
+        , Html.p [ classes [ Tw.text_xs, Tw.text_color (Th.gray Th.s400) ] ] [ Html.text description ]
         ]
 
 
@@ -684,13 +718,13 @@ viewEasingDemo model { name, label, easingValue, description } =
 
 th : String -> Html msg
 th label =
-    Html.th [ Attr.class "py-2 px-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider" ]
+    Html.th [ classes [ Tw.py (Th.s2), Tw.px (Th.s3), Tw.text_left, Tw.text_xs, Tw.font_semibold, Tw.text_color (Th.gray Th.s500), Tw.uppercase, Tw.tracking_wider ] ]
         [ Html.text label ]
 
 
 viewRuleCard : ( String, String ) -> Html msg
 viewRuleCard ( title, body ) =
-    Html.div [ Attr.class "border-l-4 border-brand-yellow pl-4 py-1 space-y-1" ]
-        [ Html.p [ Attr.class "font-semibold text-sm text-brand" ] [ Html.text title ]
-        , Html.p [ Attr.class "text-sm text-gray-600" ] [ Html.text body ]
+    Html.div [ classes [ Tw.border_l_4, Tw.border_simple TC.brandYellow, Tw.pl (Th.s4), Tw.py (Th.s1), TwEx.space_y (Th.s1) ] ]
+        [ Html.p [ classes [ Tw.font_semibold, Tw.text_sm, Tw.text_simple TC.brand ] ] [ Html.text title ]
+        , Html.p [ classes [ Tw.text_sm, Tw.text_color (Th.gray Th.s600) ] ] [ Html.text body ]
         ]
