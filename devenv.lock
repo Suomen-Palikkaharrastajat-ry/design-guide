@@ -3,11 +3,11 @@
     "devenv": {
       "locked": {
         "dir": "src/modules",
-        "lastModified": 1774880920,
-        "narHash": "sha256-VPLBe2ES5agAANNZKDNaBQE/socnjBeEr2zloVcJHKk=",
+        "lastModified": 1775147763,
+        "narHash": "sha256-VY+Vemh6/KcOquICLIzM/WPoBWNgp0issGO0ytXydU0=",
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "f333c713e692b687a9ed7cc38ea5738cac67d38a",
+        "rev": "ad4d771adec17a35c347f0eef2419de642db3db4",
         "type": "github"
       },
       "original": {
@@ -17,44 +17,13 @@
         "type": "github"
       }
     },
-    "devenv-module-devcontainer": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1774894009,
-        "narHash": "sha256-tA+xvpFRXZ4PoqveMjyAUHaIln6oC7uJDDRCL+1v+Sk=",
-        "owner": "datakurre",
-        "repo": "devenv-module-devcontainer",
-        "rev": "1ee7c8ddb71100fd0d056ec075f916d5c2255a4f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "datakurre",
-        "repo": "devenv-module-devcontainer",
-        "type": "github"
-      }
-    },
-    "devenv-module-devcontainer-nixpkgs": {
-      "locked": {
-        "lastModified": 1774894165,
-        "narHash": "sha256-H3BMQH3L++HMOMcSQuqDLn82B+AdBXmHwZo4TJXnStc=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "10254dfa93eef150de1f546f9c23299a69cc9afa",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1774894165,
-        "narHash": "sha256-H3BMQH3L++HMOMcSQuqDLn82B+AdBXmHwZo4TJXnStc=",
+        "lastModified": 1775158684,
+        "narHash": "sha256-N0lfdGiM6xNVnN+baVKt98l3E3wovlhgWNcIX2BALvM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "10254dfa93eef150de1f546f9c23299a69cc9afa",
+        "rev": "cc0b76230dcabf7a8eca582b0994a08ffc4cb80e",
         "type": "github"
       },
       "original": {
@@ -66,8 +35,6 @@
     "root": {
       "inputs": {
         "devenv": "devenv",
-        "devenv-module-devcontainer": "devenv-module-devcontainer",
-        "devenv-module-devcontainer-nixpkgs": "devenv-module-devcontainer-nixpkgs",
         "nixpkgs": "nixpkgs"
       }
     }

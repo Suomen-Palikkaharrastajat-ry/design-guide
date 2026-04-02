@@ -37,12 +37,12 @@ let
     # Computed by building with pkgs.lib.fakeHash and reading the "got:" line.
     # To update: set back to pkgs.lib.fakeHash, run the nix build command above,
     # then replace this value with the sha256 printed in the error output.
-    hash = "sha256-UwjgOJVRj9Nd9rwtVGzpUBEUDvde1oetSnbNpqyAX1U=";
+    hash = "sha256-PqG1rnUWM3IJsK99ObXKDsrx6luwi0pYcxUlM1/GKfE=";
   };
 in
 pkgs.stdenv.mkDerivation {
   pname = "elm-pages";
-  version = "3.1.5";
+  version = "3.3.4";
 
   src = patchedSrc;
 

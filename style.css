@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* TailwindExtra computed classes — built via string concatenation in TailwindExtra.elm
    so can't be extracted into the elm-tailwind-classes safelist. Explicitly listed here
@@ -45,6 +46,7 @@
 
   /* ── Typography ─────────────────────────────────────── */
   --font-sans: "Outfit", system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
 
   /* ── Motion ─────────────────────────────────────────── */
   --duration-fast: 150ms;
