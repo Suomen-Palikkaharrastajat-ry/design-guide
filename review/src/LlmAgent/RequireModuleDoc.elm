@@ -2,14 +2,6 @@ module LlmAgent.RequireModuleDoc exposing (rule)
 
 {-| Requires every module to have a module-level documentation comment.
 
-    -- not ok  (no {-| ... -} above the module declaration)
-    module Component.Button exposing (..)
-
-    -- ok
-    module Component.Button exposing (..)
-    {-| A button component with multiple visual variants and sizes.
-    -}
-
 Module documentation is the first thing an LLM coding agent reads when it
 opens a file. A short description of purpose and usage dramatically reduces
 the time needed to understand the module in context.
@@ -27,8 +19,7 @@ type alias Context =
     }
 
 
-{-| Reports modules that lack a `{-| ... -}` module documentation comment.
--}
+{-| Reports modules that lack a module documentation comment. -}
 rule : Rule
 rule =
     Rule.newModuleRuleSchema "LlmAgent.RequireModuleDoc"
@@ -56,7 +47,7 @@ moduleDocumentationVisitor maybeDoc context =
                     , details =
                         [ "Every module should begin with a {-| ... -} comment that describes its purpose, main exports, and any usage notes."
                         , "LLM coding agents rely on module documentation to quickly understand the role of a file without reading all of its source."
-                        , "Add a comment directly below the module declaration, e.g.:\n\n    {-| A button component with Primary, Secondary, Ghost and Danger variants.\n    -}"
+                        , "Add a comment directly below the module declaration, e.g.:\n\n    {-| Color tokens for the design system.\n    -}"
                         ]
                     }
                     context.moduleDefinitionRange

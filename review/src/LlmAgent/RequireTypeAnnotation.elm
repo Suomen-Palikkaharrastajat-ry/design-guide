@@ -2,20 +2,9 @@ module LlmAgent.RequireTypeAnnotation exposing (rule)
 
 {-| Requires every top-level function and value to have a type annotation.
 
-    -- not ok
-    buttonClasses variant =
-        ...
-
-    -- ok
-    buttonClasses : Variant -> List Tw.ClassValue
-    buttonClasses variant =
-        ...
-
 Type annotations are the primary contract between a function's author and its
 callers. LLM coding agents use them to understand what a function accepts and
-returns without having to trace through the implementation. Missing annotations
-force the agent to perform type inference manually, which increases error rate
-and token usage.
+returns without having to trace through the implementation.
 
 -}
 
@@ -24,8 +13,7 @@ import Elm.Syntax.Node as Node exposing (Node)
 import Review.Rule as Rule exposing (Rule)
 
 
-{-| Reports top-level functions and values without a type annotation.
--}
+{-| Reports top-level functions and values without a type annotation. -}
 rule : Rule
 rule =
     Rule.newModuleRuleSchema "LlmAgent.RequireTypeAnnotation" ()

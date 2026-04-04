@@ -6,38 +6,15 @@ devenv.local.nix
 devenv.local.yaml
 .env
 
-# --- Dependencies ---
-# Python
-__pycache__/
-*.py[cod]
-
-# Node / pnpm
-node_modules/
-.pnpm-store/
-
-# Elm
-elm-stuff/
-.elm-pages/
-.elm-tailwind/
-
 # --- Haskell build artifacts ---
 dist-newstyle/
+
+# --- Generated build output ---
 dist/
 
-# --- Generated / build artifacts (do NOT commit) ---
-# Outputs from the logo pipeline and site build
-src/Guide/Tokens.elm
-logo/
-favicon/
-design-guide.json
-design-guide.tokens.json
-design-guide/
-public/logo/
-public/favicon/
-public/fonts/
-public/design-guide/
-public/design-guide.json
-public/design-guide.tokens.json
+# --- Elm ---
+elm-stuff/
+review/elm-stuff/
 
 # --- Editor & OS ---
 .DS_Store
@@ -46,8 +23,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-
-# --- Misc / local ---
 .claude/
 job-logs.txt
 
