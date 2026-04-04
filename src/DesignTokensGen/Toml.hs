@@ -1,15 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-{- | Parse design-guide.toml into 'DesignGuide'.
+{- | Parse design tokens from the content/ directory.
 
-Uses the @toml-parser@ library with manual 'FromValue' instances.
+Each .toml file in content/ contains one section of the design guide.
+The parser reads every file and merges the results into a single 'DesignGuide'.
 -}
-module Guide.Toml (parseDesignGuide) where
+module DesignTokensGen.Toml (parseContentDir) where
 
-import Data.Text (Text)
+import Data.List (sort)
 import Data.Text qualified as T
 import Data.Text.IO qualified as TIO
-import Guide.Types
+import DesignTokensGen.Types
+import System.Directory (listDirectory)
+import System.FilePath (takeExtension, (</>))
 import Toml (Result (..), decode)
 import Toml.Schema
 
@@ -17,43 +20,101 @@ import Toml.Schema
 -- Entry point
 -- ---------------------------------------------------------------------------
 
-parseDesignGuide :: FilePath -> IO DesignGuide
-parseDesignGuide path = do
-    raw <- TIO.readFile path
+parseContentDir :: FilePath -> IO DesignGuide
+parseContentDir dir = do
+    files <- sort . filter isToml <$> listDirectory dir
+    sections <- mapM (parseSection dir) files
+    mergeSections sections
+  where
+    isToml f = takeExtension f == ".toml"
+
+-- ---------------------------------------------------------------------------
+-- Section sum type
+-- ---------------------------------------------------------------------------
+
+data Section
+    = SMeta Meta
+    | SColors [BrandColor] [SkinTone] [RainbowColor] [SemanticColor]
+    | STypography TypographyConfig
+    | SSpacing SpacingConfig
+    | SMotion MotionConfig
+    | SEffects EffectsConfig
+    | SAccessibility AccessibilityConfig
+    | SOpacity OpacityConfig
+    | SComponents [ComponentSpec]
+
+parseSection :: FilePath -> FilePath -> IO Section
+parseSection dir file = do
+    raw <- TIO.readFile (dir </> file)
+    case file of
+        "meta.toml" -> do
+            WrapMeta m <- decodeOrFail file raw
+            pure (SMeta m)
+        "colors.toml" -> do
+            WrapColors ct <- decodeOrFail file raw
+            pure (SColors (ctBrand ct) (ctSkinTones ct) (ctRainbow ct) (ctSemantic ct))
+        "typography.toml" -> do
+            WrapTypography t <- decodeOrFail file raw
+            pure (STypography t)
+        "spacing.toml" -> do
+            WrapSpacing sp <- decodeOrFail file raw
+            pure (SSpacing sp)
+        "motion.toml" -> do
+            WrapMotion mo <- decodeOrFail file raw
+            pure (SMotion mo)
+        "components.toml" -> do
+            WrapComponents cs <- decodeOrFail file raw
+            pure (SComponents cs)
+        "effects.toml" -> do
+            WrapEffects ef <- decodeOrFail file raw
+            pure (SEffects ef)
+        "accessibility.toml" -> do
+            WrapAccessibility ac <- decodeOrFail file raw
+            pure (SAccessibility ac)
+        "opacity.toml" -> do
+            WrapOpacity op <- decodeOrFail file raw
+            pure (SOpacity op)
+        _ -> fail $ "Unknown content file: " ++ file
+
+decodeOrFail :: (FromValue a) => String -> T.Text -> IO a
+decodeOrFail name raw =
     case decode raw of
         Failure errs ->
-            fail $
-                "design-guide.toml: parse errors:\n"
-                    ++ unlines errs
+            fail $ name ++ ": parse errors:\n" ++ unlines errs
         Success _warnings val -> pure val
 
--- ---------------------------------------------------------------------------
--- FromValue instances
--- ---------------------------------------------------------------------------
+mergeSections :: [Section] -> IO DesignGuide
+mergeSections sections = do
+    m <- requireOne "meta.toml" [x | SMeta x <- sections]
+    (bc, st, rc, sc) <- requireOne "colors.toml" [(b, s, r, sem) | SColors b s r sem <- sections]
+    tp <- requireOne "typography.toml" [x | STypography x <- sections]
+    sp <- requireOne "spacing.toml" [x | SSpacing x <- sections]
+    mo <- requireOne "motion.toml" [x | SMotion x <- sections]
+    ef <- requireOne "effects.toml" [x | SEffects x <- sections]
+    ac <- requireOne "accessibility.toml" [x | SAccessibility x <- sections]
+    op <- requireOne "opacity.toml" [x | SOpacity x <- sections]
+    cs <- requireOne "components.toml" [x | SComponents x <- sections]
+    pure
+        DesignGuide
+            { dgMeta = m
+            , dgBrandColors = bc
+            , dgSkinTones = st
+            , dgRainbowColors = rc
+            , dgSemanticColors = sc
+            , dgTypography = tp
+            , dgSpacing = sp
+            , dgMotion = mo
+            , dgLayout = spacingToLayout sp
+            , dgEffects = ef
+            , dgAccessibility = ac
+            , dgOpacity = op
+            , dgComponents = cs
+            }
 
-instance FromValue DesignGuide where
-    fromValue = parseTableFromValue $ do
-        m <- reqKey "meta"
-        colorTbl <- reqKey "color"
-        typo <- reqKey "typography"
-        sp <- reqKey "spacing"
-        mot <- reqKey "motion"
-        comps <- reqKey "component"
-        pure
-            DesignGuide
-                { dgMeta = m
-                , dgBrandColors = cBrand colorTbl
-                , dgSkinTones = cSkinTones colorTbl
-                , dgRainbowColors = cRainbow colorTbl
-                , dgSemanticColors = cSemantic colorTbl
-                , dgTypography = typo
-                , dgSpacing = sp
-                , dgMotion = mot
-                , dgLayout = spacingToLayout sp
-                , dgComponents = comps
-                }
+requireOne :: String -> [a] -> IO a
+requireOne label [] = fail $ "Missing required content file: " ++ label
+requireOne _ (x : _) = pure x
 
--- Helper to extract Layout from SpacingConfig (they share the same TOML section)
 spacingToLayout :: SpacingConfig -> LayoutConfig
 spacingToLayout sp =
     LayoutConfig
@@ -65,14 +126,54 @@ spacingToLayout sp =
         }
 
 -- ---------------------------------------------------------------------------
--- Color table (intermediate)
+-- Root wrappers (each file has a top-level key)
+-- ---------------------------------------------------------------------------
+
+newtype WrapMeta = WrapMeta Meta
+instance FromValue WrapMeta where
+    fromValue = parseTableFromValue $ WrapMeta <$> reqKey "meta"
+
+newtype WrapColors = WrapColors ColorTable
+instance FromValue WrapColors where
+    fromValue = parseTableFromValue $ WrapColors <$> reqKey "color"
+
+newtype WrapTypography = WrapTypography TypographyConfig
+instance FromValue WrapTypography where
+    fromValue = parseTableFromValue $ WrapTypography <$> reqKey "typography"
+
+newtype WrapSpacing = WrapSpacing SpacingConfig
+instance FromValue WrapSpacing where
+    fromValue = parseTableFromValue $ WrapSpacing <$> reqKey "spacing"
+
+newtype WrapMotion = WrapMotion MotionConfig
+instance FromValue WrapMotion where
+    fromValue = parseTableFromValue $ WrapMotion <$> reqKey "motion"
+
+newtype WrapEffects = WrapEffects EffectsConfig
+instance FromValue WrapEffects where
+    fromValue = parseTableFromValue $ WrapEffects <$> reqKey "effects"
+
+newtype WrapAccessibility = WrapAccessibility AccessibilityConfig
+instance FromValue WrapAccessibility where
+    fromValue = parseTableFromValue $ WrapAccessibility <$> reqKey "accessibility"
+
+newtype WrapOpacity = WrapOpacity OpacityConfig
+instance FromValue WrapOpacity where
+    fromValue = parseTableFromValue $ WrapOpacity <$> reqKey "opacity"
+
+newtype WrapComponents = WrapComponents [ComponentSpec]
+instance FromValue WrapComponents where
+    fromValue = parseTableFromValue $ WrapComponents <$> reqKey "component"
+
+-- ---------------------------------------------------------------------------
+-- Intermediate color table
 -- ---------------------------------------------------------------------------
 
 data ColorTable = ColorTable
-    { cBrand :: [BrandColor]
-    , cSkinTones :: [SkinTone]
-    , cRainbow :: [RainbowColor]
-    , cSemantic :: [SemanticColor]
+    { ctBrand :: [BrandColor]
+    , ctSkinTones :: [SkinTone]
+    , ctRainbow :: [RainbowColor]
+    , ctSemantic :: [SemanticColor]
     }
 
 instance FromValue ColorTable where
@@ -81,10 +182,10 @@ instance FromValue ColorTable where
         s <- reqKey "skin-tone"
         r <- reqKey "rainbow"
         sem <- reqKey "semantic"
-        pure ColorTable{cBrand = b, cSkinTones = s, cRainbow = r, cSemantic = sem}
+        pure ColorTable{ctBrand = b, ctSkinTones = s, ctRainbow = r, ctSemantic = sem}
 
 -- ---------------------------------------------------------------------------
--- Meta
+-- FromValue: Meta
 -- ---------------------------------------------------------------------------
 
 instance FromValue Meta where
@@ -114,7 +215,7 @@ instance FromValue Meta where
                 }
 
 -- ---------------------------------------------------------------------------
--- Colors
+-- FromValue: Colors
 -- ---------------------------------------------------------------------------
 
 instance FromValue WcagContrast where
@@ -174,24 +275,18 @@ instance FromValue RainbowColor where
 
 instance FromValue SemanticColor where
     fromValue = parseTableFromValue $ do
-        en <- reqKey "elm-name"
-        jp <- reqKey "json-path"
+        i <- reqKey "id"
         h <- reqKey "hex"
-        tc <- reqKey "tailwind-class"
-        cv <- reqKey "css-variable"
         d <- reqKey "description"
         pure
             SemanticColor
-                { scElmName = en
-                , scJsonPath = jp
+                { scId = i
                 , scHex = h
-                , scTailwindClass = tc
-                , scCssVariable = cv
                 , scDescription = d
                 }
 
 -- ---------------------------------------------------------------------------
--- Typography
+-- FromValue: Typography
 -- ---------------------------------------------------------------------------
 
 instance FromValue TypographyConfig where
@@ -235,7 +330,7 @@ instance FromValue TypeScaleEntry where
                 }
 
 -- ---------------------------------------------------------------------------
--- Spacing
+-- FromValue: Spacing
 -- ---------------------------------------------------------------------------
 
 instance FromValue SpacingConfig where
@@ -318,7 +413,7 @@ instance FromValue ResponsiveGrid where
                 }
 
 -- ---------------------------------------------------------------------------
--- Motion
+-- FromValue: Motion
 -- ---------------------------------------------------------------------------
 
 instance FromValue MotionConfig where
@@ -361,20 +456,89 @@ instance FromValue MotionEasing where
                 }
 
 -- ---------------------------------------------------------------------------
--- Components
+-- FromValue: Effects
+-- ---------------------------------------------------------------------------
+
+instance FromValue EffectsConfig where
+    fromValue = parseTableFromValue $ do
+        sh <- reqKey "shadow"
+        zi <- reqKey "z-index"
+        ur <- reqKey "usage-rules"
+        pure EffectsConfig{ecShadows = sh, ecZIndices = zi, ecUsageRules = ur}
+
+instance FromValue Shadow where
+    fromValue = parseTableFromValue $ do
+        n <- reqKey "name"
+        v <- reqKey "value"
+        tc <- reqKey "tailwind-class"
+        d <- reqKey "description"
+        pure Shadow{shName = n, shValue = v, shTailwindClass = tc, shDescription = d}
+
+instance FromValue ZIndex where
+    fromValue = parseTableFromValue $ do
+        n <- reqKey "name"
+        v <- reqKey "value"
+        d <- reqKey "description"
+        pure ZIndex{ziName = n, ziValue = v, ziDescription = d}
+
+-- ---------------------------------------------------------------------------
+-- FromValue: Accessibility
+-- ---------------------------------------------------------------------------
+
+instance FromValue AccessibilityConfig where
+    fromValue = parseTableFromValue $ do
+        fr <- reqKey "focus-ring"
+        ur <- reqKey "usage-rules"
+        pure AccessibilityConfig{acFocusRings = fr, acUsageRules = ur}
+
+instance FromValue FocusRing where
+    fromValue = parseTableFromValue $ do
+        n <- reqKey "name"
+        w <- reqKey "width-px"
+        o <- reqKey "offset-px"
+        c <- reqKey "color"
+        tc <- reqKey "tailwind-class"
+        d <- reqKey "description"
+        pure
+            FocusRing
+                { frName = n
+                , frWidthPx = w
+                , frOffsetPx = o
+                , frColor = c
+                , frTailwindClass = tc
+                , frDescription = d
+                }
+
+-- ---------------------------------------------------------------------------
+-- FromValue: Opacity
+-- ---------------------------------------------------------------------------
+
+instance FromValue OpacityConfig where
+    fromValue = parseTableFromValue $ do
+        sc <- reqKey "scale"
+        ur <- reqKey "usage-rules"
+        pure OpacityConfig{ocScale = sc, ocUsageRules = ur}
+
+instance FromValue OpacityStep where
+    fromValue = parseTableFromValue $ do
+        n <- reqKey "name"
+        v <- reqKey "value"
+        d <- reqKey "description"
+        pure OpacityStep{osName = n, osValue = v, osDescription = d}
+
+-- ---------------------------------------------------------------------------
+-- FromValue: Components
 -- ---------------------------------------------------------------------------
 
 instance FromValue ComponentSpec where
     fromValue = parseTableFromValue $ do
         n <- reqKey "name"
-        m <- reqKey "module"
         d <- reqKey "description"
         p <- reqKey "props"
         td <- reqKey "token-deps"
         pure
             ComponentSpec
                 { csName = n
-                , csModule = m
                 , csDescription = d
                 , csProps = p
                 , csTokenDependencies = td

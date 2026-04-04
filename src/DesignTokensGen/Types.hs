@@ -1,51 +1,62 @@
-{-# LANGUAGE OverloadedStrings #-}
+{- | Shared ADTs for the design-token pipeline.
 
-{- | Shared ADTs for the design-guide pipeline.
-
-All generators (Guide.Json, Guide.JsonLd, Guide.ElmGen, Guide.CssGen)
-consume these types.  The canonical source of values is design-guide.toml,
-parsed by Guide.Toml.
+All generators (DesignTokensGen.Json, DesignTokensGen.ElmGen) consume these types.
+The canonical source of values is the content/*.toml directory,
+parsed by DesignTokensGen.Toml.
 -}
-module Guide.Types
-    ( -- * Top-level
-      DesignGuide (..)
+module DesignTokensGen.Types (
+    -- * Top-level
+    DesignGuide (..),
 
-      -- * Metadata
-    , Meta (..)
+    -- * Metadata
+    Meta (..),
 
-      -- * Hex wrapper (re-exported for backward compat)
-    , Hex (..)
-    , hexText
+    -- * Hex wrapper
+    Hex (..),
+    hexText,
 
-      -- * Colors
-    , BrandColor (..)
-    , WcagContrast (..)
-    , SkinTone (..)
-    , RainbowColor (..)
-    , SemanticColor (..)
+    -- * Colors
+    BrandColor (..),
+    WcagContrast (..),
+    SkinTone (..),
+    RainbowColor (..),
+    SemanticColor (..),
 
-      -- * Typography
-    , TypographyConfig (..)
-    , TypeScaleEntry (..)
+    -- * Typography
+    TypographyConfig (..),
+    TypeScaleEntry (..),
 
-      -- * Spacing
-    , SpacingConfig (..)
-    , SpacingStep (..)
+    -- * Spacing
+    SpacingConfig (..),
+    SpacingStep (..),
 
-      -- * Motion
-    , MotionConfig (..)
-    , MotionDuration (..)
-    , MotionEasing (..)
+    -- * Motion
+    MotionConfig (..),
+    MotionDuration (..),
+    MotionEasing (..),
 
-      -- * Layout
-    , LayoutConfig (..)
-    , Breakpoint (..)
-    , BorderRadius (..)
-    , ResponsiveGrid (..)
+    -- * Layout
+    LayoutConfig (..),
+    Breakpoint (..),
+    BorderRadius (..),
+    ResponsiveGrid (..),
 
-      -- * Components
-    , ComponentSpec (..)
-    )
+    -- * Effects
+    EffectsConfig (..),
+    Shadow (..),
+    ZIndex (..),
+
+    -- * Accessibility
+    AccessibilityConfig (..),
+    FocusRing (..),
+
+    -- * Opacity
+    OpacityConfig (..),
+    OpacityStep (..),
+
+    -- * Components
+    ComponentSpec (..),
+)
 where
 
 import Data.Text (Text)
@@ -73,6 +84,9 @@ data DesignGuide = DesignGuide
     , dgSpacing :: SpacingConfig
     , dgMotion :: MotionConfig
     , dgLayout :: LayoutConfig
+    , dgEffects :: EffectsConfig
+    , dgAccessibility :: AccessibilityConfig
+    , dgOpacity :: OpacityConfig
     , dgComponents :: [ComponentSpec]
     }
     deriving (Show, Eq)
@@ -100,9 +114,9 @@ data Meta = Meta
 -- ---------------------------------------------------------------------------
 
 data WcagContrast = WcagContrast
-    { wcagOn :: Text -- ^ e.g. "onWhite", "onBlack", "onBrand"
+    { wcagOn :: Text
     , wcagRatio :: Double
-    , wcagRating :: Text -- ^ "AAA", "AA", "fail"
+    , wcagRating :: Text
     }
     deriving (Show, Eq)
 
@@ -134,11 +148,8 @@ data RainbowColor = RainbowColor
     deriving (Show, Eq)
 
 data SemanticColor = SemanticColor
-    { scElmName :: Text -- ^ e.g. "colorTextPrimary"
-    , scJsonPath :: Text -- ^ e.g. "text.primary"
-    , scHex :: Text -- ^ resolved hex value
-    , scTailwindClass :: Text
-    , scCssVariable :: Text
+    { scId :: Text
+    , scHex :: Text
     , scDescription :: Text
     }
     deriving (Show, Eq)
@@ -148,7 +159,7 @@ data SemanticColor = SemanticColor
 -- ---------------------------------------------------------------------------
 
 data TypographyConfig = TypographyConfig
-    { tcFontFamily :: [Text] -- ^ e.g. ["Outfit", "system-ui", "sans-serif"]
+    { tcFontFamily :: [Text]
     , tcFontFile :: Text
     , tcFontLicense :: Text
     , tcFontLicenseFile :: Text
@@ -265,12 +276,74 @@ data MotionEasing = MotionEasing
     deriving (Show, Eq)
 
 -- ---------------------------------------------------------------------------
--- Components
+-- Effects
+-- ---------------------------------------------------------------------------
+
+data EffectsConfig = EffectsConfig
+    { ecShadows :: [Shadow]
+    , ecZIndices :: [ZIndex]
+    , ecUsageRules :: [Text]
+    }
+    deriving (Show, Eq)
+
+data Shadow = Shadow
+    { shName :: Text
+    , shValue :: Text
+    , shTailwindClass :: Text
+    , shDescription :: Text
+    }
+    deriving (Show, Eq)
+
+data ZIndex = ZIndex
+    { ziName :: Text
+    , ziValue :: Int
+    , ziDescription :: Text
+    }
+    deriving (Show, Eq)
+
+-- ---------------------------------------------------------------------------
+-- Accessibility
+-- ---------------------------------------------------------------------------
+
+data AccessibilityConfig = AccessibilityConfig
+    { acFocusRings :: [FocusRing]
+    , acUsageRules :: [Text]
+    }
+    deriving (Show, Eq)
+
+data FocusRing = FocusRing
+    { frName :: Text
+    , frWidthPx :: Int
+    , frOffsetPx :: Int
+    , frColor :: Text
+    , frTailwindClass :: Text
+    , frDescription :: Text
+    }
+    deriving (Show, Eq)
+
+-- ---------------------------------------------------------------------------
+-- Opacity
+-- ---------------------------------------------------------------------------
+
+data OpacityConfig = OpacityConfig
+    { ocScale :: [OpacityStep]
+    , ocUsageRules :: [Text]
+    }
+    deriving (Show, Eq)
+
+data OpacityStep = OpacityStep
+    { osName :: Text
+    , osValue :: Int
+    , osDescription :: Text
+    }
+    deriving (Show, Eq)
+
+-- ---------------------------------------------------------------------------
+-- Components (token mapping only — no Elm implementation)
 -- ---------------------------------------------------------------------------
 
 data ComponentSpec = ComponentSpec
     { csName :: Text
-    , csModule :: Text
     , csDescription :: Text
     , csProps :: [Text]
     , csTokenDependencies :: [Text]
