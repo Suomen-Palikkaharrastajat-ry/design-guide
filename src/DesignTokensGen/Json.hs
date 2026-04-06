@@ -30,7 +30,9 @@ generateTokensJson :: DesignGuide -> ByteString
 generateTokensJson dg =
     encodePretty $
         object
-            [ "color" .= colorGroup dg
+            [ "metadata" .= metadataGroup dg
+            , "asset" .= assetGroup dg
+            , "color" .= colorGroup dg
             , "typography" .= typographyGroup dg
             , "spacing" .= spacingGroup dg
             , "motion" .= motionGroup dg
@@ -39,6 +41,124 @@ generateTokensJson dg =
             , "opacity" .= opacityGroup dg
             , "component" .= componentGroup dg
             ]
+
+-- ---------------------------------------------------------------------------
+-- Metadata group
+-- ---------------------------------------------------------------------------
+
+metadataGroup :: DesignGuide -> Value
+metadataGroup dg =
+    let m = dgMeta dg
+     in object
+            [ "seo"
+                .= object
+                    [ "title" .= stringToken (metaDefaultTitle m) "Default document title."
+                    , "description" .= stringToken (metaDefaultDescription m) "Default meta description."
+                    , "canonical-url" .= stringToken (metaCanonicalUrl m) "Canonical site URL."
+                    , "robots" .= stringToken (metaRobots m) "Robots directive."
+                    , "author" .= stringToken (metaAuthor m) "Author metadata."
+                    ]
+            , "open-graph"
+                .= object
+                    [ "site-name" .= stringToken (metaSiteName m) "Open Graph site name."
+                    , "type" .= stringToken (metaOgType m) "Open Graph object type."
+                    , "locale" .= stringToken (metaDefaultLocale m) "Open Graph locale."
+                    , "url" .= stringToken (metaCanonicalUrl m) "Open Graph canonical URL."
+                    ]
+            , "twitter"
+                .= object
+                    [ "card" .= stringToken (metaTwitterCard m) "Twitter card type."
+                    ]
+            , "ui"
+                .= object
+                    [ "theme-color" .= colorTokenValue (metaThemeColor m) "Browser theme color."
+                    , "color-scheme" .= stringToken (metaColorScheme m) "Preferred browser color schemes."
+                    , "format-detection" .= stringToken (metaFormatDetection m) "Browser auto-link detection directive."
+                    ]
+            , "pwa"
+                .= object
+                    [ "application-name" .= stringToken (metaApplicationName m) "Installable application name."
+                    , "short-name" .= stringToken (metaSiteShortName m) "Installable short name."
+                    , "description" .= stringToken (metaDefaultDescription m) "Manifest description."
+                    , "manifest-url" .= stringToken (metaManifestUrl m) "Web app manifest path."
+                    , "start-url" .= stringToken (metaManifestStartUrl m) "Web app start URL."
+                    , "display" .= stringToken (metaManifestDisplay m) "Manifest display mode."
+                    , "background-color" .= colorTokenValue (metaManifestBackgroundColor m) "Manifest background color."
+                    , "theme-color" .= colorTokenValue (metaManifestThemeColor m) "Manifest theme color."
+                    ]
+            , "apple"
+                .= object
+                    [ "mobile-web-app-capable" .= boolToken (metaAppleMobileWebAppCapable m) "Enable standalone iOS web app mode."
+                    , "mobile-web-app-title" .= stringToken (metaAppleMobileWebAppTitle m) "iOS home screen app title."
+                    , "status-bar-style" .= stringToken (metaAppleMobileWebAppStatusBarStyle m) "iOS status bar style."
+                    ]
+            , "android"
+                .= object
+                    [ "mobile-web-app-capable" .= boolToken (metaMobileWebAppCapable m) "Enable standalone Android web app mode."
+                    , "application-name" .= stringToken (metaApplicationName m) "Android application name."
+                    ]
+            , "structured-data"
+                .= object
+                    [ "schema-type" .= stringToken (metaSchemaType m) "schema.org type for JSON-LD."
+                    , "name" .= stringToken (metaSiteName m) "Structured data site name."
+                    , "url" .= stringToken (metaCanonicalUrl m) "Structured data canonical URL."
+                    ]
+            ]
+
+-- ---------------------------------------------------------------------------
+-- Asset group
+-- ---------------------------------------------------------------------------
+
+assetGroup :: DesignGuide -> Value
+assetGroup dg =
+    let lg = dgLogos dg
+     in object
+            [ "social-image" .= object (map socialImageToken $ lgSocialImages lg)
+            , "web-icon" .= object (map webIconToken $ lgWebIcons lg)
+            ]
+
+socialImageToken :: SocialImage -> (Key, Value)
+socialImageToken si =
+    ( Key.fromText (siId si)
+    , object
+        [ "$type" .= t "object"
+        , "$value"
+            .= object
+                [ "url" .= siUrl si
+                , "absoluteUrl" .= siAbsoluteUrl si
+                , "alt" .= siAlt si
+                , "width" .= siWidth si
+                , "height" .= siHeight si
+                , "mimeType" .= siMimeType si
+                , "platforms" .= siPlatforms si
+                ]
+        , "$description" .= siDescription si
+        ]
+    )
+  where
+    t :: Text -> Text
+    t = id
+
+webIconToken :: WebIcon -> (Key, Value)
+webIconToken wi =
+    ( Key.fromText (wiId wi)
+    , object
+        [ "$type" .= t "object"
+        , "$value"
+            .= object
+                [ "rel" .= wiRel wi
+                , "url" .= wiUrl wi
+                , "mimeType" .= wiMimeType wi
+                , "sizes" .= wiSizes wi
+                , "purpose" .= wiPurpose wi
+                , "platforms" .= wiPlatforms wi
+                ]
+        , "$description" .= wiDescription wi
+        ]
+    )
+  where
+    t :: Text -> Text
+    t = id
 
 -- ---------------------------------------------------------------------------
 -- Color group
@@ -374,6 +494,39 @@ compToken cs =
                 ]
         ]
     )
+
+stringToken :: Text -> Text -> Value
+stringToken value description =
+    object
+        [ "$type" .= t "string"
+        , "$value" .= value
+        , "$description" .= description
+        ]
+  where
+    t :: Text -> Text
+    t = id
+
+boolToken :: Bool -> Text -> Value
+boolToken value description =
+    object
+        [ "$type" .= t "boolean"
+        , "$value" .= value
+        , "$description" .= description
+        ]
+  where
+    t :: Text -> Text
+    t = id
+
+colorTokenValue :: Hex -> Text -> Value
+colorTokenValue value description =
+    object
+        [ "$type" .= t "color"
+        , "$value" .= colorValue (hexText value)
+        , "$description" .= description
+        ]
+  where
+    t :: Text -> Text
+    t = id
 
 -- ---------------------------------------------------------------------------
 -- Hex → sRGB components

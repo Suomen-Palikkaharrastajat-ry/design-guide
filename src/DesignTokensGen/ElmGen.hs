@@ -23,6 +23,7 @@ generateElmPackage :: DesignGuide -> [(FilePath, Text)]
 generateElmPackage dg =
     [ ("elm.json", elmJson)
     , ("src/DesignTokens.elm", rootModule dg)
+    , ("src/DesignTokens/Metadata.elm", metadataModule dg)
     , ("src/DesignTokens/Colors.elm", colorsModule dg)
     , ("src/DesignTokens/Typography.elm", typographyModule dg)
     , ("src/DesignTokens/Spacing.elm", spacingModule dg)
@@ -50,6 +51,7 @@ elmJson =
         , "    \"version\": \"1.0.0\","
         , "    \"exposed-modules\": ["
         , "        \"DesignTokens\","
+        , "        \"DesignTokens.Metadata\","
         , "        \"DesignTokens.Colors\","
         , "        \"DesignTokens.Typography\","
         , "        \"DesignTokens.Spacing\","
@@ -84,6 +86,7 @@ rootModule dg =
         , "Import sub-modules directly:"
         , ""
         , "    import DesignTokens.Colors"
+        , "    import DesignTokens.Metadata"
         , "    import DesignTokens.Typography"
         , "    import DesignTokens.Spacing"
         , "    import DesignTokens.Motion"
@@ -100,6 +103,90 @@ rootModule dg =
         , "version ="
         , "    " <> quote (metaVersion $ dgMeta dg)
         ]
+
+-- ---------------------------------------------------------------------------
+-- Metadata module
+-- ---------------------------------------------------------------------------
+
+metadataModule :: DesignGuide -> Text
+metadataModule dg =
+    let m = dgMeta dg
+        exports =
+            [ "organization"
+            , "siteName"
+            , "siteShortName"
+            , "defaultTitle"
+            , "defaultDescription"
+            , "canonicalUrl"
+            , "defaultLocale"
+            , "robots"
+            , "author"
+            , "themeColor"
+            , "colorScheme"
+            , "formatDetection"
+            , "ogType"
+            , "twitterCard"
+            , "applicationName"
+            , "appleMobileWebAppTitle"
+            , "appleMobileWebAppCapable"
+            , "appleMobileWebAppStatusBarStyle"
+            , "mobileWebAppCapable"
+            , "manifestUrl"
+            , "manifestStartUrl"
+            , "manifestDisplay"
+            , "manifestBackgroundColor"
+            , "manifestThemeColor"
+            , "schemaType"
+            ]
+     in T.unlines $
+            [ moduleHeader "DesignTokens.Metadata" exports
+            , ""
+            , ""
+            , "{-| Site metadata tokens for SEO, social sharing, and PWA manifests. -}"
+            ]
+                ++ metadataStringDef "organization" "Organization name." (metaOrganization m)
+                ++ metadataStringDef "siteName" "Site name for SEO and Open Graph." (metaSiteName m)
+                ++ metadataStringDef "siteShortName" "Short site name for app and icon contexts." (metaSiteShortName m)
+                ++ metadataStringDef "defaultTitle" "Default page title." (metaDefaultTitle m)
+                ++ metadataStringDef "defaultDescription" "Default page description." (metaDefaultDescription m)
+                ++ metadataStringDef "canonicalUrl" "Canonical site URL." (metaCanonicalUrl m)
+                ++ metadataStringDef "defaultLocale" "Default site locale." (metaDefaultLocale m)
+                ++ metadataStringDef "robots" "Robots directive." (metaRobots m)
+                ++ metadataStringDef "author" "Author metadata." (metaAuthor m)
+                ++ metadataStringDef "themeColor" "Browser theme color." (hexText $ metaThemeColor m)
+                ++ metadataStringDef "colorScheme" "Supported browser color schemes." (metaColorScheme m)
+                ++ metadataStringDef "formatDetection" "Browser auto-link detection directive." (metaFormatDetection m)
+                ++ metadataStringDef "ogType" "Open Graph object type." (metaOgType m)
+                ++ metadataStringDef "twitterCard" "Twitter card type." (metaTwitterCard m)
+                ++ metadataStringDef "applicationName" "Installable application name." (metaApplicationName m)
+                ++ metadataStringDef "appleMobileWebAppTitle" "iOS app title." (metaAppleMobileWebAppTitle m)
+                ++ metadataBoolDef "appleMobileWebAppCapable" "Enable standalone iOS web app mode." (metaAppleMobileWebAppCapable m)
+                ++ metadataStringDef "appleMobileWebAppStatusBarStyle" "iOS status bar style." (metaAppleMobileWebAppStatusBarStyle m)
+                ++ metadataBoolDef "mobileWebAppCapable" "Enable standalone Android web app mode." (metaMobileWebAppCapable m)
+                ++ metadataStringDef "manifestUrl" "Web app manifest path." (metaManifestUrl m)
+                ++ metadataStringDef "manifestStartUrl" "Manifest start URL." (metaManifestStartUrl m)
+                ++ metadataStringDef "manifestDisplay" "Manifest display mode." (metaManifestDisplay m)
+                ++ metadataStringDef "manifestBackgroundColor" "Manifest background color." (hexText $ metaManifestBackgroundColor m)
+                ++ metadataStringDef "manifestThemeColor" "Manifest theme color." (hexText $ metaManifestThemeColor m)
+                ++ metadataStringDef "schemaType" "schema.org type for JSON-LD." (metaSchemaType m)
+
+metadataStringDef :: Text -> Text -> Text -> [Text]
+metadataStringDef name docs value =
+    [ ""
+    , "{-| " <> docs <> " -}"
+    , name <> " : String"
+    , name <> " ="
+    , "    " <> quote value
+    ]
+
+metadataBoolDef :: Text -> Text -> Bool -> [Text]
+metadataBoolDef name docs value =
+    [ ""
+    , "{-| " <> docs <> " -}"
+    , name <> " : Bool"
+    , name <> " ="
+    , "    " <> elmBool value
+    ]
 
 -- ---------------------------------------------------------------------------
 -- Colors module
@@ -467,7 +554,7 @@ componentDef cs =
 
 guideColorsModule :: DesignGuide -> Text
 guideColorsModule dg =
-    T.unlines $
+    T.unlines
         [ moduleHeader
             "DesignTokens.Guide.Colors"
             [ "ColorEntry"
@@ -566,13 +653,17 @@ rainbowRecord rc =
 guideLogosModule :: DesignGuide -> Text
 guideLogosModule dg =
     let lg = dgLogos dg
-     in T.unlines $
+     in T.unlines
             [ moduleHeader
                 "DesignTokens.Guide.Logos"
                 [ "LogoVariant"
+                , "SocialImage"
+                , "WebIcon"
                 , "squareVariants"
                 , "squareFullVariants"
                 , "horizontalVariants"
+                , "socialImages"
+                , "webIcons"
                 ]
             , ""
             , ""
@@ -599,6 +690,33 @@ guideLogosModule dg =
             , "    }"
             , ""
             , ""
+            , "{-| Default social sharing image metadata. -}"
+            , "type alias SocialImage ="
+            , "    { id : String"
+            , "    , description : String"
+            , "    , url : String"
+            , "    , absoluteUrl : String"
+            , "    , alt : String"
+            , "    , width : Int"
+            , "    , height : Int"
+            , "    , mimeType : String"
+            , "    , platforms : List String"
+            , "    }"
+            , ""
+            , ""
+            , "{-| Web icon and install asset metadata. -}"
+            , "type alias WebIcon ="
+            , "    { id : String"
+            , "    , description : String"
+            , "    , rel : String"
+            , "    , url : String"
+            , "    , mimeType : String"
+            , "    , sizes : List String"
+            , "    , purpose : List String"
+            , "    , platforms : List String"
+            , "    }"
+            , ""
+            , ""
             , "{-| Square (icon-only) logo variants. -}"
             , "squareVariants : List LogoVariant"
             , "squareVariants ="
@@ -615,6 +733,18 @@ guideLogosModule dg =
             , "horizontalVariants : List LogoVariant"
             , "horizontalVariants ="
             , "    " <> elmRecordList (map logoVariantRecord $ lgHorizontal lg)
+            , ""
+            , ""
+            , "{-| Default social sharing images for Open Graph and Twitter. -}"
+            , "socialImages : List SocialImage"
+            , "socialImages ="
+            , "    " <> elmRecordList (map socialImageRecord $ lgSocialImages lg)
+            , ""
+            , ""
+            , "{-| Favicon, touch icon, and install icon assets. -}"
+            , "webIcons : List WebIcon"
+            , "webIcons ="
+            , "    " <> elmRecordList (map webIconRecord $ lgWebIcons lg)
             ]
 
 logoVariantRecord :: LogoVariant -> Text
@@ -631,6 +761,33 @@ logoVariantRecord lv =
         , ("pngUrl", elmMaybe quote $ lvPngUrl lv)
         , ("webpUrl", elmMaybe quote $ lvWebpUrl lv)
         , ("gifUrl", elmMaybe quote $ lvGifUrl lv)
+        ]
+
+socialImageRecord :: SocialImage -> Text
+socialImageRecord si =
+    elmRecord
+        [ ("id", quote $ siId si)
+        , ("description", quote $ siDescription si)
+        , ("url", quote $ siUrl si)
+        , ("absoluteUrl", quote $ siAbsoluteUrl si)
+        , ("alt", quote $ siAlt si)
+        , ("width", showT $ siWidth si)
+        , ("height", showT $ siHeight si)
+        , ("mimeType", quote $ siMimeType si)
+        , ("platforms", elmList $ map quote $ siPlatforms si)
+        ]
+
+webIconRecord :: WebIcon -> Text
+webIconRecord wi =
+    elmRecord
+        [ ("id", quote $ wiId wi)
+        , ("description", quote $ wiDescription wi)
+        , ("rel", quote $ wiRel wi)
+        , ("url", quote $ wiUrl wi)
+        , ("mimeType", quote $ wiMimeType wi)
+        , ("sizes", elmList $ map quote $ wiSizes wi)
+        , ("purpose", elmList $ map quote $ wiPurpose wi)
+        , ("platforms", elmList $ map quote $ wiPlatforms wi)
         ]
 
 -- ---------------------------------------------------------------------------

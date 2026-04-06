@@ -228,3 +228,108 @@ bold = true
 highlight = false
 webp-url = "/logo/horizontal/png/horizontal-full-dark-bold-animated.webp"
 gif-url = "/logo/horizontal/png/horizontal-full-dark-bold-animated.gif"
+
+# ── Social images ────────────────────────────────────────────────────────────
+
+[[logo.social-image]]
+id = "open-graph-default"
+description = "Oletuskuva Open Graph- ja Twitter-kortteihin."
+url = "/og-image.jpg"
+absolute-url = "https://palikkaharrastajat.fi/og-image.jpg"
+alt = "Suomen Palikkaharrastajat ry:n Open Graph -jakokuva."
+width = 1200
+height = 630
+mime-type = "image/jpeg"
+platforms = ["open-graph", "twitter"]
+
+# ── Web icons ────────────────────────────────────────────────────────────────
+
+[[logo.web-icon]]
+id = "favicon-ico"
+description = "Perinteinen favicon laajaa selainyhteensopivuutta varten."
+rel = "icon"
+url = "/favicon.ico"
+mime-type = "image/x-icon"
+sizes = ["16x16", "32x32", "48x48"]
+purpose = []
+platforms = ["browser"]
+
+[[logo.web-icon]]
+id = "favicon-svg"
+description = "Skaalautuva SVG-favicon moderneille selaimille."
+rel = "icon"
+url = "/favicon.svg"
+mime-type = "image/svg+xml"
+sizes = ["any"]
+purpose = []
+platforms = ["browser"]
+
+[[logo.web-icon]]
+id = "favicon-16"
+description = "PNG-favicon 16x16-kokoisena."
+rel = "icon"
+url = "/favicon-16x16.png"
+mime-type = "image/png"
+sizes = ["16x16"]
+purpose = []
+platforms = ["browser"]
+
+[[logo.web-icon]]
+id = "favicon-32"
+description = "PNG-favicon 32x32-kokoisena."
+rel = "icon"
+url = "/favicon-32x32.png"
+mime-type = "image/png"
+sizes = ["32x32"]
+purpose = []
+platforms = ["browser"]
+
+[[logo.web-icon]]
+id = "favicon-48"
+description = "PNG-favicon 48x48-kokoisena."
+rel = "icon"
+url = "/favicon-48x48.png"
+mime-type = "image/png"
+sizes = ["48x48"]
+purpose = []
+platforms = ["browser"]
+
+[[logo.web-icon]]
+id = "apple-touch-icon"
+description = "Apple touch -ikoni iOS-kotiruutua varten."
+rel = "apple-touch-icon"
+url = "/apple-touch-icon.png"
+mime-type = "image/png"
+sizes = ["180x180"]
+purpose = []
+platforms = ["ios", "safari"]
+
+[[logo.web-icon]]
+id = "android-chrome-192"
+description = "Android- ja PWA-asennusikoni 192x192-kokoisena."
+rel = "icon"
+url = "/android-chrome-192x192.png"
+mime-type = "image/png"
+sizes = ["192x192"]
+purpose = []
+platforms = ["android", "chrome", "pwa"]
+
+[[logo.web-icon]]
+id = "android-chrome-512"
+description = "Android- ja PWA-asennusikoni 512x512-kokoisena."
+rel = "icon"
+url = "/android-chrome-512x512.png"
+mime-type = "image/png"
+sizes = ["512x512"]
+purpose = []
+platforms = ["android", "chrome", "pwa"]
+
+[[logo.web-icon]]
+id = "icon-maskable"
+description = "Maskable-ikoni Androidille ja PWA-asennuksiin."
+rel = "icon"
+url = "/icon-maskable.png"
+mime-type = "image/png"
+sizes = ["512x512"]
+purpose = ["maskable"]
+platforms = ["android", "chrome", "pwa"]

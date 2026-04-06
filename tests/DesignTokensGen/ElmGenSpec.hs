@@ -16,19 +16,31 @@ tests =
         "Guide.ElmGen"
         [ testCase "generates correct number of files" $ do
             dg <- parseContentDir "content"
-            length (generateElmPackage dg) @?= 10
+            length (generateElmPackage dg) @?= 13
         , testCase "root module contains version" $ do
             dg <- parseContentDir "content"
             let files = generateElmPackage dg
                 root = maybe "" snd $ lookup' "src/DesignTokens.elm" files
             assertBool "has version" $
                 "version" `T.isInfixOf` root
+        , testCase "metadata module contains canonicalUrl" $ do
+            dg <- parseContentDir "content"
+            let files = generateElmPackage dg
+                metadata = maybe "" snd $ lookup' "src/DesignTokens/Metadata.elm" files
+            assertBool "has canonicalUrl" $
+                "canonicalUrl" `T.isInfixOf` metadata
         , testCase "colors module contains legoBlack" $ do
             dg <- parseContentDir "content"
             let files = generateElmPackage dg
                 colors = maybe "" snd $ lookup' "src/DesignTokens/Colors.elm" files
             assertBool "has legoBlack" $
                 "legoBlack" `T.isInfixOf` colors
+        , testCase "guide logos module contains webIcons" $ do
+            dg <- parseContentDir "content"
+            let files = generateElmPackage dg
+                logos = maybe "" snd $ lookup' "src/DesignTokens/Guide/Logos.elm" files
+            assertBool "has webIcons" $
+                "webIcons" `T.isInfixOf` logos
         , testCase "skinTones has 4 entries" $ do
             dg <- parseContentDir "content"
             length (dgSkinTones dg) @?= 4

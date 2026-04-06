@@ -59,6 +59,8 @@ module DesignTokensGen.Types (
 
     -- * Logos
     LogoVariant (..),
+    SocialImage (..),
+    WebIcon (..),
     LogoGroup (..),
 )
 where
@@ -105,6 +107,29 @@ data Meta = Meta
     , metaOrganization :: Text
     , metaCanonicalUrl :: Text
     , metaBrandGuideUrl :: Text
+    , metaSiteName :: Text
+    , metaSiteShortName :: Text
+    , metaDefaultTitle :: Text
+    , metaDefaultDescription :: Text
+    , metaDefaultLocale :: Text
+    , metaRobots :: Text
+    , metaAuthor :: Text
+    , metaThemeColor :: Hex
+    , metaColorScheme :: Text
+    , metaFormatDetection :: Text
+    , metaOgType :: Text
+    , metaTwitterCard :: Text
+    , metaApplicationName :: Text
+    , metaAppleMobileWebAppTitle :: Text
+    , metaAppleMobileWebAppCapable :: Bool
+    , metaAppleMobileWebAppStatusBarStyle :: Text
+    , metaMobileWebAppCapable :: Bool
+    , metaManifestUrl :: Text
+    , metaManifestStartUrl :: Text
+    , metaManifestDisplay :: Text
+    , metaManifestBackgroundColor :: Hex
+    , metaManifestThemeColor :: Hex
+    , metaSchemaType :: Text
     , metaFeatureColor :: Hex
     , metaHighlightColor :: Hex
     , metaDarkBg :: Hex
@@ -375,9 +400,36 @@ data LogoVariant = LogoVariant
     }
     deriving (Show, Eq)
 
+data SocialImage = SocialImage
+    { siId :: Text
+    , siDescription :: Text
+    , siUrl :: Text
+    , siAbsoluteUrl :: Text
+    , siAlt :: Text
+    , siWidth :: Int
+    , siHeight :: Int
+    , siMimeType :: Text
+    , siPlatforms :: [Text]
+    }
+    deriving (Show, Eq)
+
+data WebIcon = WebIcon
+    { wiId :: Text
+    , wiDescription :: Text
+    , wiRel :: Text
+    , wiUrl :: Text
+    , wiMimeType :: Text
+    , wiSizes :: [Text]
+    , wiPurpose :: [Text]
+    , wiPlatforms :: [Text]
+    }
+    deriving (Show, Eq)
+
 data LogoGroup = LogoGroup
     { lgSquare :: [LogoVariant]
     , lgSquareFull :: [LogoVariant]
     , lgHorizontal :: [LogoVariant]
+    , lgSocialImages :: [SocialImage]
+    , lgWebIcons :: [WebIcon]
     }
     deriving (Show, Eq)

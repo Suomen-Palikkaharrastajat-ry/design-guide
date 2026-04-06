@@ -204,6 +204,29 @@ instance FromValue Meta where
         org <- reqKey "organization"
         curl <- reqKey "canonical-url"
         burl <- reqKey "brand-guide-url"
+        sn <- reqKey "site-name"
+        ssn <- reqKey "site-short-name"
+        dt <- reqKey "default-title"
+        dd <- reqKey "default-description"
+        dl <- reqKey "default-locale"
+        rb <- reqKey "robots"
+        au <- reqKey "author"
+        tc <- reqKey "theme-color"
+        cs <- reqKey "color-scheme"
+        fd <- reqKey "format-detection"
+        ogt <- reqKey "og-type"
+        twc <- reqKey "twitter-card"
+        an <- reqKey "application-name"
+        amwt <- reqKey "apple-mobile-web-app-title"
+        amwc <- reqKey "apple-mobile-web-app-capable"
+        amws <- reqKey "apple-mobile-web-app-status-bar-style"
+        mwc <- reqKey "mobile-web-app-capable"
+        mu <- reqKey "manifest-url"
+        msu <- reqKey "manifest-start-url"
+        md <- reqKey "manifest-display"
+        mbc <- reqKey "manifest-background-color"
+        mtc <- reqKey "manifest-theme-color"
+        st <- reqKey "schema-type"
         fc <- reqKey "feature-color"
         hc <- reqKey "highlight-color"
         db <- reqKey "dark-bg"
@@ -216,6 +239,29 @@ instance FromValue Meta where
                 , metaOrganization = org
                 , metaCanonicalUrl = curl
                 , metaBrandGuideUrl = burl
+                , metaSiteName = sn
+                , metaSiteShortName = ssn
+                , metaDefaultTitle = dt
+                , metaDefaultDescription = dd
+                , metaDefaultLocale = dl
+                , metaRobots = rb
+                , metaAuthor = au
+                , metaThemeColor = Hex tc
+                , metaColorScheme = cs
+                , metaFormatDetection = fd
+                , metaOgType = ogt
+                , metaTwitterCard = twc
+                , metaApplicationName = an
+                , metaAppleMobileWebAppTitle = amwt
+                , metaAppleMobileWebAppCapable = amwc
+                , metaAppleMobileWebAppStatusBarStyle = amws
+                , metaMobileWebAppCapable = mwc
+                , metaManifestUrl = mu
+                , metaManifestStartUrl = msu
+                , metaManifestDisplay = md
+                , metaManifestBackgroundColor = Hex mbc
+                , metaManifestThemeColor = Hex mtc
+                , metaSchemaType = st
                 , metaFeatureColor = Hex fc
                 , metaHighlightColor = Hex hc
                 , metaDarkBg = Hex db
@@ -565,7 +611,16 @@ instance FromValue LogoGroup where
         sq <- reqKey "square"
         sqf <- reqKey "square-full"
         hz <- reqKey "horizontal"
-        pure LogoGroup{lgSquare = sq, lgSquareFull = sqf, lgHorizontal = hz}
+        si <- reqKey "social-image"
+        wi <- reqKey "web-icon"
+        pure
+            LogoGroup
+                { lgSquare = sq
+                , lgSquareFull = sqf
+                , lgHorizontal = hz
+                , lgSocialImages = si
+                , lgWebIcons = wi
+                }
 
 instance FromValue LogoVariant where
     fromValue = parseTableFromValue $ do
@@ -593,4 +648,50 @@ instance FromValue LogoVariant where
                 , lvPngUrl = pn
                 , lvWebpUrl = wp
                 , lvGifUrl = gi
+                }
+
+instance FromValue SocialImage where
+    fromValue = parseTableFromValue $ do
+        i <- reqKey "id"
+        d <- reqKey "description"
+        u <- reqKey "url"
+        au <- reqKey "absolute-url"
+        a <- reqKey "alt"
+        w <- reqKey "width"
+        h <- reqKey "height"
+        mt <- reqKey "mime-type"
+        ps <- reqKey "platforms"
+        pure
+            SocialImage
+                { siId = i
+                , siDescription = d
+                , siUrl = u
+                , siAbsoluteUrl = au
+                , siAlt = a
+                , siWidth = w
+                , siHeight = h
+                , siMimeType = mt
+                , siPlatforms = ps
+                }
+
+instance FromValue WebIcon where
+    fromValue = parseTableFromValue $ do
+        i <- reqKey "id"
+        d <- reqKey "description"
+        r <- reqKey "rel"
+        u <- reqKey "url"
+        mt <- reqKey "mime-type"
+        sz <- reqKey "sizes"
+        pu <- reqKey "purpose"
+        ps <- reqKey "platforms"
+        pure
+            WebIcon
+                { wiId = i
+                , wiDescription = d
+                , wiRel = r
+                , wiUrl = u
+                , wiMimeType = mt
+                , wiSizes = sz
+                , wiPurpose = pu
+                , wiPlatforms = ps
                 }
