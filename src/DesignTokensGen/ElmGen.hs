@@ -112,63 +112,31 @@ metadataModule :: DesignGuide -> Text
 metadataModule dg =
     let m = dgMeta dg
         exports =
-            [ "organization"
-            , "siteName"
-            , "siteShortName"
-            , "defaultTitle"
-            , "defaultDescription"
-            , "canonicalUrl"
-            , "defaultLocale"
-            , "robots"
-            , "author"
-            , "themeColor"
-            , "colorScheme"
-            , "formatDetection"
+            [ "brandGuideUrl"
             , "ogType"
-            , "twitterCard"
-            , "applicationName"
-            , "appleMobileWebAppTitle"
-            , "appleMobileWebAppCapable"
-            , "appleMobileWebAppStatusBarStyle"
-            , "mobileWebAppCapable"
-            , "manifestUrl"
-            , "manifestStartUrl"
-            , "manifestDisplay"
-            , "manifestBackgroundColor"
-            , "manifestThemeColor"
             , "schemaType"
+            , "featureColor"
+            , "highlightColor"
+            , "darkBg"
+            , "subtitleOnLight"
+            , "subtitleOnDark"
+            , "headSvgFaceColor"
             ]
      in T.unlines $
             [ moduleHeader "DesignTokens.Metadata" exports
             , ""
             , ""
-            , "{-| Site metadata tokens for SEO, social sharing, and PWA manifests. -}"
+            , "{-| Design-guide-specific metadata tokens. Site metadata (title, locale, PWA settings, etc.) lives in config.toml. -}"
             ]
-                ++ metadataStringDef "organization" "Organization name." (metaOrganization m)
-                ++ metadataStringDef "siteName" "Site name for SEO and Open Graph." (metaSiteName m)
-                ++ metadataStringDef "siteShortName" "Short site name for app and icon contexts." (metaSiteShortName m)
-                ++ metadataStringDef "defaultTitle" "Default page title." (metaDefaultTitle m)
-                ++ metadataStringDef "defaultDescription" "Default page description." (metaDefaultDescription m)
-                ++ metadataStringDef "canonicalUrl" "Canonical site URL." (metaCanonicalUrl m)
-                ++ metadataStringDef "defaultLocale" "Default site locale." (metaDefaultLocale m)
-                ++ metadataStringDef "robots" "Robots directive." (metaRobots m)
-                ++ metadataStringDef "author" "Author metadata." (metaAuthor m)
-                ++ metadataStringDef "themeColor" "Browser theme color." (hexText $ metaThemeColor m)
-                ++ metadataStringDef "colorScheme" "Supported browser color schemes." (metaColorScheme m)
-                ++ metadataStringDef "formatDetection" "Browser auto-link detection directive." (metaFormatDetection m)
+                ++ metadataStringDef "brandGuideUrl" "Brand guide URL." (metaBrandGuideUrl m)
                 ++ metadataStringDef "ogType" "Open Graph object type." (metaOgType m)
-                ++ metadataStringDef "twitterCard" "Twitter card type." (metaTwitterCard m)
-                ++ metadataStringDef "applicationName" "Installable application name." (metaApplicationName m)
-                ++ metadataStringDef "appleMobileWebAppTitle" "iOS app title." (metaAppleMobileWebAppTitle m)
-                ++ metadataBoolDef "appleMobileWebAppCapable" "Enable standalone iOS web app mode." (metaAppleMobileWebAppCapable m)
-                ++ metadataStringDef "appleMobileWebAppStatusBarStyle" "iOS status bar style." (metaAppleMobileWebAppStatusBarStyle m)
-                ++ metadataBoolDef "mobileWebAppCapable" "Enable standalone Android web app mode." (metaMobileWebAppCapable m)
-                ++ metadataStringDef "manifestUrl" "Web app manifest path." (metaManifestUrl m)
-                ++ metadataStringDef "manifestStartUrl" "Manifest start URL." (metaManifestStartUrl m)
-                ++ metadataStringDef "manifestDisplay" "Manifest display mode." (metaManifestDisplay m)
-                ++ metadataStringDef "manifestBackgroundColor" "Manifest background color." (hexText $ metaManifestBackgroundColor m)
-                ++ metadataStringDef "manifestThemeColor" "Manifest theme color." (hexText $ metaManifestThemeColor m)
                 ++ metadataStringDef "schemaType" "schema.org type for JSON-LD." (metaSchemaType m)
+                ++ metadataStringDef "featureColor" "Feature highlight color (hex)." (hexText $ metaFeatureColor m)
+                ++ metadataStringDef "highlightColor" "Highlight / on-dark accent color (hex)." (hexText $ metaHighlightColor m)
+                ++ metadataStringDef "darkBg" "Dark background color (hex)." (hexText $ metaDarkBg m)
+                ++ metadataStringDef "subtitleOnLight" "Subtitle color on light surface (hex)." (hexText $ metaSubtitleOnLight m)
+                ++ metadataStringDef "subtitleOnDark" "Subtitle color on dark surface (hex)." (hexText $ metaSubtitleOnDark m)
+                ++ metadataStringDef "headSvgFaceColor" "Head SVG face fill color (hex)." (metaHeadSvgFaceColor m)
 
 metadataStringDef :: Text -> Text -> Text -> [Text]
 metadataStringDef name docs value =
@@ -177,15 +145,6 @@ metadataStringDef name docs value =
     , name <> " : String"
     , name <> " ="
     , "    " <> quote value
-    ]
-
-metadataBoolDef :: Text -> Text -> Bool -> [Text]
-metadataBoolDef name docs value =
-    [ ""
-    , "{-| " <> docs <> " -}"
-    , name <> " : Bool"
-    , name <> " ="
-    , "    " <> elmBool value
     ]
 
 -- ---------------------------------------------------------------------------

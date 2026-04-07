@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 {- | Parse design tokens from the content/ directory.
 
@@ -13,7 +14,7 @@ import Data.Text.IO qualified as TIO
 import DesignTokensGen.Types
 import System.Directory (listDirectory)
 import System.FilePath (takeExtension, (</>))
-import Toml (Result (..), decode)
+import Toml (decode)
 import Toml.Schema
 
 -- ---------------------------------------------------------------------------
@@ -201,31 +202,8 @@ instance FromValue ColorTable where
 instance FromValue Meta where
     fromValue = parseTableFromValue $ do
         ver <- reqKey "version"
-        org <- reqKey "organization"
-        curl <- reqKey "canonical-url"
         burl <- reqKey "brand-guide-url"
-        sn <- reqKey "site-name"
-        ssn <- reqKey "site-short-name"
-        dt <- reqKey "default-title"
-        dd <- reqKey "default-description"
-        dl <- reqKey "default-locale"
-        rb <- reqKey "robots"
-        au <- reqKey "author"
-        tc <- reqKey "theme-color"
-        cs <- reqKey "color-scheme"
-        fd <- reqKey "format-detection"
         ogt <- reqKey "og-type"
-        twc <- reqKey "twitter-card"
-        an <- reqKey "application-name"
-        amwt <- reqKey "apple-mobile-web-app-title"
-        amwc <- reqKey "apple-mobile-web-app-capable"
-        amws <- reqKey "apple-mobile-web-app-status-bar-style"
-        mwc <- reqKey "mobile-web-app-capable"
-        mu <- reqKey "manifest-url"
-        msu <- reqKey "manifest-start-url"
-        md <- reqKey "manifest-display"
-        mbc <- reqKey "manifest-background-color"
-        mtc <- reqKey "manifest-theme-color"
         st <- reqKey "schema-type"
         fc <- reqKey "feature-color"
         hc <- reqKey "highlight-color"
@@ -236,31 +214,8 @@ instance FromValue Meta where
         pure
             Meta
                 { metaVersion = ver
-                , metaOrganization = org
-                , metaCanonicalUrl = curl
                 , metaBrandGuideUrl = burl
-                , metaSiteName = sn
-                , metaSiteShortName = ssn
-                , metaDefaultTitle = dt
-                , metaDefaultDescription = dd
-                , metaDefaultLocale = dl
-                , metaRobots = rb
-                , metaAuthor = au
-                , metaThemeColor = Hex tc
-                , metaColorScheme = cs
-                , metaFormatDetection = fd
                 , metaOgType = ogt
-                , metaTwitterCard = twc
-                , metaApplicationName = an
-                , metaAppleMobileWebAppTitle = amwt
-                , metaAppleMobileWebAppCapable = amwc
-                , metaAppleMobileWebAppStatusBarStyle = amws
-                , metaMobileWebAppCapable = mwc
-                , metaManifestUrl = mu
-                , metaManifestStartUrl = msu
-                , metaManifestDisplay = md
-                , metaManifestBackgroundColor = Hex mbc
-                , metaManifestThemeColor = Hex mtc
                 , metaSchemaType = st
                 , metaFeatureColor = Hex fc
                 , metaHighlightColor = Hex hc

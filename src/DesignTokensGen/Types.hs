@@ -104,31 +104,8 @@ data DesignGuide = DesignGuide
 
 data Meta = Meta
     { metaVersion :: Text
-    , metaOrganization :: Text
-    , metaCanonicalUrl :: Text
     , metaBrandGuideUrl :: Text
-    , metaSiteName :: Text
-    , metaSiteShortName :: Text
-    , metaDefaultTitle :: Text
-    , metaDefaultDescription :: Text
-    , metaDefaultLocale :: Text
-    , metaRobots :: Text
-    , metaAuthor :: Text
-    , metaThemeColor :: Hex
-    , metaColorScheme :: Text
-    , metaFormatDetection :: Text
     , metaOgType :: Text
-    , metaTwitterCard :: Text
-    , metaApplicationName :: Text
-    , metaAppleMobileWebAppTitle :: Text
-    , metaAppleMobileWebAppCapable :: Bool
-    , metaAppleMobileWebAppStatusBarStyle :: Text
-    , metaMobileWebAppCapable :: Bool
-    , metaManifestUrl :: Text
-    , metaManifestStartUrl :: Text
-    , metaManifestDisplay :: Text
-    , metaManifestBackgroundColor :: Hex
-    , metaManifestThemeColor :: Hex
     , metaSchemaType :: Text
     , metaFeatureColor :: Hex
     , metaHighlightColor :: Hex
