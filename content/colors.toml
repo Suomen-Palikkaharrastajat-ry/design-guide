@@ -73,6 +73,24 @@ usage = ["accent", "danger", "highlights"]
   ratio = 4.2
   rating = "AA"
 
+[[color.brand]]
+id = "green"
+name = "Green"
+hex = "#237841"
+description = "Classic LEGO green. Used for map markers, nature themes, and accent highlights."
+description_fi = "Perinteinen LEGO-vihreä. Käytetään karttamerkinnöissä, luontoteemoissa ja korostuksissa."
+usage = ["accent", "map markers", "nature"]
+
+  [[color.brand.wcag]]
+  on = "onWhite"
+  ratio = 4.6
+  rating = "AA"
+
+  [[color.brand.wcag]]
+  on = "onBlack"
+  ratio = 4.5
+  rating = "AA"
+
 # ── Skin tones ───────────────────────────────────────────────────────────────
 
 [[color.skin-tone]]

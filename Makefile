@@ -41,6 +41,7 @@ test: ## Run Haskell test suite and hlint
 review/vendor/master-builder:
 	mkdir -p review/vendor
 	git clone --depth 1 https://github.com/Suomen-Palikkaharrastajat-ry/master-builder review/vendor/master-builder
+	ln -sfn ../vendor/master-builder/review/src/LlmAgent review/src/LlmAgent
 
 .PHONY: check
 check: review/vendor/master-builder ## Run hlint + elm-review on generated code

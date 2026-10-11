@@ -10,7 +10,7 @@ import Data.Text.Lazy qualified as TL
 import Data.Text.Lazy.Encoding qualified as TLE
 import DesignTokensGen.Json (generateTokensJson)
 import DesignTokensGen.Toml (parseContentDir)
-import DesignTokensGen.Types (dgBrandColors, dgLogos, dgMeta, hexText, lgWebIcons, metaOrganization, metaThemeColor)
+import DesignTokensGen.Types (dgBrandColors, dgLogos, dgMeta, hexText, lgWebIcons, metaBrandGuideUrl, metaFeatureColor)
 import Test.Tasty
 import Test.Tasty.HUnit
 
@@ -18,15 +18,15 @@ tests :: TestTree
 tests =
     testGroup
         "Guide.Json"
-        [ testCase "organization matches expected value" $ do
+        [ testCase "brand guide URL matches expected value" $ do
             dg <- parseContentDir "content"
-            metaOrganization (dgMeta dg) @?= "Suomen Palikkaharrastajat ry"
-        , testCase "theme color matches expected value" $ do
+            metaBrandGuideUrl (dgMeta dg) @?= "https://logo.palikkaharrastajat.fi"
+        , testCase "feature color matches expected value" $ do
             dg <- parseContentDir "content"
-            hexText (metaThemeColor $ dgMeta dg) @?= "#05131D"
-        , testCase "brand colors has 4 entries" $ do
+            hexText (metaFeatureColor $ dgMeta dg) @?= "#05131D"
+        , testCase "brand colors has 5 entries" $ do
             dg <- parseContentDir "content"
-            length (dgBrandColors dg) @?= 4
+            length (dgBrandColors dg) @?= 5
         , testCase "web icons include installability set" $ do
             dg <- parseContentDir "content"
             length (lgWebIcons $ dgLogos dg) @?= 9

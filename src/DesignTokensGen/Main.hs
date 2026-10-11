@@ -3,11 +3,13 @@
 Outputs:
   - dist/design-tokens.tokens.json  (W3C DTCG 2025.10)
   - dist/design-tokens-elm/         (publishable Elm package)
+  - dist/design-tokens.css          (Tailwind v4 @theme + @utility fragment)
 -}
 module Main where
 
 import Data.ByteString.Lazy qualified as LBS
 import Data.Text.IO qualified as TIO
+import DesignTokensGen.CssGen (generateCss)
 import DesignTokensGen.ElmGen (generateElmPackage)
 import DesignTokensGen.Json (generateTokensJson)
 import DesignTokensGen.Toml (parseContentDir)
@@ -23,6 +25,12 @@ main = do
     createDirectoryIfMissing True (takeDirectory jsonPath)
     LBS.writeFile jsonPath (generateTokensJson dg)
     putStrLn $ "Wrote " ++ jsonPath
+
+    -- Tailwind v4 CSS
+    let cssPath = "dist/design-tokens.css"
+    createDirectoryIfMissing True (takeDirectory cssPath)
+    TIO.writeFile cssPath (generateCss dg)
+    putStrLn $ "Wrote " ++ cssPath
 
     -- Elm package
     let elmFiles = generateElmPackage dg

@@ -6,7 +6,7 @@ build-type:    Simple
 
 library
   exposed-modules:
-    DesignTokensGen.Types, DesignTokensGen.Toml, DesignTokensGen.Json, DesignTokensGen.ElmGen
+    DesignTokensGen.Types, DesignTokensGen.Toml, DesignTokensGen.Json, DesignTokensGen.ElmGen, DesignTokensGen.CssGen
   hs-source-dirs: src
   ghc-options: -Wall
   default-language: GHC2021
@@ -20,7 +20,7 @@ library
 executable design-tokens-gen
   main-is: DesignTokensGen/Main.hs
   other-modules:
-    DesignTokensGen.Types, DesignTokensGen.Toml, DesignTokensGen.Json, DesignTokensGen.ElmGen
+    DesignTokensGen.Types, DesignTokensGen.Toml, DesignTokensGen.Json, DesignTokensGen.ElmGen, DesignTokensGen.CssGen
   hs-source-dirs: src
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language: GHC2021
@@ -33,7 +33,7 @@ test-suite design-tokens-tests
   type: exitcode-stdio-1.0
   main-is: TestSuite.hs
   other-modules:
-    DesignTokensGen.ElmGenSpec, DesignTokensGen.JsonSpec
+    DesignTokensGen.ElmGenSpec, DesignTokensGen.JsonSpec, DesignTokensGen.CssGenSpec
   hs-source-dirs: tests
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language: GHC2021

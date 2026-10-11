@@ -23,12 +23,12 @@ tests =
                 root = maybe "" snd $ lookup' "src/DesignTokens.elm" files
             assertBool "has version" $
                 "version" `T.isInfixOf` root
-        , testCase "metadata module contains canonicalUrl" $ do
+        , testCase "metadata module contains brandGuideUrl" $ do
             dg <- parseContentDir "content"
             let files = generateElmPackage dg
                 metadata = maybe "" snd $ lookup' "src/DesignTokens/Metadata.elm" files
-            assertBool "has canonicalUrl" $
-                "canonicalUrl" `T.isInfixOf` metadata
+            assertBool "has brandGuideUrl" $
+                "brandGuideUrl" `T.isInfixOf` metadata
         , testCase "colors module contains legoBlack" $ do
             dg <- parseContentDir "content"
             let files = generateElmPackage dg

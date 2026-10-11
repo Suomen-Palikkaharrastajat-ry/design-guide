@@ -20,10 +20,11 @@ Pure design token pipeline for Suomen Palikkaharrastajat ry (Finnish LEGO enthus
 Reads TOML token definitions from `content/`, generates:
 - `dist/design-tokens.tokens.json` — W3C Design Tokens 2025.10 compliant JSON
 - `dist/design-tokens-elm/` — publishable Elm package with typed constants
+- `dist/design-tokens.css` — Tailwind v4 stylesheet fragment (@theme + @utility blocks)
 
 Key directories:
 - `content/` — TOML source of truth (9 files)
-- `src/DesignTokensGen/` — Haskell pipeline: Types, Toml, Json, ElmGen, Main
+- `src/DesignTokensGen/` — Haskell pipeline: Types, Toml, Json, ElmGen, CssGen, Main
 - `tests/` — Tasty test suite
 - `review/` — elm-review config; the shared LlmAgent rules live in master-builder (fetched into gitignored `review/vendor/`)
 - `reference/` — LEGO color catalog (`allowed-colors.csv`) that the brand color tokens derive from
@@ -33,7 +34,7 @@ Key directories:
 | File | Tokens |
 |------|--------|
 | `content/meta.toml` | Org metadata, version, canonical URL |
-| `content/colors.toml` | Brand (3), skin-tones (4), rainbow (7), semantic (11) |
+| `content/colors.toml` | Brand (4), skin-tones (4), rainbow (7), semantic (11) |
 | `content/typography.toml` | Font family, 10 type scale entries |
 | `content/spacing.toml` | Base unit, 8 scale steps, 4 breakpoints, border radii |
 | `content/motion.toml` | 3 durations, 3 easings |
@@ -50,6 +51,7 @@ Key directories:
 | `DesignTokensGen.Toml` | Multi-file TOML parser (`parseContentDir`) |
 | `DesignTokensGen.Json` | W3C DTCG JSON generator (`generateJson`) |
 | `DesignTokensGen.ElmGen` | Elm package generator (`generateElmPackage`) |
+| `DesignTokensGen.CssGen` | Tailwind v4 CSS generator (`generateCss`) |
 | `DesignTokensGen.Main` | Executable entry point |
 
 ## Makefile key targets
@@ -57,7 +59,7 @@ Key directories:
 | Target | Description |
 |--------|-------------|
 | `make build` | Compile Haskell executables |
-| `make dist` | Run design-tokens-gen: content/ TOML → dist/ JSON + Elm |
+| `make dist` | Run design-tokens-gen: content/ TOML → dist/ JSON + Elm + CSS |
 | `make test` | Run test suite + `make check` |
 | `make check` | hlint + elm-review on generated code |
 | `make format` | Auto-format Haskell with fourmolu |
@@ -67,6 +69,7 @@ Key directories:
 
 - `dist/design-tokens.tokens.json` — W3C DTCG 2025.10: `$type`, `$value`, `$description`
 - `dist/design-tokens-elm/` — Elm package (type=package, exposed modules under `DesignTokens.*`)
+- `dist/design-tokens.css` — Tailwind v4 CSS fragment (@theme + @utility classes)
 
 ## elm-review
 

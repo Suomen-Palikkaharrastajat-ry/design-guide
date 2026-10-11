@@ -4,6 +4,7 @@ Reads TOML definitions from `content/`, generates:
 
 - **`dist/design-tokens.tokens.json`** — W3C Design Tokens (2025.10) compliant JSON
 - **`dist/design-tokens-elm/`** — publishable Elm package with typed constants
+- **`dist/design-tokens.css`** — Tailwind v4 stylesheet fragment (`@theme` + `@utility` blocks)
 
 ## Prerequisites
 
@@ -17,7 +18,7 @@ devenv shell
 
 ```bash
 make build   # compile Haskell pipeline
-make dist    # content/ TOML → dist/ (JSON + Elm package)
+make dist    # content/ TOML → dist/ (JSON + Elm package + CSS)
 make test    # run test suite + hlint + elm-review
 ```
 
@@ -26,7 +27,7 @@ make test    # run test suite + hlint + elm-review
 | File | Tokens |
 |------|--------|
 | `content/meta.toml` | Org metadata, version, canonical URL |
-| `content/colors.toml` | Brand (3), skin-tone (4), rainbow (7), semantic (11) |
+| `content/colors.toml` | Brand (4), skin-tone (4), rainbow (7), semantic (11) |
 | `content/typography.toml` | Font family, 10 type-scale entries |
 | `content/spacing.toml` | Base unit, 8 scale steps, 4 breakpoints, border radii |
 | `content/motion.toml` | 3 durations, 3 cubic-bezier easings |
@@ -57,6 +58,13 @@ Edit any TOML file, then `make dist` to regenerate outputs.
 - `DesignTokens.Opacity` — opacity scale (0–100)
 - `DesignTokens.Components` — per-component token dependency lists
 
+### Tailwind v4 CSS
+
+`dist/design-tokens.css` is a Tailwind v4 stylesheet fragment ready for `@import` in consumer apps. It defines:
+
+- `@theme` with brand and semantic color variables (`--color-*`), fonts (`--font-sans`, `--font-mono`), border radius (`--radius-*`), shadows (`--shadow-*`), breakpoints (`--breakpoint-*`), durations (`--duration-*`), and easings (`--ease-*`).
+- `@utility` classes for the typography scale (`type-display`, `type-h1` .. `type-overline`).
+
 ## Makefile targets
 
 | Target | Description |
@@ -77,6 +85,7 @@ src/DesignTokensGen/
   Toml.hs         Multi-file TOML parser
   Json.hs         W3C DTCG JSON generator
   ElmGen.hs       Elm package generator
+  CssGen.hs       Tailwind v4 CSS generator
   Main.hs         Executable entry point
 tests/            Tasty test suite
 review/           elm-review config (shared LlmAgent rules fetched from master-builder)

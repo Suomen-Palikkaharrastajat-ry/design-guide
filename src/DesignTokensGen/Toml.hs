@@ -330,6 +330,8 @@ instance FromValue TypeScaleEntry where
         ls <- reqKey "letter-spacing-em"
         cc <- reqKey "css-class"
         d <- reqKey "description"
+        ff <- optKey "font-family"
+        tt <- optKey "text-transform"
         pure
             TypeScaleEntry
                 { tseName = n
@@ -340,6 +342,8 @@ instance FromValue TypeScaleEntry where
                 , tseLetterSpacingEm = ls
                 , tseCssClass = cc
                 , tseDescription = d
+                , tseFontFamily = ff
+                , tseTextTransform = tt
                 }
 
 -- ---------------------------------------------------------------------------

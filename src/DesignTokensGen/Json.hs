@@ -18,6 +18,7 @@ import Data.Aeson.Key (Key)
 import Data.Aeson.Key qualified as Key
 import Data.ByteString.Lazy (ByteString)
 import Data.Char (digitToInt, toLower)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Data.Text qualified as T
 import DesignTokensGen.Types
@@ -236,7 +237,7 @@ scaleToken ts =
         [ "$type" .= t "typography"
         , "$value"
             .= object
-                [ "fontFamily" .= t "Outfit"
+                [ "fontFamily" .= fromMaybe "Outfit" (tseFontFamily ts)
                 , "fontWeight" .= tseWeight ts
                 , "fontSize" .= (T.pack (show (tseSizeRem ts)) <> "rem")
                 , "lineHeight" .= tseLineHeight ts

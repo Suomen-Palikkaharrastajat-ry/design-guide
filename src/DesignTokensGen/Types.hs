@@ -185,6 +185,8 @@ data TypeScaleEntry = TypeScaleEntry
     , tseLetterSpacingEm :: Double
     , tseCssClass :: Text
     , tseDescription :: Text
+    , tseFontFamily :: Maybe Text
+    , tseTextTransform :: Maybe Text
     }
     deriving (Show, Eq)
 
