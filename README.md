@@ -27,7 +27,7 @@ make test    # run test suite + hlint + elm-review
 | File | Tokens |
 |------|--------|
 | `content/meta.toml` | Org metadata, version, canonical URL |
-| `content/colors.toml` | Brand (4), skin-tone (4), rainbow (7), semantic (11) |
+| `content/colors.toml` | Brand (5), skin-tone (4), rainbow (7), semantic (11) |
 | `content/typography.toml` | Font family, 10 type-scale entries |
 | `content/spacing.toml` | Base unit, 8 scale steps, 4 breakpoints, border radii |
 | `content/motion.toml` | 3 durations, 3 cubic-bezier easings |
@@ -62,7 +62,7 @@ Edit any TOML file, then `make dist` to regenerate outputs.
 
 `dist/design-tokens.css` is a Tailwind v4 stylesheet fragment ready for `@import` in consumer apps. It defines:
 
-- `@theme` with brand and semantic color variables (`--color-*`), fonts (`--font-sans`, `--font-mono`), border radius (`--radius-*`), shadows (`--shadow-*`), breakpoints (`--breakpoint-*`), durations (`--duration-*`), and easings (`--ease-*`).
+- `@theme` with brand and semantic color variables (`--color-*`), the brand font (`--font-sans`), durations (`--duration-*`), and easings (`--ease-*`). Border radii, shadows, breakpoints and `--font-mono` are intentionally not emitted: Tailwind has defaults under the same names, and overriding them would restyle every `rounded-*`, `shadow-*` and responsive utility in consumer apps. Those tokens remain available in the JSON and Elm outputs.
 - `@utility` classes for the typography scale (`type-display`, `type-h1` .. `type-overline`).
 
 ## Makefile targets

@@ -18,25 +18,37 @@ import Numeric (showFFloat)
 -- | Generate the full Tailwind v4 CSS tokens fragment.
 generateCss :: DesignGuide -> Text
 generateCss dg =
-    T.unlines $
+    (<> "\n") . T.stripEnd . T.unlines $
         [ "/* Generated file, do not edit."
-        , " * Source: content/*.toml"
+        , " * Source: design-guide content/*.toml"
         , " * Version: " <> metaVersion (dgMeta dg)
         , " */"
         , ""
         , "@theme {"
         ]
-            ++ map ("  " <>) (themeBody dg)
+            ++ map indent (themeBody dg)
             ++ [ "}"
                , ""
                ]
             ++ concatMap utilityBlock (tcScale $ dgTypography dg)
+  where
+    indent l
+        | T.null l = l
+        | otherwise = "  " <> l
 
+{- | Body of the @theme block.
+
+Only namespaces the design guide owns are emitted. Border radii, shadows,
+breakpoints and @--font-mono@ are deliberately left out: Tailwind ships
+defaults under the same names (@--radius-md@, @--shadow-sm@,
+@--breakpoint-sm@ ...), so emitting ours would silently restyle every
+@rounded-*@, @shadow-*@ and responsive utility in every consumer. Those
+tokens stay available in the JSON and Elm outputs.
+-}
 themeBody :: DesignGuide -> [Text]
 themeBody dg =
     [ "/* ── Font ─────────────────────────────────────────────────────────────── */"
     , "--font-sans: " <> formatFontFamily (tcFontFamily $ dgTypography dg) <> ";"
-    , "--font-mono: ui-monospace, monospace;"
     , ""
     , "/* ── Brand palette ────────────────────────────────────────────────────── */"
     ]
@@ -53,18 +65,6 @@ themeBody dg =
            , "/* ── Semantic borders ─────────────────────────────────────────────────── */"
            ]
         ++ map (formatAlignedVar 24) (semanticBorderVars dg)
-        ++ [ ""
-           , "/* ── Radius ──────────────────────────────────────────────────────────── */"
-           ]
-        ++ map formatRadius (spcBorderRadii $ dgSpacing dg)
-        ++ [ ""
-           , "/* ── Shadows ─────────────────────────────────────────────────────────── */"
-           ]
-        ++ map formatShadow (ecShadows $ dgEffects dg)
-        ++ [ ""
-           , "/* ── Breakpoints ─────────────────────────────────────────────────────── */"
-           ]
-        ++ map formatBreakpoint (spcBreakpoints $ dgSpacing dg)
         ++ [ ""
            , "/* ── Motion ──────────────────────────────────────────────────────────── */"
            ]
@@ -136,18 +136,6 @@ formatAlignedVar targetWidth (name, val) =
     let colon = name <> ":"
         spaces = T.replicate (max 1 (targetWidth - T.length colon)) " "
      in colon <> spaces <> val <> ";"
-
-formatRadius :: BorderRadius -> Text
-formatRadius br =
-    "--radius-" <> brName br <> ": " <> T.pack (show (brPx br)) <> "px;"
-
-formatShadow :: Shadow -> Text
-formatShadow sh =
-    "--" <> shName sh <> ": " <> shValue sh <> ";"
-
-formatBreakpoint :: Breakpoint -> Text
-formatBreakpoint bp =
-    "--breakpoint-" <> bpName bp <> ": " <> T.pack (show (bpPx bp)) <> "px;"
 
 formatDuration :: MotionDuration -> Text
 formatDuration md =

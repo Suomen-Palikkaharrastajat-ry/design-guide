@@ -30,11 +30,26 @@ tests =
             let css = generateCss dg
             assertBool "contains --color-brand-green" ("--color-brand-green:" `T.isInfixOf` css)
             assertBool "contains #237841" ("#237841" `T.isInfixOf` css)
-        , testCase "contains font variables in @theme" $ do
+        , testCase "contains --font-sans in @theme" $ do
             dg <- parseContentDir "content"
             let css = generateCss dg
             assertBool "contains --font-sans" ("--font-sans: \"Outfit\", system-ui, sans-serif;" `T.isInfixOf` css)
-            assertBool "contains --font-mono" ("--font-mono: ui-monospace, monospace;" `T.isInfixOf` css)
+        , testCase "does not override Tailwind's default theme namespaces" $ do
+            dg <- parseContentDir "content"
+            let vars = extractThemeVars (generateCss dg)
+                clashes =
+                    [ v
+                    | v <- vars
+                    , p <- ["--radius-", "--shadow-", "--breakpoint-", "--font-mono"]
+                    , p `T.isPrefixOf` v
+                    ]
+            assertBool "theme has variables" (not (null vars))
+            clashes @?= []
+        , testCase "has no trailing whitespace" $ do
+            dg <- parseContentDir "content"
+            let bad = filter (\l -> T.stripEnd l /= l) (T.lines (generateCss dg))
+            bad @?= []
+            assertBool "ends with exactly one newline" ("}\n" `T.isSuffixOf` generateCss dg)
         , testCase "contains expected @utility type-h1 block with correct declarations" $ do
             dg <- parseContentDir "content"
             let css = generateCss dg
@@ -51,7 +66,7 @@ tests =
         , testCase "contains font-family in @utility type-mono" $ do
             dg <- parseContentDir "content"
             let css = generateCss dg
-            assertBool "type-mono has font-family" ("font-family: ui-monospace, monospace;" `T.isInfixOf` css)
+            assertBool "type-mono has font-family" ("font-family: ui-monospace, \"Cascadia Code\", \"Source Code Pro\", Menlo, Consolas, \"DejaVu Sans Mono\", monospace;" `T.isInfixOf` css)
         , testCase "contains text-transform in @utility type-overline" $ do
             dg <- parseContentDir "content"
             let css = generateCss dg

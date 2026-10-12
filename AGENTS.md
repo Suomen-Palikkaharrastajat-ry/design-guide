@@ -34,7 +34,7 @@ Key directories:
 | File | Tokens |
 |------|--------|
 | `content/meta.toml` | Org metadata, version, canonical URL |
-| `content/colors.toml` | Brand (4), skin-tones (4), rainbow (7), semantic (11) |
+| `content/colors.toml` | Brand (5), skin-tones (4), rainbow (7), semantic (11) |
 | `content/typography.toml` | Font family, 10 type scale entries |
 | `content/spacing.toml` | Base unit, 8 scale steps, 4 breakpoints, border radii |
 | `content/motion.toml` | 3 durations, 3 easings |
@@ -70,6 +70,11 @@ Key directories:
 - `dist/design-tokens.tokens.json` — W3C DTCG 2025.10: `$type`, `$value`, `$description`
 - `dist/design-tokens-elm/` — Elm package (type=package, exposed modules under `DesignTokens.*`)
 - `dist/design-tokens.css` — Tailwind v4 CSS fragment (@theme + @utility classes)
+
+The `@theme` block deliberately omits border radii, shadows, breakpoints and
+`--font-mono`. Tailwind has defaults under the same variable names, so emitting
+them would restyle every `rounded-*`, `shadow-*` and responsive utility in the
+consumer apps. Do not add them back; they stay available in the JSON and Elm outputs.
 
 ## elm-review
 
